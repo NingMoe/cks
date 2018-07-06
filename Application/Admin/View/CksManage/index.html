@@ -198,8 +198,8 @@
         //点击添加
         $("#add-manager").click(function(){
             if(tag == 1) cksManageFn.secCommon('channel', '商城', '商城');
-            if(tag == 2 || tag == 3)cksManageFn.secCommon('operator', '等于', '=');
-            if(tag == 4 || tag == 5)$("#otcr").val('');
+            if(tag == 2 || tag == 3)cksManageFn.secCommon('operator', '等于', '==');
+            if(tag == 4 || tag == 5)$("#describe").val('');
             //cksManageFn.secCommon('ratio', 1, 1);
             cksManageFn.inputShow();
             globalFn.lyPopup("<?php echo $systemKeysValue['value1']?>", ['450px', '300px'],'add-manage-popup',1);
@@ -218,7 +218,7 @@
                 }
 
                 //客户渠道、料号策略
-                if(tag == 4 || tag ==5)$("#otcr").val(data.data.describe);
+                if(tag == 4 || tag ==5)$("#describe").val(data.data.describe);
 
                 $('#ratio').val(data.data.exratio);
                 //cksManageFn.secCommon('ratio', data.data.exratio, data.data.exratio);
