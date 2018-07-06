@@ -48,6 +48,9 @@
             <th>序号</th>
             <th>兑付策略</th>
             <th>描述</th>
+            <?php if($tag == 2 ||  $tag == 3):?>
+            <th>说明</th>
+            <?php endif;?>
             <th>比例</th>
             <?php if($tag == 1 ):?>
             <th>汇率</th>
@@ -63,6 +66,9 @@
             <td><?php echo $key+1;?></td>
             <td><?php echo $systemKeysValue['value1']?></td>
             <td><?php echo $val['describe'];?></td>
+            <?php if($tag == 2 ||  $tag == 3):?>
+            <td><?php echo $val['operator'];?></td>
+            <?php endif;?>
             <td><?php echo $val['exratio'];?></td>
             <?php if($tag == 1 ):?>
             <th><?php echo $val['rate'];?></th>

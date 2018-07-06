@@ -59,7 +59,7 @@ class ExGiftController extends Controller
 
     //发送数据
     public function curlPostSend($paramArr, $source, $key){
-//        echo json_encode(EncryptSignVerify::sign($paramArr, $key));
+        //echo json_encode(EncryptSignVerify::sign($paramArr, $key));die;
         return Curl::curl_header_post(
             C($source),
             json_encode(EncryptSignVerify::sign($paramArr, $key)),
@@ -81,15 +81,15 @@ class ExGiftController extends Controller
     public function testPushGift()
     {
         $arr = [
-            'phone' =>   '13795000060',
+            'phone' =>   '18981976763',
             'kcodeType' =>   'W2',
-            'kcode' => 'am123',
+            'kcode' => 'am22',
             'kcodeSn' => 'mm1234',
             'deviceSn' => 'sb1234',
             'bingSn' => 'bd123',
-            'Amount' => '999'
+            'Amount' => '99.9'
         ];
-        p($this->pushGift($arr, 'jh_push_gift', 'hxwj_key'));
+        p($this->pushGift($arr, 'hxwj_push_gift', 'hxwj_key'));
     }
 
     /**
@@ -103,7 +103,7 @@ class ExGiftController extends Controller
             'status' => 'invalid',
             'statusName' => 'invalid'
         ];
-        p($this->changeGiftStatus($arr, 'jh_change_status', 'hxwj_key'));
+        p($this->changeGiftStatus($arr, 'hxwj_change_status', 'hxwj_key'));
     }
 
 }
