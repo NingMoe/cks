@@ -193,7 +193,7 @@
             $("#aaresults").hide();
         })
         //分页
-        globalFn.lypage('page', "{$data['pages']}", "Admin/CksManage/index");
+        globalFn.lypage('page', "{$data['pages']}", "Admin/CksManage/index",  'tag', '<?php echo $tag?>');
 
         //点击添加
         $("#add-manager").click(function(){

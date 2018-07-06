@@ -19,7 +19,7 @@ class CksManageController extends BaseController
         $this->assign('tag', $_GET['tag']);
 
         //策略列表
-        $this->assign('data', CksManageModel::getPolicyListData($_GET['tag']));
+        $this->assign('data', CksManageModel::getPolicyListData($_GET['tag'], $_GET['page']));
         //dump(CksManageModel::getPolicyListData($_GET['tag']));die;
 
         //比例

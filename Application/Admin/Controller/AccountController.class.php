@@ -17,6 +17,7 @@ class AccountController extends BaseController
      */
     public function index()
     {
+
        $this->assign('data', AccountModel::getAccountListData($_GET['page']));
        $this->assign('roleName', AccountModel::getRoleName());
        $this->display();
