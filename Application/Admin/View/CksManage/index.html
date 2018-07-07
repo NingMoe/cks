@@ -144,12 +144,7 @@
             <label class="layui-form-label"> 兑换比例</label>
             <div class="layui-input-inline">
                 <input name="ratio"  placeholder="请输入兑换比例" lay-verify="required" class="layui-input" type="text" id="ratio"
-                       onkeypress="if(!this.value.match(/^[\+\-]?\d*?\.?\d*?$/))this.value=this.t_value;else this.t_value=this.value;
-                                    if(this.value.match(/^(?:[\+\-]?\d+(?:\.\d+)?)?$/))this.o_value=this.value"
-                       onkeyup="if(!this.value.match(/^[\+\-]?\d*?\.?\d*?$/))this.value=this.t_value;else this.t_value=this.value;
-                                if(this.value.match(/^(?:[\+\-]?\d+(?:\.\d+)?)?$/))this.o_value=this.value"
-                       onblur="if(!this.value.match(/^(?:[\+\-]?\d+(?:\.\d+)?|\.\d*?)?$/))this.value=this.o_value;else{
-                           if(this.value.match(/^\.\d+$/)) this.value=0+this.value;if(this.value.match(/^\.$/))this.value=0;this.o_value=this.value}">
+                       onKeyUp=" globalFn.amount(this)" onBlur="globalFn.overFormat(this)">
             </div>
         </div>
 
@@ -181,12 +176,15 @@
                 //$('.ui-autocomplete').show();
                 var htmls = '';
                 //var resulte = JSON.parse(data);
+                console.log(data.data.length);
                 if(data.data.length >0){
                     var field =  data.field;
                     for(var i in data.data)
                         htmls = htmls + "<p>"+data.data[i][data.field]+"</p>";
                     $("#aaresults").html(htmls);
                     $("#aaresults").show();
+                }else{
+                    $("#aaresults").hide();
                 }
 
             });

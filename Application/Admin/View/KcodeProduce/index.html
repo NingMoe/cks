@@ -100,6 +100,7 @@
                     <input name="<?php echo $val['value3']?>"
                     <?php if($val['key2'] == 6):?>readonly<?php endif;?>
                     <?php if($val['key2'] == 4 || $val['key2'] == 5 || $val['key2'] == 7 ):?> placeholder="<?php echo $val['value2']?>" <?php endif;?>
+                    <?php if($val['key2'] ==  7):?> onKeyUp=" globalFn.amount(this)" onBlur="globalFn.overFormat(this)" <?php endif;?>
                     lay-verify="required" class="layui-input describe" type="text" id="<?php echo $val['value3']?>" tag="<?php echo $val['key2']?>">
                     <div class = 'aaresults' id="<?php echo $val['value3']?>s" style="display: none;height: 150px;overflow-y: scroll">
                     </div>
@@ -137,7 +138,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">料号</label>
                 <div class="layui-input-inline">
-                    <input name="pnumbers"  placeholder="请输入料号" lay-verify="required" class="layui-input pnumbers" type="text" id="pnumbers">
+                    <input name="pnumbers" autocomplete="off" placeholder="请输入料号" lay-verify="required" class="layui-input pnumbers" type="text" id="pnumbers">
                     <div id="aaresults1" style="display: none;height: 150px;overflow-y: scroll">
 
                     </div>
@@ -166,6 +167,7 @@
 <script>
 
     $(function() {
+
         //分页
         globalFn.lypage('page', "{$data['pages']}", "Admin/KcodeProduce/index");
         //模糊搜索
@@ -185,6 +187,8 @@
                             htmls = htmls + "<p>" + data.data[i][data.field] + "</p>";
                         $("#" + selectPid).html(htmls);
                         $("#" + selectPid).show();
+                    } else {
+                        $("#" + selectPid).hide();
                     }
 
                 });

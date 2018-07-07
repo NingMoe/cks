@@ -20,6 +20,7 @@ class IndexController extends Controller
         //if($_SERVER["SERVER_NAME"] == 'cks.phicomm.com')
 
         header('location:https://cks.phicomm.com/index.php/Admin');
+        //header('location:https://k.phicomm.com/cks/dist/');
 
         //else
 
