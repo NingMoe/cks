@@ -261,8 +261,10 @@ class BaseModel extends  Model{
         return $_SESSION['adminInfo']['role_id'] == 1 ? true : false;
     }
 
-
-
+    //角色ID
+    public static function roleId(){
+        return $_SESSION['adminInfo']['role_id'];
+    }
 
     /**
     @获取最新的一条数据的id

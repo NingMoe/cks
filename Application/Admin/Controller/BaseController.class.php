@@ -23,9 +23,11 @@ class BaseController extends Controller
             exit;
         }
 
+        if($_SESSION['menuInfo'] && BaseModel::roleName() != '超级管理员')
+            $this->authorizedAccessing($_SESSION['menuInfo'], $_GET['tag']);
+
+
     }
-
-
 
     //处理添加或修改的入口
     public function access(){
@@ -75,6 +77,29 @@ class BaseController extends Controller
     //数据重复提醒
     protected  function distRemind($remind){
         $remind['data'] && $this->ajaxReturn(['status'=>2, 'info'=>$remind['info']]);
+
+    }
+
+    //访问权限
+    protected function authorizedAccessing($menu, $tag){
+
+        $menuGather = [];
+        if($tag)$parm = "?tag=".$tag;
+
+        $visitMenu = CONTROLLER_NAME.'/'.ACTION_NAME.$parm; //当前访问菜单
+
+        foreach ($menu as $val){
+
+            if(!empty($val['son']))
+                foreach($val['son'] as $va)
+                    array_push ($menuGather, $va['route']);
+            else
+                array_push ($menuGather, $val['route']);
+
+        }
+
+        if(CONTROLLER_NAME !== 'Index')
+            if(!in_array($visitMenu, $menuGather)) exit('非法操作');
 
     }
 
