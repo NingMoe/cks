@@ -75,7 +75,7 @@
             <?php endif;?>
             <?php if($tag != 7):?>
             <td>
-                <a class="edit" attr="<?php echo $val['id']?>" href="#"></a>
+                <a class="edit" attr="<?php echo $val['id']?>" desc="<?php echo $val['describe'];?>" href="#"></a>
                 <a class="delete" attr="<?php echo $val['id']?>" href="#" ></a>
             </td>
             <?php endif;?>
@@ -95,7 +95,7 @@
         <div class="layui-form-item channel">
             <label class="layui-form-label"><?php echo $systemKeysValue['value1']?></label>
             <div class="layui-input-inline">
-                <select name="describe" lay-filter="">
+                <select name="describe" lay-filter="" id="desc">
                     <?php foreach($channel as $val):?>
                     <option value="<?php echo $val['value1']?>"><?php echo $val['value1']?></option>
                     <?php endforeach;?>
@@ -109,7 +109,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label"><?php echo $systemKeysValue['value1']?></label>
                 <div class="layui-input-block">
-                    <input type='text' readonly lay-verify="required" class='form-control selectData layui-input' id='datepicker' name='describe' value="">
+                    <input type='text' autocomplete="off" readonly lay-verify="required" class='form-control selectData layui-input' id='datepicker' name='describe' value="">
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label"><?php echo $systemKeysValue['value1']?></label>
                 <div class="layui-input-inline">
-                    <input name="describe"  placeholder="请输入渠道" lay-verify="required" class="layui-input" type="text" id="describe">
+                    <input autocomplete="off" name="describe"  placeholder="请输入渠道" lay-verify="required" class="layui-input" type="text" id="describe">
                     <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
 
                     </div>
@@ -177,7 +177,7 @@
         //模糊搜索
         $('#describe').on('input propertychange', function() {
             $("#aaresults").html('');
-            $.post("{:U('dimSearch')}",  {tag:"<?php echo$tag?>",describe:$('#describe').val()}, function(data){
+            $.post("{:U('dimSearch')}",  {tag:"<?php echo $tag?>",describe:$('#describe').val()}, function(data){
                 //$('.ui-autocomplete').show();
                 var htmls = '';
                 //var resulte = JSON.parse(data);
@@ -214,9 +214,11 @@
         //点击编辑
         $(".edit").click(function(){
             cksManageFn.inputHide();
+            a = $(this).attr('desc');
+            $('#desc').find("option[value="+a+"]").prop("selected",true);
             $.post("{:U('getOnePolicyData')}",{id:$(this).attr('attr')},function(data){
                 //渠道策略
-                if(tag == 1) cksManageFn.secCommon('channel', data.data.describe, data.data.describe);
+                if(tag == 1) cksManageFn.secCommon('channel', $('#desc').val(), $('#desc').val());
                 //出货时间、激活时间策略
                 if(tag == 2 || tag == 3) {
                     $('#datepicker').val(data.data.describe);
@@ -239,6 +241,7 @@
             //监听提交
             form.on('submit(demo2)', function(data){
                 _index = layer.load();
+                console.log(JSON.stringify(data.field));
                 $.post("{:U('access')}", {data:JSON.stringify(data.field)},function(res){
                     res.status == 1 ? globalFn.remind(_index, res.info,"{:U('index',['tag' => $tag])}")
                         : globalFn.remind(_index, res.info);

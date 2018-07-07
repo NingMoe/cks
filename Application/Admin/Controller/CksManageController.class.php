@@ -116,7 +116,7 @@ class CksManageController extends BaseController
 
         $data['table'] = CksManageModel::$table[0];
         $data['data']['describe'] = trim($pdata['describe']);
-        if($pdata['sign'] == 1 || $pdata['sign'] == 7)$data['data']['tag'] = $this->mapping($pdata['describe']);
+        if($pdata['sign'] == 1 || $pdata['sign'] == 7)$data['data']['tag'] = $this->mapping(trim($pdata['describe']));
         $data['data']['exratio'] = trim($pdata['ratio']);
         $data['data']['cash'] = trim($pdata['sign']);
         $data['data']['operator'] = trim($pdata['operator']) ? trim($pdata['operator']) : '==';
@@ -141,7 +141,6 @@ class CksManageController extends BaseController
         //cash 1渠道兑付 4客户渠道 5料号
         if(trim($pdata['sign']) == 1 || trim($pdata['sign']) == 4 || trim($pdata['sign']) == 5){
 
-
             $distinctRole = [
                 'remind' => '该策略已存在',
                 'distWhere' => ['cash' => trim($pdata['sign']), 'describe' => trim($pdata['describe'])],
@@ -152,7 +151,6 @@ class CksManageController extends BaseController
 
             return $distinctRole;
         }
-
 
         //cash 2出货时间策略 3激活时间策略
         if((trim($pdata['sign']) == 2 || trim($pdata['sign']) == 3) && $pdata['action'] == 'add') {
