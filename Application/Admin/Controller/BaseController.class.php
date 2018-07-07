@@ -23,8 +23,8 @@ class BaseController extends Controller
             exit;
         }
 
-        if($_SESSION['menuInfo'] && BaseModel::roleName() != '超级管理员')
-            $this->authorizedAccessing($_SESSION['menuInfo'], $_GET['tag']);
+        /*if($_SESSION['menuInfo'] && BaseModel::roleName() != '超级管理员')
+            $this->authorizedAccessing($_SESSION['menuInfo'], $_GET['tag']);*/
 
 
     }

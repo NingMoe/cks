@@ -155,6 +155,32 @@
             </div>
         </div>
 
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-inline">
+                    <select name="start_time" lay-filter="" id="end_time">
+                        <?php foreach($imTime as $val):?>
+                        <option value="<?php echo $val['time']?>"><?php echo $val['time']?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">结束结束</label>
+                <div class="layui-input-inline">
+                    <select name="end_time" lay-filter=""  id="start_time">
+                        <?php foreach($imTime as $val):?>
+                        <option value="<?php echo $val['time']?>"><?php echo $val['time']?></option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <inpt name="derive" type="hidden" value="derive" />
 
         <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin-left:-28px; " >
@@ -218,7 +244,7 @@
 
         //点击导出
         $(".badge").click(function(){
-            globalFn.lyPopup("K码导出", ['415px', '250px'],'derive-manage-popup',1);
+            globalFn.lyPopup("K码导出", ['415px', '450px'],'derive-manage-popup',1);
         })
 
         //模糊搜索导出

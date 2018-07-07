@@ -43,6 +43,10 @@ class KcodeProduceController extends BaseController
         //导入列表
         $this->assign('data', KcodeProduceModel:: getProductImportListData($_GET['page']));
 
+        //时间
+        //p(KcodeProduceModel:: getProductImportTime());
+        $this->assign('imTime', KcodeProduceModel:: getProductImportTime());
+
 
         $this->display();
     }
@@ -59,7 +63,7 @@ class KcodeProduceController extends BaseController
 
         $this->ajaxReturn(BaseModel::getDbData([
             'table' => KcodeProduceModel::$table[0],
-            'field' => 'pname',
+            'fields' => 'pname',
             'where' => ['pnumber' => I('post.pnumber')]
         ],false));
 
@@ -70,6 +74,7 @@ class KcodeProduceController extends BaseController
 
         $pdata = json_decode($_POST['data'],true);
         //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
+
         $this->verifyPnumberByPname($pdata['pnumber'], $pdata['pname']);//验证料号和名称是否对应
 
         $postData = $this->checkPost($pdata);//待添加数据
@@ -126,6 +131,11 @@ class KcodeProduceController extends BaseController
 
     }*/
 
+    //验证时间时间 是否合法
+    public function  verifyTimeValidity($startTime, $endTime){
+        if($endTime < $startTime)$this->ajaxReturn(['status' => 0, 'info' => '结束时间不能够小于开始时间']);
+    }
+
     //验证  料号产品名是否对应
     public function  verifyPnumberByPname($pnumber, $pname){
 
@@ -142,15 +152,21 @@ class KcodeProduceController extends BaseController
 
     }
 
+    //导出
     public function exportProductInitialData(){
         $pdata = json_decode($_POST['data'],true);
 
+        $this->verifyTimeValidity($pdata['start_time'], $pdata['end_time']);//验证时间合法性
         $this->verifyPnumberByPname($pdata['pnumbers'], $pdata['pnames']);//验证料号和名称是否对应
 
         $exportExcelData =  BaseModel::getDbData([
             'table' => KcodeProduceModel::$table[2],
-            'field' => ['id', 'clearcd', 'secretcd', 'hcode', 'im_pnumber', 'im_model','im_staff','im_time', 'status', 'pmoney', 'close_time'],
-            'where' => ['im_pnumber' => $pdata['pnumbers'], 'im_model' => $pdata['pnames']]
+            'fields' => ['id', 'clearcd', 'secretcd', 'hcode', 'im_pnumber', 'im_model','im_staff','im_time', 'status', 'pmoney', 'close_time'],
+            'where' => [
+                'im_pnumber' => $pdata['pnumbers'],
+                'im_model' => $pdata['pnames'],
+                'im_time' => ['between', [startMinuteTime(strtotime($pdata['start_time'])), endMinuteTime(strtotime($pdata['end_time']))]]
+            ]
         ]);
 
         //echo M()->getLastSql();die;

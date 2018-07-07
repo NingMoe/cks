@@ -142,6 +142,18 @@ function endTime($t = null){
     return date("Y-m-d H:i:s", mktime(23,59,59,date("m", $time),date("d", $time),date("Y", $time)));
 }
 
+//一分钟结束
+function endMinuteTime($t = null){
+    $time =  $t ? :time();
+    return date("Y-m-d H:i:s", mktime(date("H", $time),date("i", $time),59,date("m", $time),date("d", $time),date("Y", $time)));
+}
+
+//一分钟开始
+function startMinuteTime($t = null){
+    $time =  $t ? :time();
+    return date("Y-m-d H:i:s", mktime(date("H", $time),date("i", $time),0,date("m", $time),date("d", $time),date("Y", $time)));
+}
+
 //页面跳转
 function linkUrl($url){
      if(is_numeric($url))

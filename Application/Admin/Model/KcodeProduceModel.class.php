@@ -56,4 +56,14 @@ class KcodeProduceModel extends  BaseModel{
         return webDomain(true).self::$filePath.$fileName.'.xlsx';
     }
 
+
+    //获取导入时间
+    public static function getProductImportTime(){
+
+        $sql = "SELECT COUNT(*), DATE_FORMAT(im_time,'%Y-%m-%d %H:%i') as time FROM relation GROUP BY time order by time desc";
+
+        return M()->query($sql);
+
+    }
+
 }
