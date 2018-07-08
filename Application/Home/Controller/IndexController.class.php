@@ -17,14 +17,14 @@ class IndexController extends Controller
      */
     public function index(){
 
-        if($_SERVER["SERVER_NAME"] == 'phishop.local')
+        //if($_SERVER["SERVER_NAME"] == 'phishop.local')
 
-         header('location:http://phishop.local/index.php/Admin');
+         //header('location:http://phishop.local/index.php/Admin');
         //header('location:https://k.phicomm.com/cks/dist/');
 
         //else
 
-           // header('location:https://cks.phicomm.com/index.php/Admin');
+           header('location:https://cks.phicomm.com/index.php/Admin/index');
     }
 
 }
