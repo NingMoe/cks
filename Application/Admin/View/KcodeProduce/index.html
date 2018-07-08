@@ -244,6 +244,8 @@
 
         //点击导出
         $(".badge").click(function(){
+            $('#pnumbers').val('');
+            $('#pnamess').val('');
             globalFn.lyPopup("K码导出", ['415px', '450px'],'derive-manage-popup',1);
         })
 

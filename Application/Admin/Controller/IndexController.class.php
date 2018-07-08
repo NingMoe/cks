@@ -49,44 +49,44 @@ class IndexController extends BaseController
     public function main(){
 
         //产品总数
-        $this->assign('productCount', $this->getCount($this->table[0]));
+        //$this->assign('productCount', $this->getCount($this->table[0]));
 
         //未分配
-        $this->assign('productUndistributed', $this->getCount($this->table[0], ['status' => 0]));
+        //$this->assign('productUndistributed', $this->getCount($this->table[0], ['status' => 0]));
 
         //已分配
-        $this->assign('productAllocated', $this->getCount($this->table[0], ['status' => 1]));
+        //$this->assign('productAllocated', $this->getCount($this->table[0], ['status' => 1]));
 
         //已激活
-        $this->assign('productActivated', $this->getCount($this->table[0], ['status' => 2]));
+        //$this->assign('productActivated', $this->getCount($this->table[0], ['status' => 2]));
 
 
         //总量最多型号
-        $this->assign('modelCountMax', $this->getMaxModelCount($this->table[0],'im_model'));
+        //$this->assign('modelCountMax', $this->getMaxModelCount($this->table[0],'im_model'));
 
         //激活最多
-        $this->assign('activateCountMax', $this->getMaxActivateCount($this->table[0],'im_model'));
+        //$this->assign('activateCountMax', $this->getMaxActivateCount($this->table[0],'im_model'));
 
         //echart图表日期
-        $sevenDays = $this->getDateFromRange(date("Y-m-d",strtotime('-6 day')), date("Y-m-d",time()));
+        //$sevenDays = $this->getDateFromRange(date("Y-m-d",strtotime('-6 day')), date("Y-m-d",time()));
 
         //一周日期
-        $this->assign('sevenDays', json_encode($sevenDays));
+        //$this->assign('sevenDays', json_encode($sevenDays));
 
         //今日新增
-        $this->assign('sevenDaysUndistributedIncNum', $this->getDayIncNum($this->echartsName[0], $sevenDays, $this->table[0], 0, 'im_time'));
+        //$this->assign('sevenDaysUndistributedIncNum', $this->getDayIncNum($this->echartsName[0], $sevenDays, $this->table[0], 0, 'im_time'));
 
         //今日分配
-        $this->assign('sevenDaysAllocatedIncNum', $this->getDayIncNum($this->echartsName[1], $sevenDays, $this->table[0], 1, 'allot_time'));
+        //$this->assign('sevenDaysAllocatedIncNum', $this->getDayIncNum($this->echartsName[1], $sevenDays, $this->table[0], 1, 'allot_time'));
 
         //今日激活
-        $this->assign('sevenDaysActivatedIncNum', $this->getDayIncNum($this->echartsName[2], $sevenDays, $this->table[0], 2, 'im_time'));
+        //$this->assign('sevenDaysActivatedIncNum', $this->getDayIncNum($this->echartsName[2], $sevenDays, $this->table[0], 2, 'im_time'));
 
         //echart设置信息
-        $this->assign('echartsName', json_encode($this->echartsName));
+        //$this->assign('echartsName', json_encode($this->echartsName));
 
         //系统信息
-        $this->assign('systemInfo', $this->getSystemInfo());
+        //$this->assign('systemInfo', $this->getSystemInfo());
 
         $this->display();
     }
