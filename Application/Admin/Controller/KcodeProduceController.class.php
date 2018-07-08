@@ -71,6 +71,7 @@ class KcodeProduceController extends BaseController
 
     //导入
     public function imProductInitialData(){
+        set_time_limit(0);
 
         $pdata = json_decode($_POST['data'],true);
         //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
@@ -192,8 +193,7 @@ class KcodeProduceController extends BaseController
         $str = '';
 
         while(1) {
-
-            $rand = rand($this->randStart,$this->randEnd);
+            $rand = mt_rand($this->randStart,$this->randEnd);
 
             if(!in_array($rand, $this->arr))
 

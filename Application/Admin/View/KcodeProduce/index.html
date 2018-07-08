@@ -97,7 +97,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label"><?php echo $val['value1']?></label>
                 <div class="layui-input-inline">
-                    <input name="<?php echo $val['value3']?>"
+                    <input name="<?php echo $val['value3']?>" autocomplete="off"
                     <?php if($val['key2'] == 6):?>readonly<?php endif;?>
                     <?php if($val['key2'] == 4 || $val['key2'] == 5 || $val['key2'] == 7 ):?> placeholder="<?php echo $val['value2']?>" <?php endif;?>
                     <?php if($val['key2'] ==  7):?> onKeyUp=" globalFn.amount(this)" onBlur="globalFn.overFormat(this)" <?php endif;?>
@@ -111,11 +111,9 @@
         <div class="layui-form-item channel">
             <label class="layui-form-label"><?php echo $val['value1']?></label>
             <div class="layui-input-inline">
-                <select name="<?php echo $val['value3']?>" lay-filter="" >
-                <?php foreach($importRestrictions as $va):?>
-                    <option value="<?php echo $va['key2']?>"><?php echo $va['key2']?></option>
-                <?php endforeach;?>
-                </select>
+                <input name="<?php echo $val['value3']?>"  placeholder="请输入导入数量" lay-verify="required" class="layui-input" type="text"
+                       onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                       onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}">
             </div>
         </div>
         <?php endif;endforeach;?>
@@ -123,7 +121,7 @@
         <input name="postPnumberValue" type="hidden" id="postPnumberValue">
 
         <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin-left:-28px; " >
-            <div class="layui-btn" lay-submit="" lay-filter="demo2" id="sub-btn">添加</div>
+            <div class="layui-btn" lay-submit="" lay-filter="demo2" id="sub-btn">导入</div>
             <input name="sign" type="hidden" class="layui-input" value="<?php echo $tag?>" id="sign">
             <input name="action" type="hidden" class="layui-input" value="add" id="action">
             <input name="eid" type="hidden" class="layui-input" value="" id="eid">
@@ -155,6 +153,7 @@
             </div>
         </div>
 
+        <?php if($imTime):?>
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">开始时间</label>
@@ -180,6 +179,7 @@
                 </div>
             </div>
         </div>
+        <?php endif;?>
 
         <inpt name="derive" type="hidden" value="derive" />
 
