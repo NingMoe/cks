@@ -76,7 +76,7 @@ class KcodeProduceController extends BaseController
         $pdata = json_decode($_POST['data'],true);
         //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
 
-        $this->verifyPnumberByPname($pdata['pnumber'], $pdata['pname']);//验证料号和名称是否对应
+        $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
 
         $postData = $this->checkPost($pdata);//待添加数据
 
@@ -86,7 +86,7 @@ class KcodeProduceController extends BaseController
             //生成k码
             $postData['clearcd'] ='ph'.$this->createKcode('ph');
             $postData['secretcd'] =$this->createKcode('am');
-            if($pdata['pname'] == 'N1' || $pdata['pname'] == 'N1M')
+            if($pdata['pname'] == 'N1' || $pdata['pname'] == 'N1M' || $pdata['pname'] == 'K3-D1')
                 $postData['hcode'] ='BD'.$this->createKcode('BD');
 
             $res = BaseModel::addData([
