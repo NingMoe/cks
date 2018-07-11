@@ -92,7 +92,7 @@
     <form class="layui-form layui-form-pane" action="">
 
         <?php foreach($kcodeImportFields as $key => $val):?>
-        <?php if($val['value2'] != 'select'):?>
+        <?php if($val['node'] == 'text'):?>
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label"><?php echo $val['value1']?></label>
@@ -107,7 +107,18 @@
                 </div>
             </div>
         </div>
-        <?php else:?>
+        <?php elseif($val['node'] == 'checkbox'):?>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label"><?php echo $val['value1']?></label>
+                <div class="layui-input-inline" style="width:233px">
+                    <?php foreach($channelCheckBox as $va):?>
+                    <input  lay-skin="primary" lay-verify="required" class='channel_policy' data-id="<?php echo $va['value3']?>" type="checkbox" name="channel_policy[]" checked value="<?php echo $va['value3']?>"><?php echo $va['value2']?>
+                    <?php endforeach;?>
+                </div>
+            </div>
+        </div>
+        <?php elseif($val['node'] == 'select'):?>
         <div class="layui-form-item channel">
             <label class="layui-form-label"><?php echo $val['value1']?></label>
             <div class="layui-input-inline">
@@ -285,8 +296,19 @@
             var form = layui.form(),layer = layui.layer;
             //监听提交
             form.on('submit(demo2)', function(data){
+                var channelPolicyStr = '';
+                //渠道策略
+                $('.channel_policy').each(function(){
+                    if($(this).next().hasClass('layui-form-checked')){
+                        channelPolicyStr += $(this).attr('data-id')+',';
+                    }
+                });
+                if(channelPolicyStr == ''){
+                    layer.msg('请选择渠道策略');
+                    return false;
+                }
                 _index = layer.load();
-                $.post("{:U('imProductInitialData')}", {data:JSON.stringify(data.field)},function(res){
+                $.post("{:U('imProductInitialData')}", {data:JSON.stringify(data.field),'channel_policy':channelPolicyStr},function(res){
                     res.status == 1 ? globalFn.remind(_index, res.info,"{:U('index')}")
                         : globalFn.remind(_index, res.info);
                 });

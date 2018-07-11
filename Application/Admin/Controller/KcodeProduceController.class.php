@@ -37,8 +37,11 @@ class KcodeProduceController extends BaseController
         //需要导入的页面显示字段
         $this->assign('kcodeImportFields', SystemKeysModel:: getSystemKeys('kcodeImportFields','key2 asc'));
 
+        //导入渠道策略选择
+        $this->assign('channelCheckBox', SystemKeysModel:: getSystemKeys('channelCheckBox','key2 asc'));
+
         //需要导入的比例页面显示
-        $this->assign('importRestrictions', SystemKeysModel:: getSystemKeys('importRestrictions','key2 asc'));
+        //$this->assign('importRestrictions', SystemKeysModel:: getSystemKeys('importRestrictions','key2 asc'));
 
         //导入列表
         $this->assign('data', KcodeProduceModel:: getProductImportListData($_GET['page']));
@@ -78,7 +81,7 @@ class KcodeProduceController extends BaseController
 
         $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
 
-        $postData = $this->checkPost($pdata);//待添加数据
+        $postData = $this->checkPost($pdata, $_POST['channel_policy']);//待添加数据
 
 
         for($i=0; $i<$pdata['number']; $i++){
@@ -104,16 +107,18 @@ class KcodeProduceController extends BaseController
     }
 
     //数据整合
-    public function checkPost($pdata){
+    public function checkPost($pdata, $channelPolicy){
 
-        $data['im_model'] = $pdata['pname'];
-        $data['im_pnumber'] = $pdata['pnumber'];
+        $data['im_model'] = trim($pdata['pname']);
+        $data['im_pnumber'] = trim($pdata['pnumber']);
         $data['im_time'] = date('Y:m:d H:i:s', time());
         $data['im_staff'] = BaseModel::username();
-        $data['pmoney'] = $pdata['money'];
+        $data['pmoney'] = trim($pdata['money']);
         $data['close_time'] = 999;
         $data['status'] = 0;
         $data['readdress'] = '';
+        $data['channel_policy'] = rtrim($channelPolicy,',');
+
         return $data;
     }
 
