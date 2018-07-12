@@ -80,7 +80,7 @@ class KcodeProduceController extends BaseController
         $postData = $this->checkPost($pdata, $_POST['channel_policy']);//待添加数据
 
         set_time_limit(1000);
-        ini_set ('memory_limit', '256');
+        ini_set ('memory_limit', '-1');
 
         if(!is_dir($this->sqlDir)){ //存储路径文件不存在就创建
             mkdir($this->sqlDir);
