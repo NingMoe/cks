@@ -309,6 +309,7 @@
                 }
                 _index = layer.load();
                 $.post("{:U('imProductInitialData')}", {data:JSON.stringify(data.field),'channel_policy':channelPolicyStr},function(res){
+                    console.log(res.status+res.info);
                     res.status == 1 ? globalFn.remind(_index, res.info,"{:U('index')}")
                         : globalFn.remind(_index, res.info);
                 });

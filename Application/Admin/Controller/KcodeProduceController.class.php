@@ -15,9 +15,10 @@ class KcodeProduceController extends BaseController
 
     public  $arr = [58, 59, 60, 61, 62, 63, 64, 73, 79, 91, 92, 93, 94, 95, 96, 108, 111];//去除ascii特殊字符
     public  $type = ['ph' => 8, 'BD' => 8, 'am' => 10 ]; //ph、am 明码暗码 bd绑定码
-    public  $randStart = 51;//随机数开始
+    public  $randStart = 50;//随机数开始
     public  $randEnd = 122;//随机数结束
     public  $expTitle = '导入数据'; //导出标题
+    public  $sqlDir = './sql/';
     public  $expCellName =  [
                 ['clearcd', '明码'],
                 ['secretcd', '暗码'],
@@ -33,7 +34,6 @@ class KcodeProduceController extends BaseController
 
     //列表
     public function  index(){
-
         //需要导入的页面显示字段
         $this->assign('kcodeImportFields', SystemKeysModel:: getSystemKeys('kcodeImportFields','key2 asc'));
 
@@ -72,37 +72,61 @@ class KcodeProduceController extends BaseController
 
     }
 
-    //导入
+    //导入LOAD DATA local INFILE
     public function imProductInitialData(){
-        set_time_limit(0);
 
         $pdata = json_decode($_POST['data'],true);
-        //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
-
         $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
-
         $postData = $this->checkPost($pdata, $_POST['channel_policy']);//待添加数据
 
+        set_time_limit(1000);
+        ini_set ('memory_limit', '256');
 
-        for($i=0; $i<$pdata['number']; $i++){
-
-            //生成k码
-            $postData['clearcd'] ='ph'.$this->createKcode('ph');
-            $postData['secretcd'] =$this->createKcode('am');
-            if($pdata['pname'] == 'N1' || $pdata['pname'] == 'N1M' || $pdata['pname'] == 'K3-D1')
-                $postData['hcode'] ='BD'.$this->createKcode('BD');
-
-            $res = BaseModel::addData([
-                'table' => KcodeProduceModel::$table[2],
-                'data' =>$postData
-            ]);
-
-            if(!$res)$this->ajaxReturn(['status' => 0, 'info' => '导入失败']);
-            //if(!$res) continue;
-
+        if(!is_dir($this->sqlDir)){ //存储路径文件不存在就创建
+            mkdir($this->sqlDir);
+            chmod($this->sqlDir,0777);
         }
 
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '导入成功']);
+        $sqlFile = $this->sqlDir.time().'.sql';
+
+        //$insertSqlFile = $_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.');
+
+        $fhandler=fopen($sqlFile,'wb');
+
+        if($fhandler) {
+            $i = 0;
+            while ($i < $pdata['number']){
+                $sql = '';
+
+                $i++;
+                $postData['clearcd'] = 'ph'.$this->createKcode('ph');
+
+                $postData['secretcd'] =$this->createKcode('am');
+
+                if($pdata['pname'] == 'N1' || $postData['pname'] == 'N1M')
+                    $postData['hcode'] ='BD'.$this->createKcode('BD');
+
+                $sql .= "{$postData['im_model']}\t{$postData['im_pnumber']}\t{$postData['im_time']}\t{$postData['im_staff']}\t{$postData['pmoney']}\t{$postData['close_time']}\t{$postData['status']}\t{$postData['readdress']}\t{$postData['channel_policy']}\t{$postData['clearcd']}\t{$postData['secretcd']}\t{$postData['hcode']}";
+
+                fwrite($fhandler, $sql . "\r\n");
+                unset($sql);
+            }
+
+            try {
+
+            $pdoExecSql = "LOAD DATA local INFILE '".$_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.')."' INTO TABLE `relation` (`im_model`, `im_pnumber`, `im_time`, `im_staff`, `pmoney`, `close_time`, `status`, `readdress`,`channel_policy`, `clearcd`, `secretcd`, `hcode`); ";
+
+            $res = KcodeProduceModel::pdoConnect()->exec($pdoExecSql);
+
+            if($res)$this->ajaxReturn(['status' => 1, 'info' => '导入成功']);
+            //else $this->ajaxReturn(['status' => 0, 'info' => '导入失败']);
+
+            } catch (\Exception $e) {
+
+                $this->ajaxReturn(['status' => 0, 'info' => $e->getMessage()]);
+
+            }
+        }
 
     }
 
@@ -216,6 +240,139 @@ class KcodeProduceController extends BaseController
     }
 
 
+    /*
+//导入
+public function imProductInitialData(){
+    set_time_limit(0);
+
+    $pdata = json_decode($_POST['data'],true);
+    //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
+
+    $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
+
+    $postData = $this->checkPost($pdata, $_POST['channel_policy']);//待添加数据
+
+
+    for($i=0; $i<$pdata['number']; $i++){
+
+        //生成k码
+        $postData['clearcd'] ='ph'.$this->createKcode('ph');
+        $postData['secretcd'] =$this->createKcode('am');
+        if($pdata['pname'] == 'N1' || $pdata['pname'] == 'N1M' || $pdata['pname'] == 'K3-D1')
+            $postData['hcode'] ='BD'.$this->createKcode('BD');
+
+        $res = BaseModel::addData([
+            'table' => KcodeProduceModel::$table[2],
+            'data' =>$postData
+        ]);
+
+        if(!$res)$this->ajaxReturn(['status' => 0, 'info' => '导入失败']);
+        //if(!$res) continue;
+
+    }
+
+    if($res)$this->ajaxReturn(['status' => 1, 'info' => '导入成功']);
+
+}
+
+//导入
+public function importProductInitialData(){
+    set_time_limit(0);
+    $pdata = json_decode($_POST['data'],true);
+    //$this->verifyChannelName($pdata['channel_name']);//验证渠道名是否存在
+
+    $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
+
+    $postData = $this->checkPost($pdata);//待添加数据
+
+    for($k=0; $k<$pdata['number']; $k++){
+
+        //生成k码
+        $insertData[$k]['im_model'] = $postData['im_model'];
+        $insertData[$k]['im_pnumber'] = $postData['im_pnumber'];
+        $insertData[$k]['im_time'] = $postData['im_time'];
+        $insertData[$k]['im_staff'] = $postData['im_staff'];
+        $insertData[$k]['pmoney'] = $postData['pmoney'];
+        $insertData[$k]['close_time'] = $postData['close_time'];
+        $insertData[$k]['status'] = $postData['status'];
+        $insertData[$k]['readdress'] =$postData['readdress'];
+        $insertData[$k]['channel_policy'] = $postData['channel_policy'];
+        $insertData[$k]['clearcd'] = 'ph'.$this->createKcode('ph');
+        //echo $insertData[$k]['clearcd'].'<br/>';
+        $insertData[$k]['secretcd'] =$this->createKcode('am');
+        //echo $insertData[$k]['secretcd'].'<br/>';
+        if($pdata['pname'] == 'N1' || $postData['pname'] == 'N1M')
+            $insertData[$k]['hcode'] ='BD'.$this->createKcode('BD');
+    }
+    //$pdata['number'] =100;
+
+    $num  = (int)($pdata['number']/2000);//5000行间断执行
+    $yu = $pdata['number']%2000;
+    //echo $num.'<br>';
+    //echo $yu.'<br>';die;
+    if($num >=1){
+        for ($i=0; $i < $num; $i++) {
+            //每5000条数据组成一个insert语句,$codeModel是存放记录的一个数组
+            $values = '';
+            for ($j=$i*2000; $j < ($i+1)*2000; $j++) {
+                //拼接values的值
+                $values .= '("'
+                    .$insertData[$j]['im_model'].'","'
+                    .$insertData[$j]['im_pnumber'].'","'
+                    .$insertData[$j]['im_time'].'","'
+                    .$insertData[$j]['im_staff'].'","'
+                    .$insertData[$j]['pmoney'].'","'
+                    .$insertData[$j]['close_time'].'",'
+                    .$insertData[$j]['status'].',"'
+                    .$insertData[$j]['readdress'].'","'
+                    .$insertData[$j]['clearcd'].'","'
+                    .$insertData[$j]['secretcd'].'","'
+                    .$insertData[$j]['hcode'].'","'
+                    .$insertData[$j]['channel_policy'].'"'
+                    .'),';
+            }
+            //$values = "insert into w_code (im_model,im_pnumber,im_time,im_staff,pmoney,close_time,status,readdress,clearcd,secretcd) values".substr($values,0,-1).';';
+            //Yii::$app->db->createCommand($values)->execute();
+            $sql = "insert into relation (im_model,im_pnumber,im_time,im_staff,pmoney,close_time,status,readdress,clearcd,secretcd,hcode,channel_policy) values ".substr($values, 0, -1).";";
+            //echo $sql;die;
+            $res = M()->execute($sql);
+            unset($values);
+            //echo M()->getLastSql();
+            if(!$res)$this->ajaxReturn(['status' => 0, 'info' => '导入失败']);
+        }
+    }
+
+    if($yu != 0){
+        $values = '';
+        for ($j=$num * 2000; $j < $num * 2000 + $yu; $j++) {
+            //拼接values的值
+            $values .= '("'
+                .$insertData[$j]['im_model'].'","'
+                .$insertData[$j]['im_pnumber'].'","'
+                .$insertData[$j]['im_time'].'","'
+                .$insertData[$j]['im_staff'].'","'
+                .$insertData[$j]['pmoney'].'","'
+                .$insertData[$j]['close_time'].'",'
+                .$insertData[$j]['status'].',"'
+                .$insertData[$j]['readdress'].'","'
+                .$insertData[$j]['clearcd'].'","'
+                .$insertData[$j]['secretcd'].'","'
+                .$insertData[$j]['hcode'].'","'
+                .$insertData[$j]['channel_policy'].'"'
+                .'),';
+        }
+        //$values = "insert into w_code (im_model,im_pnumber,im_time,im_staff,pmoney,close_time,status,readdress,clearcd,secretcd) values".substr($values,0,-1).';';
+        //Yii::$app->db->createCommand($values)->execute();
+        $sql = "insert into relation (im_model,im_pnumber,im_time,im_staff,pmoney,close_time,status,readdress,clearcd,secretcd,hcode,channel_policy) values ".substr($values, 0, -1).";";
+        $res = M()->execute($sql);
+        unset($values);
+        if(!$res)$this->ajaxReturn(['status' => 0, 'info' => '导入失败']);
+    }
+
+
+    if($res)$this->ajaxReturn(['status' => 1, 'info' => '导入成功']);
+
+}*/
 
 
     public function test(){

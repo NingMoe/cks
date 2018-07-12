@@ -66,4 +66,16 @@ class KcodeProduceModel extends  BaseModel{
 
     }
 
+
+    //PDO链接
+    public static function pdoConnect(){
+
+        $dsn = "mysql:dbname=".C('DB_NAME').";host=".C('DB_HOST').";port=3306";
+        $user = C('DB_USER');
+        $pwd = C('DB_PWD');
+        // 这里PDO::MYSQL_ATTR_LOCAL_INFILE => true需要设置；
+        $options = [\PDO::MYSQL_ATTR_LOCAL_INFILE => true];
+        return new \PDO($dsn, $user, $pwd, $options);
+    }
+
 }
