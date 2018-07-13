@@ -97,7 +97,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label"><?php echo $val['value1']?></label>
                 <div class="layui-input-inline">
-                    <input name="<?php echo $val['value3']?>" autocomplete="off"
+                    <input name="<?php echo $val['value3']?>" autocomplete="off">
                     <?php if($val['key2'] == 6):?>readonly<?php endif;?>
                     <?php if($val['key2'] == 4 || $val['key2'] == 5 || $val['key2'] == 7 ):?> placeholder="<?php echo $val['value2']?>" <?php endif;?>
                     <?php if($val['key2'] ==  7):?> onKeyUp=" globalFn.amount(this)" onBlur="globalFn.overFormat(this)" <?php endif;?>

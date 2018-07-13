@@ -15,17 +15,15 @@ class BatchPolicyController extends BaseController
 
     public function test()
     {
-        echo 'aaa';
-        $policies = M('policy')->where([
-            'policy_type' => 2,
-            'status' => 1
-        ])->order("pnumber desc")->select();
-        $conflict = BaseModel::checkPolicyTime($policies, '2018-07-11 15:53:20', '2018-07-12 15:53:20');
-        foreach ($conflict as $item) {
-            $id = $item['id'];
-            echo $id . '\n';
+        $policies = M()->query('select distinct pnumber from policy');
+        foreach ($policies as $policy) {
+            $dataList[] = array(
+                'pnumber'=>$policy['pnumber'],
+                'policy_type'=> 2,
+            );
         }
-        p($conflict);die();
+
+        p($dataList);die();
     }
 
     //出货时间策略
@@ -39,13 +37,35 @@ class BatchPolicyController extends BaseController
     //提交批量更新出货时间策略
     public function batchModifyShipingSubmit()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
+        $value = $_POST['policy_value'];
+        //全选所有型号
+        if ($_POST['tag'] == 1) {
+            //删除所有出货时间策略，状态改为已删除
+            M('policy')->where(['policy_type' => 2, 'status' => 1])->setField('status', 0);
+
+            //批量增加出货时间策略
+            $policies = M()->query('select distinct pnumber from policy');
+            foreach ($policies as $policy) {
+                $dataList[] = array(
+                    'pnumber'=>$policy['pnumber'],
+                    'policy_type'=> 2,
+                    'policy_value'=> $value,
+                    'start_time'=> $start,
+                    'end_time'=> $end,
+                );
+            }
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        }
+
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);i
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
-            $value = $_POST['policy_value'];
             //批量增加出货时间策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
             foreach ($pnumbers as $pnumber) {
@@ -66,9 +86,10 @@ class BatchPolicyController extends BaseController
     //强制执行出货时间策略修改
     public function batchModifyShipingHard()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -103,13 +124,35 @@ class BatchPolicyController extends BaseController
     //提交批量更新激活时间策略
     public function batchModifyActivationSubmit()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
+        $value = $_POST['policy_value'];
+        //全选所有型号
+        if ($_POST['tag'] == 1) {
+            //删除所有激活时间策略，状态改为已删除
+            M('policy')->where(['policy_type' => 3, 'status' => 1])->setField('status', 0);
+
+            //批量增加激活时间策略
+            $policies = M()->query('select distinct pnumber from policy');
+            foreach ($policies as $policy) {
+                $dataList[] = array(
+                    'pnumber'=>$policy['pnumber'],
+                    'policy_type'=> 3,
+                    'policy_value'=> $value,
+                    'start_time'=> $start,
+                    'end_time'=> $end,
+                );
+            }
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        }
+
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
-            $value = $_POST['policy_value'];
             //批量增加激活时间策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));
             foreach ($pnumbers as $pnumber) {
@@ -130,9 +173,10 @@ class BatchPolicyController extends BaseController
     //强制执行激活时间策略修改
     public function batchModifyActivationHard()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -180,15 +224,38 @@ class BatchPolicyController extends BaseController
     //提交批量更新兑换平台策略
     public function batchModifyPlatformSubmit()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $platform = $_POST['platform'];
+        $value = $_POST['policy_value'];
+        //全选所有型号
+        if ($_POST['tag'] == 1) {
+            //删除所有激活时间策略，状态改为已删除
+            M('policy')->where(['policy_type' => 4, 'status' => 1])->setField('status', 0);
+
+            //批量增加激活时间策略
+            $policies = M()->query('select distinct pnumber from policy');
+            foreach ($policies as $policy) {
+                $dataList[] = array(
+                    'pnumber'=>$policy['pnumber'],
+                    'policy_type'=> 4,
+                    'policy_value'=> $value,
+                    'platform'=> $platform,
+                    //TODO flag默认值
+                );
+            }
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        }
+
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = $this->checkPlatform($policies, $platform);
         if(empty($conflict))
         {
-            $value = $_POST['policy_value'];
             //批量增加兑换平台策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
             foreach ($pnumbers as $pnumber) {
+                //TODO 一组还是多组策略，多组使用双层循环
                 $dataList[] = array(
                     'pnumber'=>$pnumber,
                     'policy_type'=> 4,
@@ -205,8 +272,9 @@ class BatchPolicyController extends BaseController
     //强制执行激活兑换平台策略修改
     public function batchModifyPlatformHard()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $platform = $_POST['platform'];
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = $this->checkPlatform($policies, $platform);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -253,8 +321,9 @@ class BatchPolicyController extends BaseController
     //提交批量更新客户渠道策略
     public function batchModifyChannelSubmit()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = $this->checkChannel($policies, $channel);
         if(empty($conflict))
         {
@@ -262,6 +331,7 @@ class BatchPolicyController extends BaseController
             //批量增加客户渠道策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
             foreach ($pnumbers as $pnumber) {
+                //TODO 一组还是多组策略，多组使用双层循环
                 $dataList[] = array(
                     'pnumber'=>$pnumber,
                     'policy_type'=> 5,
@@ -278,8 +348,9 @@ class BatchPolicyController extends BaseController
     //强制执行激活客户渠道策略修改
     public function batchModifyChannelHard()
     {
-        $policies = $_POST['policies'];
+        $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = $this->checkChannel($policies, $channel);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
