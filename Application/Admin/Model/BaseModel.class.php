@@ -278,20 +278,39 @@ class BaseModel extends  Model{
     public static function checkPolicyTime($policies, $start, $end)
     {
         $conflict = [];
-        foreach ($policies as $policy){
-            if ($policy['start_time'] > $start) {
-                if ($policy['start_time'] < $end) {
-                    array_push($conflict, $policy);
-                }
-            } else {
-                if ($policy['end_time'] > $start) {
-                    array_push($conflict, $policy);
-                }
+        foreach ($policies as $policy) {
+            if ($policy['end_time'] > $start && $policy['start_time'] < $end) {
+                array_push($conflict, $policy);
             }
         }
 
         return $conflict;
     }
 
+    //检测平台冲突
+    public static function checkPlatform($policies, $platform)
+    {
+        $conflict = [];
+        foreach ($policies as $policy){
+            if ($policy['platform'] == $platform) {
+                array_push($conflict, $policy);
+            }
+        }
+
+        return $conflict;
+    }
+
+    //检测客户渠道冲突
+    public static function checkChannel($policies, $channel)
+    {
+        $conflict = [];
+        foreach ($policies as $policy){
+            if ($policy['channel'] == $channel) {
+                array_push($conflict, $policy);
+            }
+        }
+
+        return $conflict;
+    }
 
 }

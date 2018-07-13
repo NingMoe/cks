@@ -164,25 +164,12 @@ class BatchPolicyController extends BaseController
         $this->display();
     }
 
-    //检测平台冲突
-    public static function checkPlatform($policies, $platform)
-    {
-        $conflict = [];
-        foreach ($policies as $policy){
-            if ($policy['platform'] == $platform) {
-                array_push($conflict, $policy);
-            }
-        }
-
-        return $conflict;
-    }
-
     //提交批量更新兑换平台策略
     public function batchModifyPlatformSubmit()
     {
         $policies = $_POST['policies'];
         $platform = $_POST['platform'];
-        $conflict = $this->checkPlatform($policies, $platform);
+        $conflict = BaseModel::checkPlatform($policies, $platform);
         if(empty($conflict))
         {
             $value = $_POST['policy_value'];
@@ -207,7 +194,7 @@ class BatchPolicyController extends BaseController
     {
         $policies = $_POST['policies'];
         $platform = $_POST['platform'];
-        $conflict = $this->checkPlatform($policies, $platform);
+        $conflict = BaseModel::checkPlatform($policies, $platform);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -237,25 +224,14 @@ class BatchPolicyController extends BaseController
         $this->display();
     }
 
-    //检测客户渠道冲突
-    public static function checkChannel($policies, $channel)
-    {
-        $conflict = [];
-        foreach ($policies as $policy){
-            if ($policy['channel'] == $channel) {
-                array_push($conflict, $policy);
-            }
-        }
 
-        return $conflict;
-    }
 
     //提交批量更新客户渠道策略
     public function batchModifyChannelSubmit()
     {
         $policies = $_POST['policies'];
         $channel = $_POST['channel'];
-        $conflict = $this->checkChannel($policies, $channel);
+        $conflict = BaseModel::checkChannel($policies, $channel);
         if(empty($conflict))
         {
             $value = $_POST['policy_value'];
@@ -280,7 +256,7 @@ class BatchPolicyController extends BaseController
     {
         $policies = $_POST['policies'];
         $channel = $_POST['channel'];
-        $conflict = $this->checkChannel($policies, $channel);
+        $conflict = BaseModel::checkChannel($policies, $channel);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
