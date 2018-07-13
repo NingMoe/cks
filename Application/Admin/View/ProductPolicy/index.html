@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>产品主策略</title>
+
+    <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
+    <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
+    <!-- 引入jQuery UI的css文件 -->
+    <link rel="stylesheet" href="__PUBLIC__/css/plugins/datapicker/datepicker3.css">
+    <link rel="stylesheet" href="__PUBLIC__/js/bootstrap3.37/css/bootstrap.min.css">
+    <script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/js/layui/layui.js"></script>
+    <script src="__PUBLIC__/js/bootstrap3.37/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/global.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <!-- 引入jQuery UI的js文件 -->
+</head>
+<style>
+    .panel-primary{
+        border-color: #1ab394;
+    }
+    a{
+        text-decoration: none !important;
+    }
+</style>
+
+<body>
+<div class="container-fluid" style="margin-top: 10px">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
+            <span class="badge" style=" color: #1ab394;" >产品主策略</span>
+        </div>
+    </div>
+</div>
+<div class="container-fluid" id="add-manage-popup" style="margin-left:20px;">
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input id='product-model' name="pname" lay-verify="required" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text">
+            </div>
+            <div class="layui-btn" lay-submit="" lay-filter="search-product" id="search-product">搜索</div>
+            <div class="layui-btn layui-btn-normal" lay-submit="" lay-filter="policy-create" id="policy-create">生成策略</div>
+        </div>
+    </form>
+</div>
+<div class="container-fluid">
+    <table class="layui-table" lay-data="">
+        <thead>
+        <tr>
+            <th  rowspan="3">料号</th>
+            <th  colspan="3">出货时间</th>
+            <th  colspan="3">激活时间</th>
+            <th colspan="2">客户渠道</th>
+            <th  colspan="2">兑换渠道</th>
+            <th  rowspan="3">操作</th>
+        </tr>
+        <tr>
+            <th style="border-right:none;">开始时间</th>
+            <th style="border:none;">结束时间</th>
+            <th style="border:none;">比例</th>
+            <th style="border-right:none;">开始时间</th>
+            <th style="border:none;">结束时间</th>
+            <th style="border:none;">比例</th>
+            <th style="border-right:none;">客户渠道</th>
+            <th style="border:none;">比例</th>
+            <th style="border-right:none;">兑换渠道</th>
+            <th style="border:none;">比例</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th rowspan="3"><?php echo 1234567890;?></th>
+            <td><?php echo '2018-7-13';?></td>
+            <td><?php echo '2018-7-13';?></td>
+            <td><?php echo 1;?></td>
+            <td><?php echo '2018-7-13';?></td>
+            <td><?php echo '2018-7-13';?></td>
+            <td><?php echo 1;?></td>
+            <td><?php echo '';?></td>
+            <td><?php echo 1;?></td>
+            <td><?php echo '商城';?></td>
+            <td><?php echo 1;?></td>
+        </tr>
+        <tr>
+            <th rowspan="3"><?php echo 1234567890;?></th>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+            <td><?php echo 1234567890;?></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+
+<script>
+
+    $(function() {
+
+        layui.use(['form'], function(){
+            var form = layui.form(),layer = layui.layer;
+            //监听提交
+            form.on('submit(policy-create)', function(data){
+                //点击生成策略
+                var pname = $.trim($('#product-model').val());
+                //_index = layer.load();
+
+
+                $.post("{:U('policyRuleFind')}", {pname:pname, tag:2},function(data){
+
+                    if(data.status == 0) layer.msg(data.msg);
+                    if(data.status == 1){
+                        layer.confirm(data.msg, {
+                            btn: ['确定','取消'] //按钮
+                        }, function(){
+                            //_index1 = layer.load();
+                            $.post("{:U('generatingSrategyRule')}",{panme:pname},function(res){
+
+                            })
+                        });
+                    };
+                    if(data.status == 2)layer.msg(data.msg);
+                    if(data.status == 3)layer.msg(data.msg);
+                    console.log(data.data);
+                });
+                return false;
+            });
+        })
+
+    })
+
+</script>
+
+</html>
