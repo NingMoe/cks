@@ -19,15 +19,16 @@ class ProductPolicyController extends BaseController
         ['status' => 2, 'msg' =>  '策略生成成功'],
         ['status' => 3, 'msg' =>  '策略生成失败,请重新生成']
     ];
-    //待分配K码列表
+
+
     public function index() {
 
-        $data = BaseModel::getDbData([
+        /*$data = BaseModel::getDbData([
             'table' => ProductPolicyModel::$table[1],
             'where' => ['pnumber' => 903000952]
         ]);
         //p($data);die;
-        $this->assign('data',$data);
+        $this->assign('data',$data);*/
 
         $this->display();
 
