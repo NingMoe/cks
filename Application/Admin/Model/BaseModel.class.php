@@ -274,5 +274,24 @@ class BaseModel extends  Model{
         return $data[0]['id'];
     }
 
+    //检测策略时间冲突
+    public static function checkPolicyTime($policies, $start, $end)
+    {
+        $conflict = [];
+        foreach ($policies as $policy){
+            if ($policy['start_time'] > $start) {
+                if ($policy['start_time'] < $end) {
+                    array_push($conflict, $policy);
+                }
+            } else {
+                if ($policy['end_time'] > $start) {
+                    array_push($conflict, $policy);
+                }
+            }
+        }
+
+        return $conflict;
+    }
+
 
 }
