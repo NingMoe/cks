@@ -42,7 +42,10 @@
     <form class="layui-form layui-form-pane" action="">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input id='product-model' name="pname" lay-verify="required" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text">
+                <input id='product-model' name="pname" value="<?php echo $pname ?>" lay-verify="required" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
+                <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
+
+                </div>
             </div>
             <div class="layui-btn" lay-submit="" lay-filter="search-product" id="search-product">搜索</div>
             <div class="layui-btn layui-btn-normal" lay-submit="" lay-filter="policy-create" id="policy-create">生成策略</div>
@@ -62,45 +65,51 @@
         </tr>
         <tr>
             <th style="border-right:none;">开始时间</th>
-            <th style="border:none;">结束时间</th>
-            <th style="border:none;">比例</th>
+            <th style="border-right:none;border-left:none;">结束时间</th>
+            <th style="border-right:none;border-left:none;">比例</th>
             <th style="border-right:none;">开始时间</th>
-            <th style="border:none;">结束时间</th>
-            <th style="border:none;">比例</th>
+            <th style="border-right:none;border-left:none;">结束时间</th>
+            <th style="border-right:none;border-left:none;">比例</th>
             <th style="border-right:none;">客户渠道</th>
-            <th style="border:none;">比例</th>
+            <th style="border-right:none;border-left:none;">比例</th>
             <th style="border-right:none;">兑换渠道</th>
-            <th style="border:none;">比例</th>
+            <th style="border-right:none;border-left:none;">比例</th>
         </tr>
         </thead>
         <tbody>
+        <?php foreach($data as $key=>$val):?>
         <tr>
-            <th rowspan="3"><?php echo 1234567890;?></th>
-            <td><?php echo '2018-7-13';?></td>
-            <td><?php echo '2018-7-13';?></td>
-            <td><?php echo 1;?></td>
-            <td><?php echo '2018-7-13';?></td>
-            <td><?php echo '2018-7-13';?></td>
-            <td><?php echo 1;?></td>
-            <td><?php echo '';?></td>
-            <td><?php echo 1;?></td>
-            <td><?php echo '商城';?></td>
-            <td><?php echo 1;?></td>
+            <td><?php echo $key;?></td>
+
+            <td colspan="3">
+
+                <?php foreach($val[2] as $v):?>
+                <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <?php endforeach;?>
+            </td>
+            <td colspan="3">
+                <?php foreach($val[3] as $v):?>
+                    <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <?php endforeach;?>
+            </td>
+            <td colspan="2">
+                <?php foreach($val[5] as $v):?>
+                <?php echo $v['channel'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <?php endforeach;?>
+            </td>
+            <td colspan="2">
+                <?php foreach($val[4] as $v):?>
+                <input class='channel_policy' data-id="<?php echo $v['id']?>" type="checkbox" name="channel_policy[]" <?php if($v['flag'] ==1):?>checked<?php endif;?> value="<?php echo $v['id']?>"><?php echo $v['platform_name'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <?php endforeach;?>
+            </td>
+
+            <td>
+                <a class="edit" attr="<?php echo $key?>" href="#"></a>
+            </td>
         </tr>
-        <tr>
-            <th rowspan="3"><?php echo 1234567890;?></th>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-            <td><?php echo 1234567890;?></td>
-        </tr>
+        <?php endforeach;?>
         </tbody>
+       </tbody>
     </table>
 </div>
 
@@ -109,6 +118,42 @@
 <script>
 
     $(function() {
+        //模糊搜索
+        $('#product-model').on('input propertychange', function() {
+            $("#aaresults").html('');
+            $.post("{:U('dimSearch')}", {pname: $(this).val()}, function (data) {
+                var htmls = '';
+                if (data.data.length >0) {
+                    var field = data.field;
+                    for (var i in data.data)
+                        htmls = htmls + "<p>" + data.data[i][data.field] + "</p>";
+                    $("#aaresults").html(htmls);
+                    $("#aaresults").show();
+                }
+
+            });
+        });
+
+        $("body").on('click','#aaresults p',function () {
+            var index = $(this).index("#aaresults1 p");
+            postPnumberValue =  $("#aaresults p").eq(index).html();
+            $("#product-model").val(postPnumberValue);
+            $("#aaresults").html('');
+            $("#aaresults").hide();
+
+        })
+
+        //修改兑换平台策略是否符合
+        $('.channel_policy').change(function(){
+            var policyId = $(this).attr('data-id');
+            if($(this).prop("checked"))
+                var flag = 1;
+            else
+                var flag = 0;
+            $.post("{:U('updateExchangePlatformPolicy')}",{policyId:policyId, flag:flag},function(data){
+                console.log(data);
+            })
+        })
 
         layui.use(['form'], function(){
             var form = layui.form(),layer = layui.layer;
@@ -116,28 +161,41 @@
             form.on('submit(policy-create)', function(data){
                 //点击生成策略
                 var pname = $.trim($('#product-model').val());
-                //_index = layer.load();
+                _index = layer.load();
 
-
-                $.post("{:U('policyRuleFind')}", {pname:pname, tag:2},function(data){
-
+                $.post("{:U('policyRuleFind')}", {pname:pname},function(data){
+                    layer.close(_index);
                     if(data.status == 0) layer.msg(data.msg);
                     if(data.status == 1){
                         layer.confirm(data.msg, {
                             btn: ['确定','取消'] //按钮
                         }, function(){
                             //_index1 = layer.load();
-                            $.post("{:U('generatingSrategyRule')}",{panme:pname},function(res){
-
+                            $.post("{:U('generatingStrategy')}",{panme:pname},function(res){
+                                if(res.status == 2){
+                                    setTimeout(function () { layer.msg(res.msg) }, 1000);
+                                    setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+pname}, 2000);
+                                }
+                                if(res.status == 3)layer.msg(res.msg);
                             })
                         });
                     };
-                    if(data.status == 2)layer.msg(data.msg);
+                    if(data.status == 2){
+                        layer.msg(data.msg);
+                        setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+pname}, 2000);
+                    }
+
                     if(data.status == 3)layer.msg(data.msg);
                     console.log(data.data);
                 });
                 return false;
+
             });
+
+            form.on('submit(search-product)', function(data){
+                var pname = $.trim($('#product-model').val());
+                window.location.href = "/index.php/Admin/ProductPolicy/searchPnameShowPolicy.html?pname="+pname;
+            })
         })
 
     })

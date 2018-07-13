@@ -20,15 +20,11 @@ class ProductPolicyController extends BaseController
         ['status' => 3, 'msg' =>  '策略生成失败,请重新生成']
     ];
 
-
     public function index() {
 
-        /*$data = BaseModel::getDbData([
-            'table' => ProductPolicyModel::$table[1],
-            'where' => ['pnumber' => 903000952]
-        ]);
-        //p($data);die;
-        $this->assign('data',$data);*/
+        if($_GET['pname'])
+
+            $this->assign(['data' =>$this->getPolicyListData(ProductPolicyModel::getPnTypeData($_GET['pname'])),'pname' => $_GET['pname']]);
 
         $this->display();
 
@@ -61,7 +57,11 @@ class ProductPolicyController extends BaseController
     }
 
     //生成策略--初始化 1个料号 九条策略
-    public function generatingStrategy($pnumber){
+    public function generatingStrategy($pnumber = []){
+
+        if(I('post.panme'))
+            $pnumber = ProductPolicyModel::getGeneratedPolicy(I('post.panme'), 0); //准备生成的料号策略
+
 
         foreach ($pnumber as $val){
 
@@ -70,7 +70,8 @@ class ProductPolicyController extends BaseController
 
             $uptRes = ProductPolicyModel::updateTnTypeFlagStatus($val['pnumber']);//更新tn_type表 flag
         }
-
+        //dump($initRes);
+        //dump($uptRes);die;
         if($initRes && $uptRes)$this->ajaxReturn(array_merge($this->statusMsg[2], ['data' => $this->getPolicyListData($pnumber)]));
 
         else $this->ajaxReturn($this->statusMsg[3]);
@@ -80,14 +81,40 @@ class ProductPolicyController extends BaseController
     //查询该型号生成的策略
     public function getPolicyListData($pnumber){
 
-        return ProductPolicyModel::getPolicyListData(implode(',', array_column($pnumber, 'pnumber')));
+        return $this->structureShowObj(ProductPolicyModel::getPolicyListData(implode(',', array_column($pnumber, 'pnumber'))));
 
     }
 
+    //构造显示对象
+    public function structureShowObj($arrData){
+
+        $showArr = [];
+        foreach ($arrData as $val){
+
+            if($val['policy_type'] == 1)
+                $showArr[$val['pnumber']][1][] = ['policy_value'=>$val['policy_value']];
+
+            if($val['policy_type'] == 2)
+                $showArr[$val['pnumber']][2][] = ['start_time'=>$val['start_time'],'end_time'=>$val['end_time'],'policy_value'=>$val['policy_value']];
+
+            if($val['policy_type'] == 3)
+                $showArr[$val['pnumber']][3][] = ['start_time'=>$val['start_time'],'end_time' =>$val['end_time'],'policy_value' => $val['policy_value']];
+
+            if($val['policy_type'] == 4)
+                $showArr[$val['pnumber']][4][] = ['id'=>$val['id'], 'platform'=>$val['platform'],'platform_name' =>ProductPolicyModel::getChannelName($val['platform'])['platform_name'],'flag'=>$val['flag'],'policy_value' => $val['policy_value']];
+
+            if($val['policy_type'] == 5)
+                $showArr[$val['pnumber']][5][] = ['channel'=> $val['channel'],'policy_value' => $val['policy_value']];
+        }
+
+        return $showArr;
+    }
+
+    //生成策略数据构造
     public function insertData($pnumber){
 
         return [
-            //['pnumber' => $pnumber, 'policy_type' => 1, ],
+            ['pnumber' => $pnumber, 'policy_type' => 1 ],
             ['pnumber' => $pnumber, 'policy_type' => 2, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' => $date = date('Y', time()) + 1 . '-' . date('m-d H:i:s'),],
             ['pnumber' => $pnumber, 'policy_type' => 3, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' => $date = date('Y', time()) + 1 . '-' . date('m-d H:i:s'),],
             ['pnumber' => $pnumber, 'policy_type' => 5],
@@ -95,9 +122,32 @@ class ProductPolicyController extends BaseController
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-2', 'flag' => 1],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-3', 'flag' => 1],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-4', 'flag' => 1],
-            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '7-1', 'flag' => 2],
-            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '7-2', 'flag' => 2],
+            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '7-1', 'flag' => 0],
+            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '7-2', 'flag' => 0],
         ];
+
+    }
+
+    //模糊搜索
+    public function dimSearch(){
+
+        $this->ajaxReturn(ProductPolicyModel::getDimSearchData(I('post.pname')));
+
+    }
+
+    //搜索
+    public function searchPnameShowPolicy(){
+        //p($this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
+
+        $this->assign(['data' =>$this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
+
+        $this->display('index');
+    }
+
+    //修改兑换平台策略
+    public function updateExchangePlatformPolicy(){
+
+        $this->ajaxReturn(ProductPolicyModel::updateExchangePlatformPolicy(I('post.policyId'), I('post.flag')));
 
     }
 
