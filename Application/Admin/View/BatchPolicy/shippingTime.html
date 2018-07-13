@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>出货时间策略</title>
+
+    <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
+    <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
+    <!-- 引入jQuery UI的css文件 -->
+    <link rel="stylesheet" href="__PUBLIC__/css/plugins/datapicker/datepicker3.css">
+    <link rel="stylesheet" href="__PUBLIC__/js/bootstrap3.37/css/bootstrap.min.css">
+    <script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/js/layui/layui.js"></script>
+    <script src="__PUBLIC__/js/bootstrap3.37/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/global.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+
+</head>
+<body>
+<script src="__PUBLIC__/js/layui/layui.js" charset="utf-8"></script>
+
+<form class="layui-form">
+    <div class="layui-form-item">
+        <div class="layui-form-item date-rule">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 100px;">开始时间</label>
+                <div class="layui-input-block">
+                    <input type='text' class='datepicker layui-input' lay-verify="date" id='start_time' value="{$policy.start_time}">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 100px;">结束时间</label>
+                <div class="layui-input-block">
+                    <input type='text' class='datepicker layui-input' lay-verify="date" id='end_time' value="{$policy.end_time}">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width: 100px;">比例</label>
+                <div class="layui-input-block">
+                    <input type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
+                </div>
+            </div>
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </div>
+
+<table class="layui-table" lay-data="{width: 892, height:332, url:BatchPolicy/shippingTime page:true, id:'idTest'}" lay-filter="idTest">
+    <thead>
+    <tr>
+        <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
+        <th lay-data="{field:'pnumber', width:40, sort: true, fixed: true}">料号</th>
+        <th lay-data="{field:'start_time', width:60}">开始时间</th>
+        <th lay-data="{field:'end_time', width:60, sort: true}">结束时间</th>
+        <th lay-data="{field:'policy_value', width:20}">比例</th>
+    </tr>
+    </thead>
+    <!--<tbody>-->
+    <!--<?php foreach($policies['data'] as $policy):?>-->
+    <!--<tr>-->
+        <!--<td type=checkbox, fixed=left}></td>-->
+        <!--<td><?php echo $policy['pnumber']?></td>-->
+        <!--<td><?php echo $policy['start_time'];?></td>-->
+        <!--<td><?php echo $policy['end_time'];?></td>-->
+        <!--<td><?php echo $policy['policy_value'];?></td>-->
+        <!--<td></td>-->
+    <!--</tr>-->
+    <!--<?php endforeach;?>-->
+    <!--</tbody>-->
+
+</table>
+</form>
+
+</body>
+<script>
+    $('.datepicker').datepicker({
+        autoclose:true,
+        format: "yyyy-mm-dd",//日期格式，详见 http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format
+        todayHighlight:true
+    });
+</script>
+</html>
