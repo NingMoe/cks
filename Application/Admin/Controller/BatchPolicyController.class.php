@@ -62,7 +62,7 @@ class BatchPolicyController extends BaseController
             if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);i
+        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
