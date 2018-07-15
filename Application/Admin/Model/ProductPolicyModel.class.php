@@ -5,7 +5,7 @@ namespace Admin\Model;
 
 class ProductPolicyModel extends  BaseModel{
 
-    public static $table = ['pn_type', 'policy', 'platform'];
+    public static $table = ['pn_type', 'policy', 'platform', 'channel'];
 
     //型号是否存在
     public static function getPnTypeData($pname){
@@ -74,6 +74,16 @@ class ProductPolicyModel extends  BaseModel{
 
     }
 
+    //获取客户渠道名字
+    public static function getCustumerChannelName($id){
+        return BaseModel::getDbData([
+
+            'table' => ProductPolicyModel::$table[3],
+            'where' => ['id' => $id],
+            'fields' => 'channel_name'
+        ], false);
+    }
+
     //模糊搜索
     public static function getDimSearchData($pname){
 
@@ -88,11 +98,12 @@ class ProductPolicyModel extends  BaseModel{
     }
 
     //搜索
-    public static function searchPnameShowPolicy($pname){
+    public static function searchPnameShowPolicy($pname, $tag=0){
+
         return BaseModel::getDbData([
             'table' => self::$table[0],
             'fields' => ['pnumber'],
-            'where' => [ 'pname' => ['like', "%".$pname."%"]  ],
+            'where' => !$tag ? [ 'pname' => ['like', "%".$pname."%"]]:'',
 
         ]);
     }
