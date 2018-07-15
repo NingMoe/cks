@@ -65,7 +65,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label" style="width:100px">客户渠道</label>
                 <div class="layui-input-inline">
-                    <input name="customer_channel" autocomplete="off" placeholder="请输入客户渠道" class="layui-input" type="text" id="customer_channel">
+                    <input name="customer_channel" autocomplete="off" placeholder="请输入客户渠道" class="layui-input customer_channel" type="text" id="customer_channel">
                     <div class="channel_think" style="display: none;height: 150px;overflow-y: scroll">
 
                     </div>
@@ -127,6 +127,16 @@
 
         //点击添加
         $("body").on('click','#add-manager',function () {
+            if(!shippingTimeFn.checkNum()){
+                layer.msg('请选择料号或者型号');
+                return false;
+            }
+
+            //型号、料号必选
+            if(!shippingTimeFn.checkPnumberPnameNum()){
+                layer.msg('料号和型号只能选择其一');
+                return false;
+            };
             $('.del-tag').remove();
             globalFn.lyPopup('添加渠道', ['700px', '580px'],'add-manage-popup',1);
 
@@ -156,17 +166,52 @@
 
         })
 
+        //模糊搜索
+        $("body").on('input propertychange','.customer_channel', function() {
+
+            var _this = $(this);
+            //selectId = $(this).attr('id');
+            //selectPid = $(this).attr('id') + 's';
+            _this.next().html('');
+            $.post("{:U('dimSearchChannelName')}", {channelName: $.trim($(this).val())}, function (data) {
+                //$('.ui-autocomplete').show();
+                var htmls = '';
+                //var resulte = JSON.parse(data);
+                if (data.data.length >0) {
+                    var field = data.field;
+                    for (var i in data.data)
+                        htmls = htmls + "<p>" + data.data[i][data.field] + "</p>";
+                    _this.next().html(htmls);
+                    _this.next().show();
+                } else {
+                    _this.next().hide();
+                }
+
+            });
+        });
+
+        $("body").on('click','.channel_think p',function () {
+            var index = $(this).index(".channel_think p");
+            postPnumberValue =  $(".channel_think p").eq(index).html();
+            $(this).parent().prev().val(postPnumberValue);
+            $(".channel_think").html('');
+            $(".channel_think").hide();
+
+        })
+
+
         //添加渠道框
         $("body").on('click','#add-channel',function () {
             var iptStr = "<div class='layui-inline del-tag'>"+
                 "<label class='layui-form-label' style='width:100px'>客户渠道</label>" +
                 "<div class='layui-input-inline'>" +
-                "<input name='customer_channel' autocomplete='off' placeholder='请输入客户渠道' class='layui-input' type='text'>" +
+                "<input name='customer_channel' autocomplete='off' placeholder='请输入客户渠道' class='layui-input customer_channel' type='text'>" +
+                "<div class='channel_think' style='display: none;height: 150px;overflow-y: scroll'></div>"+
                 "</div></div>" +
                 "<div class='layui-inline del-tag'>"+
                 "<label class='layui-form-label'>比例</label>" +
                 "<div class='layui-input-inline'>" +
-                "<input name='customer_channel' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
+                "<input name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
                 "</div></div><a class='delete del-tag' href='#'></a>";
 
             $(".layui-form-item-insert").append(iptStr);
@@ -180,6 +225,7 @@
             _this.remove();
         })
 
+        //搜索
         $('#search-product').click(function () {
             var pname = $.trim($('#product-model').val());
             if($.trim(pname) == ''){
@@ -211,12 +257,20 @@
                     return false;
                 };
 
+                //判断渠道名是否重复
+                var rtn = true;
+                $('.customer_channel').each(function(){
+                    if(!shippingTimeFn.checkChannelRepeat($(this).val())){
+                        rtn = false;
+                        return false;
+                    }
+                })
+
+                if(!rtn){layer.msg('渠道名称不能重复');return false;};
                 //更改类型
                 var tag = $('.all_pname').prop("checked")?1:0;
-                var start_time = $('#start_time').val();
-                var end_time = $('#end_time').val();
-                var policy_value = $('#policy_value').val();
                 var policy_ids = [];
+                var channel_arr = [];
 
                 //组装id
                 $(".all_pnumber_child").each(function(i){
@@ -227,7 +281,17 @@
                         })
                 })
 
-                console.log(policy_ids);
+                //组装渠道名-比例
+                $(".customer_channel").each(function(i){
+
+                    var iptValue = $.trim($(this).val());
+                    if(iptValue != ''){
+                        channel_arr.push([iptValue]);
+                    }
+                })
+
+                console.log(channel_arr);
+                //console.log(policy_ids);
 
                 if(tag == 1){
                     layer.confirm('删除原有数据，新增插入数据', {
@@ -247,6 +311,27 @@
 
    })
     var shippingTimeFn = {
+        checkChannelRepeat:function (channelName){
+            //校验联系信息不能一致
+            var values="";
+            $(".customer_channel").each(function(i,item){
+                var value=$(this).val();
+                values+=value; //获取所有的名称
+            });
+            //var val=thisIpt.val(); //获得当前输入框的值
+            var newValue=values.replace(channelName,""); //去除当前输入框的值
+            if(newValue==""){
+                return true;
+            }else{
+                if(newValue.indexOf(channelName)>-1){  //当前值和newValue作比较
+                    return false;
+                //alert("渠道名称不能重复");
+                    //$(data).focus();
+                }else{
+                    return true;
+                }
+            }
+        },
         checkBoxSec:function(){
             $(".all_pnumber_child").each(function(i){
                 $(this).prop("checked")?$(this).prop('checked',false):$(this).prop('checked',true);

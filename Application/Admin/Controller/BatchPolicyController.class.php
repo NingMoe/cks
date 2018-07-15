@@ -406,6 +406,11 @@ class BatchPolicyController extends BaseController
         $this->ajaxReturn(ProductPolicyModel::getDimSearchData(I('post.pname')));
     }
 
+    //模糊搜索渠道
+    public function dimSearchChannelName(){
+        $this->ajaxReturn(ProductPolicyModel::getDimSearchChannelNameData(I('post.channelName')));
+    }
+
     //搜索
     public function searchPnameShowPolicy(){
         //echo I('get.policyType');die;

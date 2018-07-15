@@ -84,7 +84,7 @@ class ProductPolicyModel extends  BaseModel{
         ], false);
     }
 
-    //模糊搜索
+    //模糊搜索 产品型号
     public static function getDimSearchData($pname){
 
         return [ 'data' => BaseModel::getDbData([
@@ -97,7 +97,8 @@ class ProductPolicyModel extends  BaseModel{
 
     }
 
-    //搜索
+
+    //搜索料号
     public static function searchPnameShowPolicy($pname, $tag=0){
 
         return BaseModel::getDbData([
@@ -106,6 +107,18 @@ class ProductPolicyModel extends  BaseModel{
             'where' => !$tag ? [ 'pname' => ['like', "%".$pname."%"]]:'',
 
         ]);
+    }
+
+    //模糊搜索产品渠道
+    public static function getDimSearchChannelNameData($channelName){
+
+        return [ 'data' => BaseModel::getDbData([
+
+            'table' => self::$table[3],
+            'fields' => ['channel_name'],
+            'where' => [ 'channel_name' => ['like', "%".$channelName."%"]  ],
+
+        ]),'field' => 'channel_name'];
     }
 
     //修改兑换平台策略
