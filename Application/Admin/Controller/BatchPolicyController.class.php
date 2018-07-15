@@ -3,6 +3,7 @@ namespace Admin\Controller;
 
 use Admin\Model\BaseModel;
 use Admin\Model\BatchPolicyModel;
+use Admin\Model\ProductPolicyModel;
 
 /**
  * 策略管理
@@ -39,6 +40,7 @@ class BatchPolicyController extends BaseController
     //提交批量更新出货时间策略
     public function batchModifyShipingSubmit()
     {
+        p($_POST);die;
         $policies = $_POST['policies'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
@@ -301,6 +303,22 @@ class BatchPolicyController extends BaseController
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
         if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+    }
+
+    //模糊搜索
+    public function dimSearch(){
+        $this->ajaxReturn(ProductPolicyModel::getDimSearchData(I('post.pname')));
+    }
+
+    //搜索
+    public function searchPnameShowPolicy(){
+        //p($this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
+
+        //echo 121;die;
+        //p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
+        $this->assign(['data' =>ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
+
+        $this->display('shippingTime');
     }
 
 }

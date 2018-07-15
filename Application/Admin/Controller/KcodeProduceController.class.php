@@ -114,7 +114,7 @@ class KcodeProduceController extends BaseController
 
             try {
 
-            $pdoExecSql = "LOAD DATA local INFILE '".$_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.')."' INTO TABLE `relation` (`im_model`, `im_pnumber`, `im_time`, `im_staff`, `pmoney`, `close_time`, `status`, `readdress`,`channel_policy`, `clearcd`, `secretcd`, `hcode`); ";
+            $pdoExecSql = "LOAD DATA local INFILE '".$_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.')."' INTO TABLE `relation` (`im_model`, `im_pnumber`, `im_time`, `im_staff`, `pmoney`, `close_time`, `status`, `readdress`,`channel_policy`, `clearcd`, `secretcd`, `hcode`);";
 
             $res = KcodeProduceModel::pdoConnect()->exec($pdoExecSql);
 

@@ -135,7 +135,7 @@
         });
 
         $("body").on('click','#aaresults p',function () {
-            var index = $(this).index("#aaresults1 p");
+            var index = $(this).index("#aaresults p");
             postPnumberValue =  $("#aaresults p").eq(index).html();
             $("#product-model").val(postPnumberValue);
             $("#aaresults").html('');

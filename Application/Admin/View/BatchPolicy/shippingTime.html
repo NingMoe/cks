@@ -12,79 +12,260 @@
     <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
     <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
     <!-- 引入jQuery UI的css文件 -->
-    <link rel="stylesheet" href="__PUBLIC__/css/plugins/datapicker/datepicker3.css">
     <link rel="stylesheet" href="__PUBLIC__/js/bootstrap3.37/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/js/My97DatePicker/skin/WdatePicker.css">
     <script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
     <script src="__PUBLIC__/js/layui/layui.js"></script>
     <script src="__PUBLIC__/js/bootstrap3.37/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="__PUBLIC__/js/global.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/js/plugins/datapicker/bootstrap-datepicker.js"></script>
+    <script src="__PUBLIC__/js/layui/layui.js" charset="utf-8"></script>
+    <script language="javascript" type="text/javascript" src="__PUBLIC__/js/date/WdatePicker.js"></script>
 
 </head>
+<style>
+    .panel-primary{
+        border-color: #1ab394;
+    }
+    a{
+        text-decoration: none !important;
+    }
+</style>
 <body>
-<script src="__PUBLIC__/js/layui/layui.js" charset="utf-8"></script>
+<div class="container-fluid" style="margin-top: 10px">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
+            <span class="badge" style=" color: #1ab394;" >出货时间策略</span>
+        </div>
+    </div>
+</div>
 
-<form class="layui-form">
+<div class="container-fluid" id="add-manage-popup" style="margin-left:20px;">
+    <form>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 100px;">产品型号</label>
+            <div class="layui-input-inline">
+                <input id='product-model' name="pname" value="<?php echo $pname ?>" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
+                <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
+
+                </div>
+            </div>
+            <div class="layui-btn" id="search-product">搜索</div>
+
+        </div>
+    </form>
+
+<form class="layui-form" action="">
+
     <div class="layui-form-item">
-        <div class="layui-form-item date-rule">
-            <div class="layui-inline">
-                <label class="layui-form-label" style="width: 100px;">开始时间</label>
-                <div class="layui-input-block">
-                    <input type='text' class='datepicker layui-input' lay-verify="date" id='start_time' value="{$policy.start_time}">
-                </div>
-            </div>
-            <div class="layui-inline">
-                <label class="layui-form-label" style="width: 100px;">结束时间</label>
-                <div class="layui-input-block">
-                    <input type='text' class='datepicker layui-input' lay-verify="date" id='end_time' value="{$policy.end_time}">
-                </div>
-            </div>
-            <div class="layui-inline">
-                <label class="layui-form-label" style="width: 100px;">比例</label>
-                <div class="layui-input-block">
-                    <input type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
-                </div>
-            </div>
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 100px;">开始时间</label>
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <input style="height: 35px" type="text" lay-verify="required"  class='layui-input Wdate'  readonly id="start_time"  value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" name="start_time"/>
             </div>
         </div>
 
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 100px;">结束时间</label>
+            <div class="layui-input-block">
+                <input style="height: 35px" type="text" lay-verify="required"  class='layui-input Wdate'  readonly id="end_time"  value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" name="end_time"/>
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 100px;">比例</label>
+            <div class="layui-input-block">
+                <input type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="policy_submit" id="policy_submit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
+        </div>
     </div>
 
-<table class="layui-table" lay-data="{width: 892, height:332, url:BatchPolicy/shippingTime page:true, id:'idTest'}" lay-filter="idTest">
-    <thead>
-    <tr>
-        <th lay-data="{type:'checkbox', fixed: 'left'}"></th>
-        <th lay-data="{field:'pnumber', width:40, sort: true, fixed: true}">料号</th>
-        <th lay-data="{field:'start_time', width:60}">开始时间</th>
-        <th lay-data="{field:'end_time', width:60, sort: true}">结束时间</th>
-        <th lay-data="{field:'policy_value', width:20}">比例</th>
-    </tr>
-    </thead>
-    <!--<tbody>-->
-    <!--<?php foreach($policies['data'] as $policy):?>-->
-    <!--<tr>-->
-        <!--<td type=checkbox, fixed=left}></td>-->
-        <!--<td><?php echo $policy['pnumber']?></td>-->
-        <!--<td><?php echo $policy['start_time'];?></td>-->
-        <!--<td><?php echo $policy['end_time'];?></td>-->
-        <!--<td><?php echo $policy['policy_value'];?></td>-->
-        <!--<td></td>-->
-    <!--</tr>-->
-    <!--<?php endforeach;?>-->
-    <!--</tbody>-->
-
-</table>
 </form>
+</div>
+
+<div class="container-fluid">
+    <table class="layui-table" lay-data="{width: 892, height:332, url:BatchPolicy/shippingTime page:true, id:'idTest'}" lay-filter="idTest">
+        <thead>
+        <tr>
+            <th style="width:150px;" ><input id="all_pnumber" class='all_pnumber' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pnumber[]" value="">全选(料号)</th>
+            <th >料号</th>
+            <th >开始时间</th>
+            <th >结束时间</th>
+            <th >比例</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php $i = 0;?>
+        <?php foreach($data as $key => $val):?>
+
+        <tr>
+            <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
+            <td><?php echo $key?></td>
+            <td colspan="3">
+                <?php foreach($val[2] as $v):?>
+                <div class="all_pnumber<?php echo $i;?>" policy-id="<?php echo $v['id'] ?>"> <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
+                <?php endforeach;?>
+            </td>
+        </tr>
+        <?php $i++;?>
+        <?php endforeach;?>
+        </tbody>
+
+    </table>
+</div>
 
 </body>
 <script>
-    $('.datepicker').datepicker({
-        autoclose:true,
-        format: "yyyy-mm-dd",//日期格式，详见 http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format
-        todayHighlight:true
-    });
+
+    $(function() {
+        //模糊搜索
+        $('#product-model').on('input propertychange', function() {
+            $("#aaresults").html('');
+            $.post("{:U('dimSearch')}", {pname: $(this).val()}, function (data) {
+                var htmls = '';
+                if (data.data.length >0) {
+                    var field = data.field;
+                    for (var i in data.data)
+                        htmls = htmls + "<p>" + data.data[i][data.field] + "</p>";
+                    $("#aaresults").html(htmls);
+                    $("#aaresults").show();
+                }
+
+            });
+        });
+
+        $("body").on('click','#aaresults p',function () {
+            var index = $(this).index("#aaresults p");
+            postPnumberValue =  $("#aaresults p").eq(index).html();
+            $("#product-model").val(postPnumberValue);
+            $("#aaresults").html('');
+            $("#aaresults").hide();
+
+        })
+
+        $('#search-product').click(function () {
+            var pname = $.trim($('#product-model').val());
+            if($.trim(pname) == ''){
+                layer.msg('请输入产品型号');
+                return false;
+            }
+            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname;
+        })
+
+
+        layui.use(['form'], function(){
+            var form = layui.form(),layer = layui.layer;
+            //监听提交
+            form.on('submit(policy_submit)', function(data){
+                //点击生成策略
+                var pname = $.trim($('#product-model').val());
+                //_index = layer.load();
+                var checkedNum = $("input[type='checkbox']:checked").length;
+                if(checkedNum == 0){
+                    layer.msg('请选择料号或者型号');
+                    return false;
+                }
+
+                var pnumberCheckedNum = $("input[name='all_pnumber[]']:checked").length;
+                if($('.all_pname').prop("checked") && pnumberCheckedNum >0){
+                    layer.msg('料号和型号只能选择其一');
+                    return false;
+                }
+
+                if($('.all_pname').prop("checked")){
+                    var tag = 1;
+                }else{
+                    var tag = 0 ;
+                }
+
+                var start_time = $('#start_time').val();
+                var end_time = $('#end_time').val();
+                var policy_value = $('#policy_value').val();
+                var policy_ids = [];
+
+                $(".all_pnumber_child").each(function(i){
+
+                    if($(this).prop("checked")) {
+                        $('.all_pnumber' + i).each(function () {
+                            policy_ids.push($(this).attr('policy-id'));
+                        })
+                    }
+                })
+
+                console.log(policy_ids);
+                if(tag == 1){
+                    layer.confirm('删除原有数据，新增插入数据', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(){
+                        $.post("{:U('batchModifyShipingSubmit')}", {
+                            tag:tag,
+                            start_time:start_time,
+                            end_time:end_time,
+                            policy_value:policy_value,
+                            policy_ids:policy_ids
+                        },function(data){
+                            //layer.close(_index);
+                            if(data.status == 0) layer.msg(data.msg);
+                            if(data.status == 1){
+                                layer.confirm(data.msg, {
+                                    btn: ['确定','取消'] //按钮
+                                }, function(){
+                                    //_index1 = layer.load();
+                                    $.post("{:U('generatingStrategy')}",{panme:pname},function(res){
+                                        if(res.status == 2){
+                                            setTimeout(function () { layer.msg(res.msg) }, 1000);
+                                            setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+pname}, 2000);
+                                        }
+                                        if(res.status == 3)layer.msg(res.msg);
+                                    })
+                                });
+                            };
+                        });
+                    });
+                }else{
+                    $.post("{:U('batchModifyShipingSubmit')}", {
+                        tag:tag,
+                        start_time:start_time,
+                        end_time:end_time,
+                        policy_value:policy_value,
+                        policy_ids:policy_ids
+                    },function(data){
+                        //layer.close(_index);
+                        if(data.status == 0) layer.msg(data.msg);
+                        if(data.status == 1){
+                            layer.confirm(data.msg, {
+                                btn: ['确定','取消'] //按钮
+                            }, function(){
+                                //_index1 = layer.load();
+                                $.post("{:U('generatingStrategy')}",{panme:pname},function(res){
+                                    if(res.status == 2){
+                                        setTimeout(function () { layer.msg(res.msg) }, 1000);
+                                        setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+pname}, 2000);
+                                    }
+                                    if(res.status == 3)layer.msg(res.msg);
+                                })
+                            });
+                        };
+                    });
+                }
+
+                return false;
+
+            });
+
+            form.on('submit(search-product)', function(data){
+                var pname = $.trim($('#product-model').val());
+                window.location.href = "/index.php/Admin/ProductPolicy/searchPnameShowPolicy.html?pname="+pname;
+            })
+        })
+
+
+    })
 </script>
 </html>

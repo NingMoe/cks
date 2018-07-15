@@ -81,7 +81,7 @@ class ProductPolicyController extends BaseController
     //查询该型号生成的策略
     public function getPolicyListData($pnumber){
 
-        return $this->structureShowObj(ProductPolicyModel::getPolicyListData(implode(',', array_column($pnumber, 'pnumber'))));
+        return self::structureShowObj(ProductPolicyModel::getPolicyListData(implode(',', array_column($pnumber, 'pnumber'))));
 
     }
 
@@ -95,10 +95,10 @@ class ProductPolicyController extends BaseController
                 $showArr[$val['pnumber']][1][] = ['policy_value'=>$val['policy_value']];
 
             if($val['policy_type'] == 2)
-                $showArr[$val['pnumber']][2][] = ['start_time'=>$val['start_time'],'end_time'=>$val['end_time'],'policy_value'=>$val['policy_value']];
+                $showArr[$val['pnumber']][2][] = ['id'=>$val['id'], 'start_time'=>$val['start_time'],'end_time'=>$val['end_time'],'policy_value'=>$val['policy_value']];
 
             if($val['policy_type'] == 3)
-                $showArr[$val['pnumber']][3][] = ['start_time'=>$val['start_time'],'end_time' =>$val['end_time'],'policy_value' => $val['policy_value']];
+                $showArr[$val['pnumber']][3][] = ['id'=>$val['id'], 'start_time'=>$val['start_time'],'end_time' =>$val['end_time'],'policy_value' => $val['policy_value']];
 
             if($val['policy_type'] == 4)
                 $showArr[$val['pnumber']][4][] = ['id'=>$val['id'], 'platform'=>$val['platform'],'platform_name' =>ProductPolicyModel::getChannelName($val['platform'])['platform_name'],'flag'=>$val['flag'],'policy_value' => $val['policy_value']];
