@@ -162,7 +162,7 @@
             },
             changeBasicPolicy () {
                 this.basicPolicy.policy_value = this.policy_value
-                axios.post('EditPolicy/changePolicy', this.basicPolicy).then(res => {
+                axios.post("{:U('EditPolicy/changePolicy')}", this.basicPolicy).then(res => {
                     if (res.data.status === 1) {
                         this.basicPolicyVisible = false;
                         this.$message({
@@ -196,7 +196,7 @@
                         policy_type: 2,
                         policy_value: this.policy_value
                     }
-                    axios.post('EditPolicy/addPolicy', policy).then(res => {
+                    axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
                         if (res.data.status === 1) {
                             this.outTimePolicyVisible = false
                             this.outTimePolicies.push(res.data)
@@ -225,7 +225,7 @@
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    axios.post('EditPolicy/removePolicy', scope.row).then(res => {
+                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
                         if (res.data.status === 1) {
                             this.outTimePolicies.splice(scope.$index, 1);
                             this.$message({
@@ -255,7 +255,7 @@
                 this.policy.start_time = this.start_time.format()
                 this.policy.end_time = this.end_time.format()
                 this.policy.policy_value = this.policy_value
-                axios.post('EditPolicy/changePolicy', this.policy).then(res => {
+                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
                     if (res.data.status === 1) {
                         //先删除再添加
                         this.outTimePolicies.splice(this.$index, 1)
