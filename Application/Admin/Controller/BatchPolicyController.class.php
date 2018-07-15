@@ -59,9 +59,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         }
 
@@ -82,9 +82,9 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         } else {
             //跳转冲突提示框
@@ -121,9 +121,9 @@ class BatchPolicyController extends BaseController
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
         if($res) {
-            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
-            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
         }
     }
 
@@ -159,9 +159,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         }
 
@@ -183,9 +183,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         } else {
             //跳转冲突提示框
@@ -221,9 +221,9 @@ class BatchPolicyController extends BaseController
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
         if($res) {
-            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
-            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
         }
     }
 
@@ -258,9 +258,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         }
 
@@ -282,9 +282,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         } else {
             //跳转冲突提示框
@@ -318,9 +318,9 @@ class BatchPolicyController extends BaseController
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
         if($res) {
-            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
-            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
         }
     }
 
@@ -356,9 +356,9 @@ class BatchPolicyController extends BaseController
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
             if($res) {
-                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
-                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
             }
         } else {
             //跳转冲突提示框
@@ -392,9 +392,9 @@ class BatchPolicyController extends BaseController
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
         if($res) {
-            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
-            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
         }
     }
 
