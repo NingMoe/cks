@@ -84,12 +84,12 @@
             <td colspan="3">
 
                 <?php foreach($val[2] as $v):?>
-                <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
                 <?php endforeach;?>
             </td>
             <td colspan="3">
                 <?php foreach($val[3] as $v):?>
-                    <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                    <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
                 <?php endforeach;?>
             </td>
             <td colspan="2">

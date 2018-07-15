@@ -36,6 +36,7 @@ class BatchPolicyController extends BaseController
     //提交批量更新出货时间策略
     public function batchModifyShipingSubmit()
     {
+        //p($_POST);die;
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
@@ -88,7 +89,7 @@ class BatchPolicyController extends BaseController
             }
         } else {
             //跳转冲突提示框
-            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突', 'conflict' => $conflict]);
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增新出货时间策略吗？', 'conflict' => $conflict]);
         }
     }
 
