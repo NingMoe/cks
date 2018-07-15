@@ -61,7 +61,7 @@ class BatchPolicyController extends BaseController
             if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
@@ -90,7 +90,7 @@ class BatchPolicyController extends BaseController
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -149,7 +149,7 @@ class BatchPolicyController extends BaseController
             if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
@@ -176,7 +176,7 @@ class BatchPolicyController extends BaseController
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -234,7 +234,7 @@ class BatchPolicyController extends BaseController
             if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPlatform($policies, $platform);
         if(empty($conflict))
         {
@@ -260,7 +260,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $platform = $_POST['platform'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPlatform($policies, $platform);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -297,7 +297,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, $channel);
         if(empty($conflict))
         {
@@ -324,7 +324,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, $channel);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
