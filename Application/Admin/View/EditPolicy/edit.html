@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>iview example</title>
+  <!--<link rel="stylesheet" type="text/css" href="../../../../Public/css/vue/iview.css">-->
+  <link rel="stylesheet" type="text/css" href="../../../../Public/css/vue/element.css">
+  <script type="text/javascript" src="../../../../Public/js/vue/vue.js"></script>
+  <!--<script type="text/javascript" src="../../../../Public/js/vue/iview.min.js"></script>-->
+  <script type="text/javascript" src="../../../../Public/js/vue/element.js"></script>
+  <script type="text/javascript" src="../../../../Public/js/vue/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+<h2>产品策略编辑页面</h2>
+<h3 >料号：<span>{{ basicPolicy.pnumber }}</span></h3>
+
+  <h3><el-col :span="5">基础比例：</el-col>
+    <el-col :span="3"><el-input :value="basicPolicy.policy_value" :disabled="true"></el-input></el-col>
+    <el-button @click="showChangeBasicPolicy" type="primary">修改</el-button>
+  </h3>
+
+  <el-dialog title="修改基础比例" :visible.sync="basicPolicyVisible" width="500px" center>
+    <el-form label-width="120px">
+      <el-form-item>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="basicPolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="changeBasicPolicy">确定</el-button>
+    </div>
+  </el-dialog>
+
+
+  <h3>出货时间：<el-button @click="showAddOutTimePolicy" type="success" size="small">添加</el-button></h3>
+  <el-table :data="outTimePolicies" border style="width: 700px">
+    <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
+    <el-table-column prop="end_time" label="结束时间" width="200"></el-table-column>
+    <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+    <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button @click="showChangeOutTimePolicy(scope)" type="primary" size="small">修改</el-button>
+          <el-button @click="removeOutTimePolicy(scope)" type="danger" size="small">删除</el-button>
+        </template>
+    </el-table-column>
+  </el-table>
+
+  <el-dialog :title="dialogTitle" :visible.sync="outTimePolicyVisible" center>
+    <el-form label-width="80px">
+      <el-form-item label="开始时间">
+        <el-date-picker v-model="start_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束时间">
+        <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="比例">
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="outTimePolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogMethod">确 定</el-button>
+    </div>
+  </el-dialog>
+
+    <h3>激活时间：<el-button type="success" size="small">添加</el-button></h3>
+    <el-table :data="activePolicies" border style="width: 700px">
+      <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
+      <el-table-column prop="end_time" label="结束时间" width="200"></el-table-column>
+      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+      <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button @click="showChangeActivePolicy(scope)" type="primary" size="small">修改</el-button>
+          <el-button @click="removeActivePolicy(scope)" type="danger" size="small">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <h3>客户渠道：<el-button type="success" size="small">添加</el-button></h3>
+    <el-table :data="channelPolicies" border style="width: 600px">
+      <el-table-column prop="channel" label="客户渠道" width="300"></el-table-column>
+      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+      <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button @click="showChangeChannelPolicy(scope)" type="primary" size="small">修改</el-button>
+          <el-button @click="removeChannelPolicy(scope)" type="danger" size="small">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+  <el-row>
+    <h3>兑换平台：<el-button type="success" size="small">添加</el-button></h3>
+    <el-table :data="platformPolicies" border style="width: 600px">
+      <el-table-column prop="platform_name" label="兑换平台" width="300"></el-table-column>
+      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+      <el-table-column label="操作" width="200">
+        <template slot-scope="scope">
+          <el-button @click="showPlatformPolicy(scope)" type="primary" size="small">修改</el-button>
+          <el-button @click="removePlatformPolicy(scope)" type="danger" size="small">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-row>
+
+</div>
+</body>
+
+<script>
+    new Vue({
+        el: '#app',
+        data () {
+            return {
+                basicPolicy: {$basicPolicy},
+                outTimePolicies: {$outTimePolicies},
+                activePolicies: {$activePolicies},
+                platformPolicies: {$platformPolicies},
+                channelPolicies: {$channelPolicies},
+
+                basicPolicyVisible: false,
+                outTimePolicyVisible: false,
+                activePolicyVisible: false,
+                channelPolicyVisible: false,
+                platformPolicyVisible: false,
+
+                start_time: '',
+                end_time: '',
+                policy_value: 1.0,
+                dialogTitle: '',
+                dialogMethod: '',
+                policy: null,
+                $index: null
+            }
+        },
+        created () {
+            axios.defaults.baseURL = 'http://phishopadmin.thinkphp.test/index.php/Admin/';
+            axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+            Date.prototype.format = function(fmt = 'yyyy-MM-dd hh:mm:ss') {
+                let o = {
+                    "M+" : this.getMonth()+1,                 //月份
+                    "d+" : this.getDate(),                    //日
+                    "h+" : this.getHours(),                   //小时
+                    "m+" : this.getMinutes(),                 //分
+                    "s+" : this.getSeconds(),                 //秒
+                    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+                    "S"  : this.getMilliseconds()             //毫秒
+                };
+                if(/(y+)/.test(fmt)) {
+                    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+                }
+                for(var k in o) {
+                    if(new RegExp("("+ k +")").test(fmt)){
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+                    }
+                }
+                return fmt;
+            }
+        },
+        methods: {
+            showChangeBasicPolicy () {
+                this.policy_value = this.basicPolicy.policy_value
+                this.basicPolicyVisible = true
+            },
+            changeBasicPolicy () {
+                this.basicPolicy.policy_value = this.policy_value
+                axios.post('EditPolicy/changePolicy', this.basicPolicy).then(res => {
+                    if (res.data.status === 1) {
+                        this.basicPolicyVisible = false;
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    }
+                });
+            },
+            showAddOutTimePolicy () {
+                this.start_time = ''
+                this.end_time = ''
+                this.policy_value = 1.0
+                this.dialogTitle = '添加出货时间策略';
+                this.dialogMethod = this.addOutTimePolicy
+                this.outTimePolicyVisible = true
+            },
+            addOutTimePolicy () {
+                if (this.start_time instanceof Date && this.end_time instanceof Date) {
+                    if (this.start_time.format() > this.end_time.format()) {
+                        this.$message({
+                            message: '开始时间不能大于结束时间！',
+                            type: 'error'
+                        });
+                        return false
+                    }
+                    let policy = {
+                        pnumber: this.basicPolicy.pnumber,
+                        start_time: this.start_time.format(),
+                        end_time: this.end_time.format(),
+                        policy_type: 2,
+                        policy_value: this.policy_value
+                    }
+                    axios.post('EditPolicy/addPolicy', policy).then(res => {
+                        if (res.data.status === 1) {
+                            this.outTimePolicyVisible = false
+                            this.outTimePolicies.push(res.data)
+                            this.$message({
+                                message: '添加成功！',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                } else {
+                    this.$message({
+                        message: '请选择开始和结束时间！',
+                        type: 'error'
+                    });
+                }
+            },
+            removeOutTimePolicy (scope) {
+                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    axios.post('EditPolicy/removePolicy', scope.row).then(res => {
+                        if (res.data.status === 1) {
+                            this.outTimePolicies.splice(scope.$index, 1);
+                            this.$message({
+                                message: res.data.info,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                })
+            },
+            showChangeOutTimePolicy (scope) {
+                this.policy = scope.row
+                this.$index = scope.$index
+                this.start_time = new Date(this.policy.start_time)
+                this.end_time = new Date(this.policy.end_time)
+                this.policy_value = this.policy.policy_value
+                this.dialogTitle = '修改出货时间策略';
+                this.dialogMethod = this.changeOutTimePolicy
+                this.outTimePolicyVisible = true
+            },
+            changeOutTimePolicy () {
+                this.policy.start_time = this.start_time.format()
+                this.policy.end_time = this.end_time.format()
+                this.policy.policy_value = this.policy_value
+                axios.post('EditPolicy/changePolicy', this.policy).then(res => {
+                    if (res.data.status === 1) {
+                        //先删除再添加
+                        this.outTimePolicies.splice(this.$index, 1)
+                        this.outTimePolicies.push(this.policy)
+                        this.outTimePolicyVisible = false;
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    }
+                });
+            },
+            removeActivePolicy (scope) {
+                this.activePolicies.splice(scope.$index, 1);
+            },
+            removeChannelPolicy (scope) {
+                this.channelPolicies.splice(scope.$index, 1);
+            },
+            removePlatformPolicy (scope) {
+                this.platformPolicies.splice(scope.$index, 1);
+            },
+            
+            addActivePolicy () {
+                this.activePolicyVisible = false;
+            },
+            addChannelPolicy () {
+                this.channelPolicyVisible = false;
+            },
+            addPlatformPolicy () {
+                this.platformPolicyVisible = false;
+            },
+        }
+    })
+</script>
