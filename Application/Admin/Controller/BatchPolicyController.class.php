@@ -18,16 +18,13 @@ class BatchPolicyController extends BaseController
 
     public function test()
     {
+        $count = M('policy')->group('pnumber')->select();
+        p($count);die();
         $channels = [
             ['JD', 1.2],
             ['Suning', 1.0],
             ['Phicomm', 1.5],
         ];
-//        $channels = [
-//            'JD' => 1.2,
-//            'Suning' => 1.0,
-//            'Phicomm' => 1.5,
-//        ];
         $columes = array_column($channels, 0);
         foreach ($channels as $channel) {
             echo $channel['0'];
@@ -99,7 +96,7 @@ class BatchPolicyController extends BaseController
             }
         } else {
             //跳转冲突提示框
-            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增新出货时间策略吗？', 'conflict' => $conflict]);
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增出货时间策略吗？', 'conflict' => $conflict]);
         }
     }
 
@@ -200,6 +197,7 @@ class BatchPolicyController extends BaseController
             }
         } else {
             //跳转冲突提示框
+            $this->ajaxReturn(['status' => 1, 'msg' => '时间冲突,您确认删除原有激活时间策略，新增激活时间策略吗？', 'conflict' => $conflict]);
         }
     }
 
@@ -304,6 +302,7 @@ class BatchPolicyController extends BaseController
             }
         } else {
             //跳转冲突提示框
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '平台冲突,您确认删除原有兑换兑换平台策略，新增新兑换平台策略吗？', 'conflict' => $conflict]);
         }
     }
 
@@ -407,6 +406,7 @@ class BatchPolicyController extends BaseController
             }
         } else {
             //跳转冲突提示框
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '渠道冲突,您确认删除原有客户渠道策略，新增客户渠道策略吗？', 'conflict' => $conflict]);
         }
     }
 
