@@ -366,8 +366,8 @@ class BatchPolicyController extends BaseController
                     $dataList[] = array(
                         'pnumber'=>$policy['pnumber'],
                         'policy_type'=> 5,
-                        'policy_value'=> $channel['value'],
-                        'channel'=> $channel['channel'],
+                        'policy_value'=> $channel[1],
+                        'channel'=> $channel[0],
                     );
                 }
             }
