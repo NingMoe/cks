@@ -18,15 +18,22 @@ class BatchPolicyController extends BaseController
 
     public function test()
     {
-        $policies = M()->query('select distinct pnumber from policy');
-        foreach ($policies as $policy) {
-            $dataList[] = array(
-                'pnumber'=>$policy['pnumber'],
-                'policy_type'=> 2,
-            );
+        $channels = [
+            ['JD', 1.2],
+            ['Suning', 1.0],
+            ['Phicomm', 1.5],
+        ];
+//        $channels = [
+//            'JD' => 1.2,
+//            'Suning' => 1.0,
+//            'Phicomm' => 1.5,
+//        ];
+        $columes = array_column($channels, 0);
+        foreach ($channels as $channel) {
+            echo $channel['0'];
+            echo $channel['1'];
         }
-
-        p($dataList);die();
+        p($columes);die();
     }
 
     //出货时间策略
@@ -241,7 +248,7 @@ class BatchPolicyController extends BaseController
     public function batchModifyPlatformSubmit()
     {
         $policyIds = $_POST['policy_ids'];
-        $platforms = $_POST['platforms'];//(platform, value)数组
+        $platforms = $_POST['platforms'];//[platform, value]数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
             //删除所有兑换平台策略，状态改为已删除
@@ -255,9 +262,9 @@ class BatchPolicyController extends BaseController
                     $dataList[] = array(
                         'pnumber'=>$policy['pnumber'],
                         'policy_type'=> 4,
-                        'platform'=> $platform['platform'],
-                        'policy_value'=> $platform['value'],
-                        'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                        'platform'=> $platform[0],
+                        'policy_value'=> $platform[1],
+                        'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
                     );
                 }
             }
@@ -271,7 +278,7 @@ class BatchPolicyController extends BaseController
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 'platform'));
+        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 0));
         if(empty($conflict))
         {
             //批量增加兑换平台策略
@@ -282,9 +289,9 @@ class BatchPolicyController extends BaseController
                     $dataList[] = array(
                         'pnumber'=>$pnumber,
                         'policy_type'=> 4,
-                        'platform'=> $platform['platform'],
-                        'policy_value'=> $platform['value'],
-                        'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                        'platform'=> $platform[0],
+                        'policy_value'=> $platform[1],
+                        'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
                     );
                 }
             }
@@ -304,9 +311,9 @@ class BatchPolicyController extends BaseController
     public function batchModifyPlatformHard()
     {
         $policyIds = $_POST['policy_ids'];
-        $platforms = $_POST['platforms'];//(platform, value)数组
+        $platforms = $_POST['platforms'];//[platform, value]数组
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 'platform'));
+        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 0));
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -321,9 +328,9 @@ class BatchPolicyController extends BaseController
                 $dataList[] = array(
                     'pnumber'=>$pnumber,
                     'policy_type'=> 4,
-                    'platform'=> $platform['platform'],
-                    'policy_value'=> $platform['value'],
-                    'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                    'platform'=> $platform[0],
+                    'policy_value'=> $platform[1],
+                    'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
                 );
             }
         }
@@ -346,7 +353,7 @@ class BatchPolicyController extends BaseController
     public function batchModifyChannelSubmit()
     {
         $policyIds = $_POST['policy_ids'];
-        $channels = $_POST['channels'];//(channel, value)数组
+        $channels = $_POST['channels'];//[channel, value]数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
             //删除所有兑换平台策略，状态改为已删除
@@ -375,7 +382,7 @@ class BatchPolicyController extends BaseController
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 0));
         if(empty($conflict))
         {
             //批量增加客户渠道策略
@@ -386,8 +393,8 @@ class BatchPolicyController extends BaseController
                     $dataList[] = array(
                         'pnumber'=>$pnumber,
                         'policy_type'=> 5,
-                        'policy_value'=> $channel['value'],
-                        'channel'=> $channel['channel'],
+                        'policy_value'=> $channel[1],
+                        'channel'=> $channel[0],
                     );
                 }
             }
@@ -409,7 +416,7 @@ class BatchPolicyController extends BaseController
         $policyIds = $_POST['policy_ids'];
         $channels = $_POST['channels'];//(channel, value)数组
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 0));
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -418,15 +425,14 @@ class BatchPolicyController extends BaseController
 
         //批量增加平台策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
-        $value = $_POST['policy_value'];
         foreach ($pnumbers as $pnumber) {
             //多组渠道策略，多组使用双层循环
             foreach ($channels as $channel) {
                 $dataList[] = array(
                     'pnumber'=>$pnumber,
                     'policy_type'=> 5,
-                    'policy_value'=> $value,
-                    'channel'=> $channel['channel'],
+                    'policy_value'=> $channel[1],
+                    'channel'=> $channel[0],
                 );
             }
         }
