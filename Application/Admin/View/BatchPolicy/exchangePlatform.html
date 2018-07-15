@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>激活时间策略</title>
+    <title>兑换平台策略</title>
 
     <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
     <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
@@ -34,7 +34,7 @@
 <div class="container-fluid" style="margin-top: 10px">
     <div class="panel panel-primary">
         <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
-            <span class="badge" style=" color: #1ab394;" >激活时间策略</span>
+            <span class="badge" style=" color: #1ab394;" >兑换平台策略</span>
         </div>
     </div>
 </div>
@@ -108,7 +108,7 @@
             <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
             <td><?php echo $key?></td>
             <td colspan="3">
-                <?php foreach($val[3] as $v):?>
+                <?php foreach($val[2] as $v):?>
                 <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>"> <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
                 <?php endforeach;?>
             </td>
@@ -155,7 +155,7 @@
                 layer.msg('请输入产品型号');
                 return false;
             }
-            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&policyType=3";
+            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&policyType=2";
         })
 
         //全选
@@ -207,10 +207,10 @@
                     layer.confirm('删除原有数据，新增插入数据', {
                         btn: ['确定','取消'] //按钮
                     }, function(){
-                        shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                        shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
                     });
                 }else{
-                    shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                    shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
                 }
 
                 return false;
@@ -219,8 +219,7 @@
 
         })
 
-
-    })
+   })
     var shippingTimeFn = {
         checkBoxSec:function(){
             $(".all_pnumber_child").each(function(i){
@@ -268,7 +267,7 @@
                         btn: ['确定','取消'] //按钮
                     }, function(){
                         _index2 = layer.load();
-                        $.post("{:U('batchModifyActivationHard')}", {
+                        $.post("{:U('batchModifyShipingHard')}", {
                             tag:tag,
                             start_time:start_time,
                             end_time:end_time,

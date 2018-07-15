@@ -13,6 +13,8 @@ class BatchPolicyController extends BaseController
 {
     //策略类型：1-料号策略；2-出货时间策略；3-激活时间策略；4-兑换平台策略；5-销售渠道策略
 
+    public $policyType = [ 2=>'shippingTime', 3=>'activationTime', 4=>'exchangePlatform', 5=>'customerChannel'];
+
     public function test()
     {
         $policies = M()->query('select distinct pnumber from policy');
@@ -406,11 +408,12 @@ class BatchPolicyController extends BaseController
 
     //搜索
     public function searchPnameShowPolicy(){
+        //echo I('get.policyType');die;
         //p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
        // p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))));die;
         $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))),'pname' => $_GET['pname']]);
 
-        $this->display('shippingTime');
+       $this->display($this->policyType[I('get.policyType')]);
     }
 
 }
