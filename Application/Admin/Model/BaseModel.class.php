@@ -288,7 +288,7 @@ class BaseModel extends  Model{
     }
 
     //检测平台冲突
-    public static function checkPlatform($policies, $platform)
+    public static function checkPlatform($policies, $platforms)
     {
         $conflict = [];
         foreach ($policies as $policy){
@@ -301,7 +301,7 @@ class BaseModel extends  Model{
     }
 
     //检测客户渠道冲突
-    public static function checkChannel($policies, $channel)
+    public static function checkChannel($policies, $channels)
     {
         $conflict = [];
         foreach ($policies as $policy){
