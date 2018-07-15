@@ -58,7 +58,11 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
@@ -76,11 +80,15 @@ class BatchPolicyController extends BaseController
                     'end_time'=> $end,
                 );
             }
-            M('policy')->addAll($dataList);
-            $this->ajaxReturn(['status' => 1, 'msg' =>  '操作成功']);
+            $res = M('policy')->addAll($dataList);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
-            $this->ajaxReturn(['status' => 0, 'msg' =>  '时间冲突', 'conflict' => $conflict]);
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突', 'conflict' => $conflict]);
         }
     }
 
@@ -112,7 +120,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //激活时间策略
@@ -146,7 +158,11 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
@@ -164,7 +180,13 @@ class BatchPolicyController extends BaseController
                     'end_time'=> $end,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -198,7 +220,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //兑换平台策略
@@ -231,7 +257,11 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
@@ -249,7 +279,13 @@ class BatchPolicyController extends BaseController
                     'platform'=> $platform,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -281,7 +317,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //客户渠道策略
@@ -313,7 +353,13 @@ class BatchPolicyController extends BaseController
                     'channel'=> $channel,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -345,7 +391,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //模糊搜索
