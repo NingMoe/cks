@@ -5,7 +5,7 @@ namespace Admin\Model;
 
 class ProductPolicyModel extends  BaseModel{
 
-    public static $table = ['pn_type', 'policy', 'platform', 'channel'];
+    public static $table = ['pn_type', 'policy', 'platform', 'channel' ];
 
     //型号是否存在
     public static function getPnTypeData($pname){
@@ -108,6 +108,18 @@ class ProductPolicyModel extends  BaseModel{
             'where' => [ 'channel_name' => ['like', "%".$channelName."%"]  ],
 
         ]),'field' => 'channel_name'];
+    }
+
+    //模糊搜索兑换平台
+    public static function getDimSearchPlatformNameData($platformName){
+
+        return [ 'data' => BaseModel::getDbData([
+
+            'table' => self::$table[2],
+            'fields' => ['platform_name'],
+            'where' => [ 'platform_name' => ['like', "%".$platformName."%"]  ],
+
+        ]),'field' => 'platform_name'];
     }
 
     //修改兑换平台策略

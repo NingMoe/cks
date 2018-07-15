@@ -35,39 +35,65 @@
     <div class="panel panel-primary">
         <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
             <span class="badge" style=" color: #1ab394;" >兑换平台策略</span>
+            <i id="add-manager" class="layui-icon" style="float:right;font-size: 20px;margin-top:-5px;cursor:pointer">&#xe654;</i>
         </div>
     </div>
 </div>
 
-<div class="container-fluid" style="margin-left:20px;">
-    <form>
-        <div class="layui-form-item">
-            <label class="layui-form-label" style="width: 100px;">产品型号</label>
-            <div class="layui-input-inline">
-                <input id='product-model' name="pname" value="<?php echo $pname ?>" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
-                <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
 
+<form>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="width: 100px;">产品型号</label>
+        <div class="layui-input-inline">
+            <input id='product-model' name="pname" value="<?php echo $pname ?>" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
+            <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
+
+            </div>
+        </div>
+        <div class="layui-btn" id="search-product">搜索</div>
+
+    </div>
+</form>
+
+<div>
+    <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
+</div>
+<div class="container-fluid" id="add-manage-popup" style="display:none;margin-left:20px;margin-top:20px;">
+    <form class="layui-form" action="">
+        <i id="add-channel" class="layui-icon" style="float:right;font-size: 20px;margin-top:-5px;cursor:pointer">&#xe654;</i>
+        <div class="layui-form-item layui-form-item-insert">
+            <div class="layui-inline">
+                <label class="layui-form-label" style="width:100px">兑换平台</label>
+                <div class="layui-input-inline">
+                    <select name="customer_channel" class="platform customer_channel" id="customer_channel" >
+                        <option value="1-1">商城</option>
+                        <option value="1-2">推啥</option>
+                        <option value="1-3">DDW</option>
+                        <option value="1-4">以太星球</option>
+                        <option value="7-1">华夏金融</option>
+                        <option value="7-2">骏合金信</option>
+                    </select>
+                    <!--<input name="customer_channel" autocomplete="off" placeholder="请输入兑换平台" class="layui-input customer_channel" type="text" id="customer_channel">-->
                 </div>
             </div>
-            <div class="layui-btn" id="search-product">搜索</div>
 
+            <div class="layui-inline">
+                <label class="layui-form-label">比例</label>
+                <div class="layui-input-inline">
+                    <input name="ratio"  placeholder="请输入比例" class="layui-input" type="text" id="ratio">
+                </div>
+            </div>
         </div>
-    </form>
 
-</div>
-
-<div class="container-fluid" id="add-manage-popup" style="display:none;margin-left:20px;margin-top:20px">
-    <form class="layui-form" action="">
         <div class="layui-form-item">
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <button class="layui-btn" lay-submit="" lay-filter="policy_submit" id="policy_submit">提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-                <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
             </div>
         </div>
 
     </form>
-<div/>
+</div>
 
 <div class="container-fluid">
     <table class="layui-table" lay-data="{width: 892, height:332, url:BatchPolicy/shippingTime page:true, id:'idTest'}" lay-filter="idTest">
@@ -75,8 +101,7 @@
         <tr>
             <th style="width:150px;" ><input id="all_pnumber" class='all_pnumber' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pnumber[]" value="">全选(料号)</th>
             <th >料号</th>
-            <th >开始时间</th>
-            <th >结束时间</th>
+            <th >兑换平台</th>
             <th >比例</th>
         </tr>
         </thead>
@@ -87,9 +112,9 @@
         <tr>
             <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
             <td><?php echo $key?></td>
-            <td colspan="3">
-                <?php foreach($val[2] as $v):?>
-                <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>"> <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
+            <td colspan="2">
+                <?php foreach($val[4] as $v):?>
+                <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>">  <?php echo $v['platform_name'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
                 <?php endforeach;?>
             </td>
         </tr>
@@ -104,6 +129,23 @@
 <script>
 
     $(function() {
+
+        //点击添加
+        $("body").on('click','#add-manager',function () {
+            if(!shippingTimeFn.checkNum()){
+                layer.msg('请选择料号或者型号');
+                return false;
+            }
+
+            //型号、料号必选
+            if(!shippingTimeFn.checkPnumberPnameNum()){
+                layer.msg('料号和型号只能选择其一');
+                return false;
+            };
+            $('.del-tag').remove();
+            globalFn.lyPopup('添加兑换平台', ['700px', '580px'],'add-manage-popup',1);
+
+        });
         //模糊搜索
         $('#product-model').on('input propertychange', function() {
             $("#aaresults").html('');
@@ -129,29 +171,56 @@
 
         })
 
+        //添加渠道框
+        $("body").on('click','#add-channel',function () {
+            var iptStr = "<div class='layui-inline del-tag'>"+
+                "<label class='layui-form-label' style='width:100px'>兑换平台</label>" +
+                "<div class='layui-input-inline'>" +
+                "<select style='display:block;width:190px;height:36px' name='customer_channel' lay-verify=''  class='platform customer_channel'>" +
+                "<option value='1-1'>商城</option>"+
+                "<option value='1-2'>推啥</option>"+
+                "<option value='1-3'>DDW</option>"+
+                "<option value='1-4'>以太星球</option>"+
+                "<option value='7-1'>华夏金融</option>"+
+                "<option value='7-2'>骏合金信</option>"+
+                "</select>"+
+                "</div></div>" +
+                "<div class='layui-inline del-tag'>"+
+                "<label class='layui-form-label'>比例</label>" +
+                "<div class='layui-input-inline'>" +
+                "<input name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
+                "</div></div><a class='delete del-tag' href='#'></a>";
+
+            $(".layui-form-item-insert").append(iptStr);
+
+        })
+
+        //删除渠道框
+        $("body").on('click','.delete',function () {
+            var _this = $(this);
+            for(var i in [1,2]) _this.prev().remove();
+            _this.remove();
+        })
+
+        //搜索
         $('#search-product').click(function () {
             var pname = $.trim($('#product-model').val());
             if($.trim(pname) == ''){
                 layer.msg('请输入产品型号');
                 return false;
             }
-            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&policyType=2";
+            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&policyType=4";
         })
 
         //全选
         $("body").on('click', "#all_pnumber",function(){
-            $("#all_pnumber").prop("checked")?shippingTimeFn.checkBoxSec():shippingTimeFn.checkBoxSec();
+            $("#all_pnumber").prop("checked")? shippingTimeFn.checkBoxSec(true):shippingTimeFn.checkBoxSec(false);
         });
 
         layui.use(['form'], function(){
             var form = layui.form(),layer = layui.layer;
             //监听提交
             form.on('submit(policy_submit)', function(data){
-                //时间判断
-                if(!shippingTimeFn.timeFilter()){
-                    layer.msg("开始时间不能大于结束时间！");
-                    return false;
-                }
 
                 //型号料号选择
                 if(!shippingTimeFn.checkNum()){
@@ -165,12 +234,37 @@
                     return false;
                 };
 
+                //判断渠道名是否重复
+                var rtn = true;
+                $('.customer_channel').each(function(){
+                    if(!shippingTimeFn.checkChannelRepeat($(this).val())){
+                        rtn = false;
+                        return false;
+                    }
+                })
+
+                if(!rtn){layer.msg('兑换平台不能重复');return false;};
+
+                var checkValue = true;
+                $('.customer_channel').each(function(){
+                    var iptValue = $.trim($(this).val());//渠道值
+
+                    var  ratio = $.trim($(this).parent().parent().next().find("input[name='ratio']").val());//对应比例
+
+                    if((iptValue == '' && ratio != '') || (iptValue != '' && ratio == '')){
+
+                        checkValue = false;
+
+                        return false;
+                    }
+
+                })
+                if(!checkValue){layer.msg('请填写对应兑换平台或者比例');return false;};
+
                 //更改类型
                 var tag = $('.all_pname').prop("checked")?1:0;
-                var start_time = $('#start_time').val();
-                var end_time = $('#end_time').val();
-                var policy_value = $('#policy_value').val();
                 var policy_ids = [];
+                var channel_arr = [];
 
                 //组装id
                 $(".all_pnumber_child").each(function(i){
@@ -181,16 +275,30 @@
                         })
                 })
 
-                console.log(policy_ids);
+                //组装渠道名-比例
+                $(".customer_channel").each(function(i){
+
+                    var iptValue = $.trim($(this).val());//渠道值
+
+                    var  ratio = $(this).parent().parent().next().find("input[name='ratio']").val();
+
+                    if(iptValue != '')
+                        channel_arr.push([iptValue, ratio]);
+                })
+
+
+                if(channel_arr.length <=0) { layer.msg('请选择兑换平台'); return false; }
+                console.log(channel_arr);
+                //console.log(policy_ids);
 
                 if(tag == 1){
                     layer.confirm('删除原有数据，新增插入数据', {
                         btn: ['确定','取消'] //按钮
                     }, function(){
-                        shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                        shippingTimeFn.postRequest("{:U('batchModifyPlatformSubmit')}",tag, policy_ids,channel_arr);
                     });
                 }else{
-                    shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                    shippingTimeFn.postRequest("{:U('batchModifyPlatformSubmit')}",tag, policy_ids,channel_arr);
                 }
 
                 return false;
@@ -198,12 +306,34 @@
             });
 
         })
+        layui.use(['form', 'layedit', 'laydate'], function(){})
 
-   })
+    })
     var shippingTimeFn = {
-        checkBoxSec:function(){
+        checkChannelRepeat:function (channelName){
+            //校验联系信息不能一致
+            var values="";
+            $(".customer_channel").each(function(i,item){
+                var value=$(this).val();
+                values+=value; //获取所有的名称
+            });
+            //var val=thisIpt.val(); //获得当前输入框的值
+            var newValue=values.replace(channelName,""); //去除当前输入框的值
+            if(newValue==""){
+                return true;
+            }else{
+                if(newValue.indexOf(channelName)>-1){  //当前值和newValue作比较
+                    return false;
+                    //alert("渠道名称不能重复");
+                    //$(data).focus();
+                }else{
+                    return true;
+                }
+            }
+        },
+        checkBoxSec:function(bool){
             $(".all_pnumber_child").each(function(i){
-                $(this).prop("checked")?$(this).prop('checked',false):$(this).prop('checked',true);
+                !bool?$(this).prop('checked',false):$(this).prop('checked',true);
             })
         },
 
@@ -221,14 +351,12 @@
 
         checkPnumberPnameNum:function(){ return $('.all_pname').prop("checked") && $("input[name='all_pnumber[]']:checked").length >0?false:true; },
 
-        postRequest:function(url, tag, start_time, end_time, policy_value, policy_ids){
+        postRequest:function(url, tag, policyIds, platforms){
             _index = layer.load();
             $.post(url, {
                 tag:tag,
-                start_time:start_time,
-                end_time:end_time,
-                policy_value:policy_value,
-                policy_ids:policy_ids
+                policy_ids:policyIds,
+                platforms:platforms,
             },function(data){
                 layer.close(_index);
                 if(data.status == 0) shippingTimeFn.setTimeOutJump(data.msg);
@@ -247,12 +375,10 @@
                         btn: ['确定','取消'] //按钮
                     }, function(){
                         _index2 = layer.load();
-                        $.post("{:U('batchModifyShipingHard')}", {
+                        $.post("{:U('batchModifyPlatformHard')}", {
                             tag:tag,
-                            start_time:start_time,
-                            end_time:end_time,
-                            policy_value:policy_value,
-                            policy_ids:policy_ids
+                            policy_ids:policyIds,
+                            platforms:platforms,
                         },function(res){
                             layer.close(_index2);
                             if(res.status == 0) shippingTimeFn.setTimeOutJump(res.msg);
@@ -265,7 +391,7 @@
 
         setTimeOutJump:function(msg){
             setTimeout(function () { layer.msg(msg) }, 1000);
-            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())}, 2000);
+            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())+"&policyType=4"}, 2000);
         }
 
     }

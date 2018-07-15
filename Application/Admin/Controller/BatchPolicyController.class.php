@@ -239,6 +239,7 @@ class BatchPolicyController extends BaseController
     //兑换平台策略
     public function exchangePlatform()
     {
+        $this->assign('platform', M('platform')->select());
         $this->display();
     }
 
@@ -455,6 +456,11 @@ class BatchPolicyController extends BaseController
     //模糊搜索渠道
     public function dimSearchChannelName(){
         $this->ajaxReturn(ProductPolicyModel::getDimSearchChannelNameData(I('post.channelName')));
+    }
+
+    //模糊搜索渠道
+    public function dimSearchPlatformName(){
+        $this->ajaxReturn(ProductPolicyModel::getDimSearchPlatformNameData(I('post.platformName')));
     }
 
     //搜索

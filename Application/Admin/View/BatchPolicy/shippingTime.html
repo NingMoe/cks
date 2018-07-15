@@ -160,7 +160,7 @@
 
         //全选
         $("body").on('click', "#all_pnumber",function(){
-            $("#all_pnumber").prop("checked")?shippingTimeFn.checkBoxSec():shippingTimeFn.checkBoxSec();
+            $("#all_pnumber").prop("checked")? shippingTimeFn.checkBoxSec(true):shippingTimeFn.checkBoxSec(false);
         });
 
         layui.use(['form'], function(){
@@ -221,9 +221,9 @@
 
    })
     var shippingTimeFn = {
-        checkBoxSec:function(){
+        checkBoxSec:function(bool){
             $(".all_pnumber_child").each(function(i){
-                $(this).prop("checked")?$(this).prop('checked',false):$(this).prop('checked',true);
+                !bool?$(this).prop('checked',false):$(this).prop('checked',true);
             })
         },
 
