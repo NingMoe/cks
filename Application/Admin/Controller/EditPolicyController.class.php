@@ -41,11 +41,14 @@ class EditPolicyController extends BaseController
         $channelPolicies = array_values(array_filter($policies, function ($policy) {
             return $policy['policy_type'] == 5;
         }));
+
+        $platform_list = M('platform')->select();
         $this->assign('basicPolicy', json_encode($basicPolicy));
         $this->assign('outTimePolicies', json_encode($outTimePolicies));
         $this->assign('activePolicies', json_encode($activePolicies));
         $this->assign('platformPolicies', json_encode($platformPolicies));
         $this->assign('channelPolicies', json_encode($channelPolicies));
+        $this->assign('platform_list', json_encode($platform_list));
         $this->display();
     }
 
@@ -62,7 +65,35 @@ class EditPolicyController extends BaseController
                 $policy = M('policy')->where(['id' => $id])->find();
                 $this->success('添加成功！', '', $policy);
             }
-        } else {
+        } elseif ($policy['policy_type'] == 3) {
+            $res = BaseModel::checkPolicyTime($policies, $policy['start_time'], $policy['end_time']);
+            if (count($res) > 0) {
+                $this->error('时间冲突!');
+            } else {
+                $id = M('policy')->add($policy);
+                $policy = M('policy')->where(['id' => $id])->find();
+                $this->success('添加成功！', '', $policy);
+            }
+        } elseif ($policy['policy_type'] == 4) {
+            $res = M('policy')->where(['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'platform' => $policy['platform'], 'status' => 1])->find();
+            if (count($res) > 0) {
+                $this->error('兑换渠道已存在!');
+            } else {
+                $id = M('policy')->add($policy);
+                $policy = M('policy')->join('left join platform on policy.platform = platform.platform')->where(['policy.id' => $id])->find();
+                $this->success('添加成功！', '', $policy);
+            }
+        } elseif ($policy['policy_type'] == 5) {
+            $res = M('policy')->where(['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'channel' => $policy['channel'], 'status' => 1])->find();
+            if (count($res) > 0) {
+                $this->error('客户渠道已存在!');
+            } else {
+                $id = M('policy')->add($policy);
+                $policy = M('policy')->where(['id' => $id])->find();
+                $this->success('添加成功！', '', $policy);
+            }
+        }
+        else {
             $this->error('策略类型错误');
         }
     }
@@ -82,7 +113,37 @@ class EditPolicyController extends BaseController
                 M('policy')->where(['id' => $policy['id']])->save($policy);
                 $this->success('修改成功！');
             }
-        } else {
+        } elseif ($policy['policy_type'] == 3) {
+            $res = BaseModel::checkPolicyTime($policies, $policy['start_time'], $policy['end_time']);
+            if (count($res) > 0) {
+                $this->error('时间冲突!');
+            } else {
+                M('policy')->where(['id' => $policy['id']])->save($policy);
+                $this->success('修改成功！');
+            }
+        } elseif ($policy['policy_type'] == 4) {
+            $where = ['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'platform' => $policy['platform'], 'status' => 1];
+            $where['id']=array('neq',$policy['id']);
+            $res = M('policy')->where($where)->find();
+            if (count($res) > 0) {
+                $this->error('兑换渠道已存在!');
+            } else {
+                M('policy')->join('left join platform on policy.platform = platform.platform')->where(['id' => $policy['id']])->save($policy);
+                $this->success('修改成功！');
+            }
+            
+        } elseif ($policy['policy_type'] == 5) {
+            $where = ['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'channel' => $policy['channel'], 'status' => 1];
+            $where['id']=array('neq',$policy['id']);
+            $res = M('policy')->where($where)->find();
+            if (count($res) > 0) {
+                $this->error('客户渠道已存在!');
+            } else {
+                M('policy')->where(['id' => $policy['id']])->save($policy);
+                $this->success('修改成功！');
+            }
+            
+        }else {
             $this->error('策略类型错误');
         }
     }
@@ -104,4 +165,13 @@ class EditPolicyController extends BaseController
         $policies = M('policy')->where(['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'status' => 1])->select();
         $this->success($policies);
     }
+
+    public function queryChannel(){
+        $channel = I('channel');
+        $where['channel_name']=array('like',"%$channel%");
+        $res = M('channel')->field('channel_name as value')->where($where)->select();
+        exit(json_encode($res,JSON_UNESCAPED_UNICODE));
+    }
+
+    
 }

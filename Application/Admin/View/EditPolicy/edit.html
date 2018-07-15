@@ -44,7 +44,7 @@
         </template>
     </el-table-column>
   </el-table>
-
+  <!--出货时间窗-->
   <el-dialog :title="dialogTitle" :visible.sync="outTimePolicyVisible" center>
     <el-form label-width="80px">
       <el-form-item label="开始时间">
@@ -63,7 +63,7 @@
     </div>
   </el-dialog>
 
-    <h3>激活时间：<el-button type="success" size="small">添加</el-button></h3>
+    <h3>激活时间：<el-button @click="showAddActivePolicy" type="success" size="small">添加</el-button></h3>
     <el-table :data="activePolicies" border style="width: 700px">
       <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
       <el-table-column prop="end_time" label="结束时间" width="200"></el-table-column>
@@ -76,7 +76,26 @@
       </el-table-column>
     </el-table>
 
-    <h3>客户渠道：<el-button type="success" size="small">添加</el-button></h3>
+    <!--激活时间窗-->
+    <el-dialog :title="dialogTitle" :visible.sync="activePolicyVisible" center>
+      <el-form label-width="80px">
+        <el-form-item label="开始时间">
+          <el-date-picker v-model="start_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="比例">
+          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="activePolicyVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogMethod">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <h3>客户渠道：<el-button @click="showAddChannelPolicy" type="success" size="small">添加</el-button></h3>
     <el-table :data="channelPolicies" border style="width: 600px">
       <el-table-column prop="channel" label="客户渠道" width="300"></el-table-column>
       <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
@@ -88,20 +107,59 @@
       </el-table-column>
     </el-table>
 
+    <!--客户渠道窗-->
+    <el-dialog :title="dialogTitle" :visible.sync="channelPolicyVisible" center>
+      <el-form label-width="80px">
+        <el-form-item label="客户渠道">
+          <el-autocomplete 
+            v-model="channel" 
+            :fetch-suggestions="querySearchChannel" 
+            @select="handleSelectChannel"
+            placeholder="请输入内容"  label-width="150px"
+          >
+          </el-autocomplete>
+        </el-form-item>
+        <el-form-item label="比例">
+          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="channelPolicyVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogMethod">确 定</el-button>
+      </div>
+    </el-dialog>
+
   <el-row>
-    <h3>兑换平台：<el-button type="success" size="small">添加</el-button></h3>
+    <h3>兑换平台：<el-button @click="showAddPlatformPolicy" type="success" size="small">添加</el-button></h3>
     <el-table :data="platformPolicies" border style="width: 600px">
       <el-table-column prop="platform_name" label="兑换平台" width="300"></el-table-column>
       <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
       <el-table-column label="操作" width="200">
         <template slot-scope="scope">
-          <el-button @click="showPlatformPolicy(scope)" type="primary" size="small">修改</el-button>
+          <el-button @click="showChangePlatformPolicy(scope)" type="primary" size="small">修改</el-button>
           <el-button @click="removePlatformPolicy(scope)" type="danger" size="small">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
   </el-row>
 
+  <!--兑换渠道窗-->
+    <el-dialog :title="dialogTitle" :visible.sync="platformPolicyVisible" center>
+      <el-form label-width="80px">
+        <el-form-item label="兑换渠道">
+          <el-select v-model="platform" @change="selectGet" placeholder="请选择">
+            <el-option v-for="item in platform_list" :label="item.platform_name" :value="item.platform"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="比例">
+          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="platformPolicyVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogMethod">确 定</el-button>
+      </div>
+    </el-dialog>
 </div>
 </body>
 
@@ -115,6 +173,7 @@
                 activePolicies: {$activePolicies},
                 platformPolicies: {$platformPolicies},
                 channelPolicies: {$channelPolicies},
+                platform_list: {$platform_list},
 
                 basicPolicyVisible: false,
                 outTimePolicyVisible: false,
@@ -124,6 +183,9 @@
 
                 start_time: '',
                 end_time: '',
+                channel:'',
+                platform:'',
+                platform_name:'',
                 policy_value: 1.0,
                 dialogTitle: '',
                 dialogMethod: '',
@@ -172,6 +234,8 @@
                     }
                 });
             },
+
+            //-------------------------------------------出货时间-------------------------------------------
             showAddOutTimePolicy () {
                 this.start_time = ''
                 this.end_time = ''
@@ -273,25 +337,326 @@
                     }
                 });
             },
-            removeActivePolicy (scope) {
-                this.activePolicies.splice(scope.$index, 1);
+
+            //-------------------------------------------激活时间-------------------------------------------
+            showAddActivePolicy () {
+                this.start_time = ''
+                this.end_time = ''
+                this.policy_value = 1.0
+                this.dialogTitle = '添加激活时间策略';
+                this.dialogMethod = this.addActivePolicy
+                this.activePolicyVisible = true
             },
-            removeChannelPolicy (scope) {
-                this.channelPolicies.splice(scope.$index, 1);
-            },
-            removePlatformPolicy (scope) {
-                this.platformPolicies.splice(scope.$index, 1);
-            },
-            
             addActivePolicy () {
-                this.activePolicyVisible = false;
+                if (this.start_time instanceof Date && this.end_time instanceof Date) {
+                    if (this.start_time.format() > this.end_time.format()) {
+                        this.$message({
+                            message: '开始时间不能大于结束时间！',
+                            type: 'error'
+                        });
+                        return false
+                    }
+                    let policy = {
+                        pnumber: this.basicPolicy.pnumber,
+                        start_time: this.start_time.format(),
+                        end_time: this.end_time.format(),
+                        policy_type: 3,
+                        policy_value: this.policy_value
+                    }
+                    axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                        if (res.data.status === 1) {
+                            this.activePolicyVisible = false
+                            this.activePolicies.push(res.data)
+                            this.$message({
+                                message: '添加成功！',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                } else {
+                    this.$message({
+                        message: '请选择开始和结束时间！',
+                        type: 'error'
+                    });
+                }
+            },
+
+            removeActivePolicy (scope) {
+                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
+                        if (res.data.status === 1) {
+                            this.activePolicies.splice(scope.$index, 1);
+                            this.$message({
+                                message: res.data.info,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                })
+            },
+            showChangeActivePolicy (scope) {
+                this.policy = scope.row
+                this.$index = scope.$index
+                this.start_time = new Date(this.policy.start_time)
+                this.end_time = new Date(this.policy.end_time)
+                this.policy_value = this.policy.policy_value
+                this.dialogTitle = '修改激活时间策略';
+                this.dialogMethod = this.changeActivePolicy
+                this.activePolicyVisible = true
+            },
+            changeActivePolicy () {
+                this.policy.start_time = this.start_time.format()
+                this.policy.end_time = this.end_time.format()
+                this.policy.policy_value = this.policy_value
+                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                    if (res.data.status === 1) {
+                        //先删除再添加
+                        this.activePolicies.splice(this.$index, 1)
+                        this.activePolicies.push(this.policy)
+                        this.activePolicyVisible = false;
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'error'
+                        });
+                    }
+                });
+            },
+
+
+            //-------------------------------------------客户渠道-------------------------------------------
+            showAddChannelPolicy () {
+                this.channel = ''
+                this.policy_value = 1.0
+                this.dialogTitle = '添加客户渠道策略';
+                this.dialogMethod = this.addChannelPolicy
+                this.channelPolicyVisible = true
             },
             addChannelPolicy () {
-                this.channelPolicyVisible = false;
+                if (!this.channel) {
+                    this.$message({
+                        message: '请选择客户渠道！',
+                        type: 'error'
+                    });
+                }
+                let policy = {
+                    pnumber: this.basicPolicy.pnumber,
+                    channel: this.channel,
+                    policy_type: 5,
+                    policy_value: this.policy_value
+                }
+                axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                    if (res.data.status === 1) {
+                        this.channelPolicyVisible = false
+                        this.channelPolicies.push(res.data)
+                        this.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'error'
+                        });
+                    }
+                })
+            },
+
+            removeChannelPolicy (scope) {
+                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
+                        if (res.data.status === 1) {
+                            this.channelPolicies.splice(scope.$index, 1);
+                            this.$message({
+                                message: res.data.info,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                })
+            },
+            showChangeChannelPolicy (scope) {
+                this.policy = scope.row
+                this.$index = scope.$index
+                this.channel = this.policy.channel
+                this.policy_value = this.policy.policy_value
+                this.dialogTitle = '修改客户策略';
+                this.dialogMethod = this.changeChannelPolicy
+                this.channelPolicyVisible = true
+            },
+            changeChannelPolicy () {
+                this.policy.channel = this.channel
+                this.policy.policy_value = this.policy_value
+                this.policy.platform_name = this.platform_name
+                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                    if (res.data.status === 1) {
+                        //先删除再添加
+                        this.channelPolicies.splice(this.$index, 1)
+                        this.channelPolicies.push(this.policy)
+                        this.channelPolicyVisible = false;
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'error'
+                        });
+                    }
+                });
+            },
+            querySearchChannel(queryString, cb) {
+              if (!queryString) {return};
+                //var list = [{}];
+                 //调用的后台接口
+                let url = "{:U('EditPolicy/queryChannel')}" +'?channel='+queryString;
+                 //从后台获取到对象数组
+                axios.get( url ).then((response)=>{
+                    //在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+                    cb(response.data);
+                }).catch((error)=>{
+                    //console.log(error);
+                });
+            },
+            handleSelectChannel(item) {
+                //console.log(item);
+                //do something
+            },
+
+
+
+            //-------------------------------------------兑换渠道-------------------------------------------
+            showAddPlatformPolicy () {
+                this.platform = ''
+                this.policy_value = 1.0
+                this.dialogTitle = '添加兑换渠道策略';
+                this.dialogMethod = this.addPlatformPolicy
+                this.platformPolicyVisible = true
             },
             addPlatformPolicy () {
-                this.platformPolicyVisible = false;
+                if (!this.channel) {
+                    this.$message({
+                        message: '请选择兑换渠道！',
+                        type: 'error'
+                    });
+                }
+                let policy = {
+                    pnumber: this.basicPolicy.pnumber,
+                    platform: this.platform,
+                    policy_type: 4,
+                    policy_value: this.policy_value
+                }
+                axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                    if (res.data.status === 1) {
+                        this.platformPolicyVisible = false
+                        this.platformPolicies.push(res.data)
+                        this.$message({
+                            message: '添加成功！',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'error'
+                        });
+                    }
+                })
             },
+
+            removePlatformPolicy (scope) {
+                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
+                        if (res.data.status === 1) {
+                            this.platformPolicies.splice(scope.$index, 1);
+                            this.$message({
+                                message: res.data.info,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message({
+                                message: res.data.info,
+                                type: 'error'
+                            });
+                        }
+                    })
+                })
+            },
+            showChangePlatformPolicy (scope) {
+                this.policy = scope.row
+                this.$index = scope.$index
+                this.platform = this.policy.platform
+                this.policy_value = this.policy.policy_value
+                this.dialogTitle = '修改兑换渠道策略';
+                this.dialogMethod = this.changePlatformPolicy
+                this.platformPolicyVisible = true
+            },
+            changePlatformPolicy () {
+                this.policy.platform = this.platform
+                this.policy.policy_value = this.policy_value
+                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                    if (res.data.status === 1) {
+                        //先删除再添加
+                        this.platformPolicies.splice(this.$index, 1)
+                        this.platformPolicies.push(this.policy)
+                        this.platformPolicyVisible = false;
+                        this.$message({
+                            message: res.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: res.data.info,
+                            type: 'error'
+                        });
+                    }
+                });
+            },
+            selectGet(vId){
+                //这个vId也就是value值
+                let obj = {};
+                obj = this.platform_list.find((item)=>{
+                    //这里的userList就是上面遍历的数据源
+                    return item.platform === vId;//筛选出匹配数据
+                });
+                this.platform_name = obj.platform_name
+                //我这边的name就是对应label的
+                console.log(obj);
+            }
         }
     })
 </script>
