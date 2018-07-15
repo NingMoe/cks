@@ -346,7 +346,7 @@ class BatchPolicyController extends BaseController
     public function batchModifyChannelSubmit()
     {
         $policyIds = $_POST['policy_ids'];
-        $channels = $_POST['channels'];//(channel_id, value)数组
+        $channels = $_POST['channels'];//(channel, value)数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
             //删除所有兑换平台策略，状态改为已删除
@@ -361,7 +361,7 @@ class BatchPolicyController extends BaseController
                         'pnumber'=>$policy['pnumber'],
                         'policy_type'=> 5,
                         'policy_value'=> $channel['value'],
-                        'channel'=> $channel['channel_id'],
+                        'channel'=> $channel['channel'],
                     );
                 }
             }
@@ -375,7 +375,7 @@ class BatchPolicyController extends BaseController
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel_id'));
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
         if(empty($conflict))
         {
             //批量增加客户渠道策略
@@ -387,7 +387,7 @@ class BatchPolicyController extends BaseController
                         'pnumber'=>$pnumber,
                         'policy_type'=> 5,
                         'policy_value'=> $channel['value'],
-                        'channel'=> $channel['channel_id'],
+                        'channel'=> $channel['channel'],
                     );
                 }
             }
@@ -407,9 +407,9 @@ class BatchPolicyController extends BaseController
     public function batchModifyChannelHard()
     {
         $policyIds = $_POST['policy_ids'];
-        $channels = $_POST['channels'];//(channel_id, value)数组
+        $channels = $_POST['channels'];//(channel, value)数组
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel_id'));
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -426,7 +426,7 @@ class BatchPolicyController extends BaseController
                     'pnumber'=>$pnumber,
                     'policy_type'=> 5,
                     'policy_value'=> $value,
-                    'channel'=> $channel['channel_id'],
+                    'channel'=> $channel['channel'],
                 );
             }
         }

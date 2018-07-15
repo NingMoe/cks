@@ -301,11 +301,11 @@ class BaseModel extends  Model{
     }
 
     //检测客户渠道冲突
-    public static function checkChannel($policies, $channel_ids)
+    public static function checkChannel($policies, $channels)
     {
         $conflict = [];
         foreach ($policies as $policy){
-            if (in_array($channel_ids, $policy['channel'])) {
+            if (in_array($channels, $policy['channel'])) {
                 array_push($conflict, $policy);
             }
         }
