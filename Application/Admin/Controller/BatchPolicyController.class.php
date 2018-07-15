@@ -406,11 +406,9 @@ class BatchPolicyController extends BaseController
 
     //搜索
     public function searchPnameShowPolicy(){
-        //p($this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
-
-        //echo 121;die;
         //p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
-        $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
+       // p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))));die;
+        $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))),'pname' => $_GET['pname']]);
 
         $this->display('shippingTime');
     }

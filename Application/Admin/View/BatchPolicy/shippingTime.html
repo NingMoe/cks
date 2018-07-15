@@ -158,109 +158,76 @@
             window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname;
         })
 
+        //全选
         $("body").on('click', "#all_pnumber",function(){
-            if($("#all_pnumber").prop("checked")){
-                $(".all_pnumber_child").each(function(i){
-                    if($(this).prop("checked")){
-                        $(this).prop('checked',false);
-                    }else{
-                        $(this).prop('checked',true);
-                    }
-                })
-
-            } else{
-                $(".all_pnumber_child").each(function(i){
-                    if($(this).prop("checked")){
-                        $(this).prop('checked',false);
-                    }else{
-                        $(this).prop('checked',true);
-                    }
-                })
-
-            }
+            $("#all_pnumber").prop("checked")?shippingTimeFn.checkBoxSec():shippingTimeFn.checkBoxSec();
         });
 
         layui.use(['form'], function(){
             var form = layui.form(),layer = layui.layer;
             //监听提交
             form.on('submit(policy_submit)', function(data){
-                //点击生成策略
-                var pname = $.trim($('#product-model').val());
-                //_index = layer.load();
-                var beginDate=$("#start_time").val();
-                var endDate=$("#end_time").val();
-                var d1 = new Date(beginDate.replace(/\-/g, "\/"));
-                var d2 = new Date(endDate.replace(/\-/g, "\/"));
-
-                if(beginDate!=""&&endDate!=""&&d1 >=d2)
-                {
+                //时间判断
+                if(!shippingTimeFn.timeFilter()){
                     layer.msg("开始时间不能大于结束时间！");
                     return false;
                 }
-                var checkedNum = $("input[type='checkbox']:checked").length;
-                if(checkedNum == 0){
+
+                //型号料号选择
+                if(!shippingTimeFn.checkNum()){
                     layer.msg('请选择料号或者型号');
                     return false;
                 }
 
-                var pnumberCheckedNum = $("input[name='all_pnumber[]']:checked").length;
-                if($('.all_pname').prop("checked") && pnumberCheckedNum >0){
+                //型号、料号必选
+                if(!shippingTimeFn.checkPnumberPnameNum()){
                     layer.msg('料号和型号只能选择其一');
                     return false;
-                }
+                };
 
-                if($('.all_pname').prop("checked")){
-                    var tag = 1;
-                }else{
-                    var tag = 0 ;
-                }
-
+                //更改类型
+                var tag = $('.all_pname').prop("checked")?1:0;
                 var start_time = $('#start_time').val();
                 var end_time = $('#end_time').val();
                 var policy_value = $('#policy_value').val();
                 var policy_ids = [];
 
+                //组装id
                 $(".all_pnumber_child").each(function(i){
 
-                    if($(this).prop("checked")) {
-                        $('.all_pnumber' + i).each(function () {
+                    if($(this).prop("checked"))
+                        $('.all_pnumber'+i).each(function () {
                             policy_ids.push($(this).attr('policy-id'));
                         })
-                    }
                 })
 
                 console.log(policy_ids);
+
                 if(tag == 1){
                     layer.confirm('删除原有数据，新增插入数据', {
                         btn: ['确定','取消'] //按钮
                     }, function(){
-                        $.post("{:U('batchModifyShipingSubmit')}", {
+                        //_index2 = layer.load();
+                        shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                        /*$.post("{:U('batchModifyShipingSubmit')}", {
                             tag:tag,
                             start_time:start_time,
                             end_time:end_time,
                             policy_value:policy_value,
                             policy_ids:policy_ids
                         },function(data){
-                            //layer.close(_index);
-                            if(data.status == 0) layer.msg(data.msg);
-                            if(data.status == 1){
-                                layer.confirm(data.msg, {
-                                    btn: ['确定','取消'] //按钮
-                                }, function(){
-                                    //_index1 = layer.load();
-                                    $.post("{:U('generatingStrategy')}",{panme:pname},function(res){
-                                        if(res.status == 2){
-                                            setTimeout(function () { layer.msg(res.msg) }, 1000);
-                                            setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+$.trim($('#product-model').val())}, 2000);
-                                        }
-                                        if(res.status == 3)layer.msg(res.msg);
-                                    })
-                                });
-                            };
-                        });
+                            layer.close(_index2);
+                            if(data.status == 0){
+                                setTimeout(function () { layer.msg(data.msg) }, 1000);
+                                setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&tag=1"}, 2000);
+                            }
+                            if(data.status == -1)layer.msg(data.msg);
+                        });*/
                     });
                 }else{
-                    $.post("{:U('batchModifyShipingSubmit')}", {
+                    //_index = layer.load();
+                    shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                    /*$.post("{:U('batchModifyShipingSubmit')}", {
                         tag:tag,
                         start_time:start_time,
                         end_time:end_time,
@@ -270,10 +237,10 @@
                         $('.all_pnumber_sec').each(function(){
                             $(this).css("background-color","white");
                         })
-                        //layer.close(_index);
+                        layer.close(_index);
                         if(data.status == 0) {
                             setTimeout(function () { layer.msg(data.msg) }, 1000);
-                            setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+pname}, 2000);
+                            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname}, 2000);
                         }
                         if(data.status == -1)layer.msg(data.msg);
                         if(data.status == 1){
@@ -288,7 +255,7 @@
                             layer.confirm(data.msg, {
                                 btn: ['确定','取消'] //按钮
                             }, function(){
-                                //_index1 = layer.load();
+                                _index2 = layer.load();
                                 $.post("{:U('batchModifyShipingHard')}", {
                                     tag:tag,
                                     start_time:start_time,
@@ -296,15 +263,16 @@
                                     policy_value:policy_value,
                                     policy_ids:policy_ids
                                 },function(res){
+                                    layer.close(_index2);
                                     if(res.status == 0){
                                         setTimeout(function () { layer.msg(res.msg) }, 1000);
-                                        setTimeout(function(){window.location.href = "/index.php/Admin/ProductPolicy/index.html?pname="+$.trim($('#product-model').val())}, 2000);
+                                        setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())}, 2000);
                                     }
                                     if(res.status == -1)layer.msg(res.msg);
                                 })
                             });
                         };
-                    });
+                    });*/
                 }
 
                 return false;
@@ -319,5 +287,74 @@
 
 
     })
+    var shippingTimeFn = {
+        checkBoxSec:function(){
+            $(".all_pnumber_child").each(function(i){
+                $(this).prop("checked")?$(this).prop('checked',false):$(this).prop('checked',true);
+            })
+        },
+
+        timeFilter:function () {
+            var pname = $.trim($('#product-model').val());
+            var beginDate=$("#start_time").val();
+            var endDate=$("#end_time").val();
+            var d1 = new Date(beginDate.replace(/\-/g, "\/"));
+            var d2 = new Date(endDate.replace(/\-/g, "\/"));
+
+            return beginDate!=""&&endDate!=""&&d1 >=d2?false:true;
+        },
+
+        checkNum:function(){ return $("input[type='checkbox']:checked").length == 0?false:true; },
+
+        checkPnumberPnameNum:function(){ return $('.all_pname').prop("checked") && $("input[name='all_pnumber[]']:checked").length >0?false:true; },
+
+        postRequest:function(url, tag, start_time, end_time, policy_value, policy_ids){
+            _index = layer.load();
+            $.post(url, {
+                tag:tag,
+                start_time:start_time,
+                end_time:end_time,
+                policy_value:policy_value,
+                policy_ids:policy_ids
+            },function(data){
+                layer.close(_index);
+                if(data.status == 0) shippingTimeFn.setTimeOutJump(data.msg);
+                if(data.status == -1)layer.msg(data.msg);
+                if(data.status == 1){
+
+                    for (var i in data.conflict){
+                        $('.all_pnumber_sec').each(function(){
+                            if($(this).attr('policy-id') == data.conflict[i].id){
+                                $(".tag_"+data.conflict[i].id).css("background-color","red");
+                            }
+                        })
+                    }
+
+                    layer.confirm(data.msg, {
+                        btn: ['确定','取消'] //按钮
+                    }, function(){
+                        _index2 = layer.load();
+                        $.post("{:U('batchModifyShipingHard')}", {
+                            tag:tag,
+                            start_time:start_time,
+                            end_time:end_time,
+                            policy_value:policy_value,
+                            policy_ids:policy_ids
+                        },function(res){
+                            layer.close(_index2);
+                            if(res.status == 0) shippingTimeFn.setTimeOutJump(res.msg);
+                            if(res.status == -1)layer.msg(res.msg);
+                        })
+                    });
+                };
+            });
+        },
+
+        setTimeOutJump:function(msg){
+            setTimeout(function () { layer.msg(msg) }, 1000);
+            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())}, 2000);
+        }
+
+    }
 </script>
 </html>

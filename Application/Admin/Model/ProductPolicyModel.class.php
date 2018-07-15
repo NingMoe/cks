@@ -88,11 +88,12 @@ class ProductPolicyModel extends  BaseModel{
     }
 
     //搜索
-    public static function searchPnameShowPolicy($pname){
+    public static function searchPnameShowPolicy($pname, $tag=0){
+
         return BaseModel::getDbData([
             'table' => self::$table[0],
             'fields' => ['pnumber'],
-            'where' => [ 'pname' => ['like', "%".$pname."%"]  ],
+            'where' => !$tag ? [ 'pname' => ['like', "%".$pname."%"]]:'',
 
         ]);
     }
