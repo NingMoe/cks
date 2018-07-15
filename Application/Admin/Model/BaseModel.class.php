@@ -292,7 +292,7 @@ class BaseModel extends  Model{
     {
         $conflict = [];
         foreach ($policies as $policy){
-            if ($policy['platform'] == $platform) {
+            if (in_array($policy['platform'], $platforms)) {
                 array_push($conflict, $policy);
             }
         }
@@ -305,7 +305,7 @@ class BaseModel extends  Model{
     {
         $conflict = [];
         foreach ($policies as $policy){
-            if ($policy['channel'] == $channel) {
+            if (in_array($policy['channel'], $channels)) {
                 array_push($conflict, $policy);
             }
         }
