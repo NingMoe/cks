@@ -3,11 +3,11 @@
   <meta charset="utf-8">
   <title>iview example</title>
   <!--<link rel="stylesheet" type="text/css" href="../../../../Public/css/vue/iview.css">-->
-  <link rel="stylesheet" type="text/css" href="../../../../Public/css/vue/element.css">
-  <script type="text/javascript" src="../../../../Public/js/vue/vue.js"></script>
+  <link rel="stylesheet" type="text/css" href="/../../../../Public/css/vue/element.css">
+  <script type="text/javascript" src="/../../../../Public/js/vue/vue.js"></script>
   <!--<script type="text/javascript" src="../../../../Public/js/vue/iview.min.js"></script>-->
-  <script type="text/javascript" src="../../../../Public/js/vue/element.js"></script>
-  <script type="text/javascript" src="../../../../Public/js/vue/axios.min.js"></script>
+  <script type="text/javascript" src="/../../../../Public/js/vue/element.js"></script>
+  <script type="text/javascript" src="/../../../../Public/js/vue/axios.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -132,7 +132,7 @@
             }
         },
         created () {
-            axios.defaults.baseURL = 'http://phishopadmin.thinkphp.test/index.php/Admin/';
+            axios.defaults.baseURL = "<?php webDomain().'/index.php/Admin/'?>";
             axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
             Date.prototype.format = function(fmt = 'yyyy-MM-dd hh:mm:ss') {
                 let o = {

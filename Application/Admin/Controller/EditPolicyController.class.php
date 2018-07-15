@@ -19,7 +19,7 @@ class EditPolicyController extends BaseController
 
     public function edit()
     {
-        $pnumber = '901002388';
+        $pnumber = I('get.pnumber');
         $policies = M('policy')->join('left join platform on policy.platform = platform.platform')
             ->where(['pnumber' => $pnumber, 'status' => 1])
             ->field(['policy.id', 'pnumber', 'policy_type', 'policy_value', 'start_time', 'end_time',
