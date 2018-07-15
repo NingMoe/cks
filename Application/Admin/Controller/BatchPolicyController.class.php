@@ -381,8 +381,10 @@ class BatchPolicyController extends BaseController
             }
         }
 
+        //p($policyIds);die;
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, array_column($channels, 0));
+        //p($conflict);die;
         if(empty($conflict))
         {
             //批量增加客户渠道策略
@@ -459,8 +461,7 @@ class BatchPolicyController extends BaseController
     public function searchPnameShowPolicy(){
         //echo I('get.policyType');die;
         //p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
-       // p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))));die;
-        $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'), I('get.tag'))),'pname' => $_GET['pname']]);
+        $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
 
        $this->display($this->policyType[I('get.policyType')]);
     }

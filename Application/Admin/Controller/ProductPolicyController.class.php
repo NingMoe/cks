@@ -102,7 +102,7 @@ class ProductPolicyController extends BaseController
                 $showArr[$val['pnumber']][4][] = ['id'=>$val['id'], 'platform'=>$val['platform'],'platform_name' =>ProductPolicyModel::getChannelName($val['platform'])['platform_name'],'flag'=>$val['flag'],'policy_value' => $val['policy_value']];
 
             if($val['policy_type'] == 5)
-                $showArr[$val['pnumber']][5][] = ['channel'=> $val['channel'], 'channel_name'=> ProductPolicyModel::getCustumerChannelName($val['channel'])['channel_name'], 'policy_value' => $val['policy_value']];
+                $showArr[$val['pnumber']][5][] = ['id'=>$val['id'], 'channel'=> $val['channel'], 'policy_value' => $val['policy_value']];
         }
 
         return $showArr;

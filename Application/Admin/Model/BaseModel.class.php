@@ -288,11 +288,11 @@ class BaseModel extends  Model{
     }
 
     //检测平台冲突
-    public static function checkPlatform($policies, $platforms)
+    public static function checkPlatform($policies, $platform)
     {
         $conflict = [];
         foreach ($policies as $policy){
-            if (in_array($platforms, $policy['platform'])) {
+            if ($policy['platform'] == $platform) {
                 array_push($conflict, $policy);
             }
         }
@@ -301,11 +301,11 @@ class BaseModel extends  Model{
     }
 
     //检测客户渠道冲突
-    public static function checkChannel($policies, $channels)
+    public static function checkChannel($policies, $channel)
     {
         $conflict = [];
         foreach ($policies as $policy){
-            if (in_array($channels, $policy['channel'])) {
+            if ($policy['channel'] == $channel) {
                 array_push($conflict, $policy);
             }
         }

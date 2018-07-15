@@ -74,16 +74,6 @@ class ProductPolicyModel extends  BaseModel{
 
     }
 
-    //获取客户渠道名字
-    public static function getCustumerChannelName($id){
-        return BaseModel::getDbData([
-
-            'table' => ProductPolicyModel::$table[3],
-            'where' => ['id' => $id],
-            'fields' => 'channel_name'
-        ], false);
-    }
-
     //模糊搜索 产品型号
     public static function getDimSearchData($pname){
 
@@ -99,13 +89,12 @@ class ProductPolicyModel extends  BaseModel{
 
 
     //搜索料号
-    public static function searchPnameShowPolicy($pname, $tag=0){
+    public static function searchPnameShowPolicy($pname){
 
         return BaseModel::getDbData([
             'table' => self::$table[0],
             'fields' => ['pnumber'],
-            'where' => !$tag ? [ 'pname' => ['like', "%".$pname."%"]]:'',
-
+            'where' => [ 'pname' => $pname],
         ]);
     }
 

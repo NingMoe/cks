@@ -286,7 +286,7 @@
 
         setTimeOutJump:function(msg){
             setTimeout(function () { layer.msg(msg) }, 1000);
-            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())}, 2000);
+            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())+"&policyType=3"}, 2000);
         }
 
     }

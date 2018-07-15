@@ -107,8 +107,8 @@
         <tr>
             <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
             <td><?php echo $key?></td>
-            <td colspan="5">
-                <?php foreach($val[2] as $v):?>
+            <td colspan="2">
+                <?php foreach($val[5] as $v):?>
                 <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>">  <?php echo $v['channel'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
                 <?php endforeach;?>
             </td>
@@ -267,6 +267,23 @@
                 })
 
                 if(!rtn){layer.msg('渠道名称不能重复');return false;};
+
+                var checkValue = true;
+                $('.customer_channel').each(function(){
+                    var iptValue = $.trim($(this).val());//渠道值
+
+                    var  ratio = $.trim($(this).parent().parent().next().find("input[name='ratio']").val());//对应比例
+
+                    if((iptValue == '' && ratio != '') || (iptValue != '' && ratio == '')){
+
+                        checkValue = false;
+
+                        return false;
+                    }
+
+                })
+                if(!checkValue){layer.msg('请填写对应渠道或者比例');return false;};
+
                 //更改类型
                 var tag = $('.all_pname').prop("checked")?1:0;
                 var policy_ids = [];
@@ -284,12 +301,16 @@
                 //组装渠道名-比例
                 $(".customer_channel").each(function(i){
 
-                    var iptValue = $.trim($(this).val());
-                    if(iptValue != ''){
-                        channel_arr.push([iptValue]);
-                    }
+                    var iptValue = $.trim($(this).val());//渠道值
+
+                    var  ratio = $(this).parent().parent().next().find("input[name='ratio']").val();
+
+                    if(iptValue != '')
+                        channel_arr.push([iptValue, ratio]);
                 })
 
+
+                if(channel_arr.length <=0) { layer.msg('请选择渠道'); return false; }
                 console.log(channel_arr);
                 //console.log(policy_ids);
 
@@ -297,10 +318,10 @@
                     layer.confirm('删除原有数据，新增插入数据', {
                         btn: ['确定','取消'] //按钮
                     }, function(){
-                        shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                        shippingTimeFn.postRequest("{:U('batchModifyChannelSubmit')}",tag, policy_ids,channel_arr);
                     });
                 }else{
-                    shippingTimeFn.postRequest("{:U('batchModifyShipingSubmit')}",tag, start_time,end_time,policy_value,policy_ids);
+                    shippingTimeFn.postRequest("{:U('batchModifyChannelSubmit')}",tag, policy_ids,channel_arr);
                 }
 
                 return false;
@@ -352,14 +373,12 @@
 
         checkPnumberPnameNum:function(){ return $('.all_pname').prop("checked") && $("input[name='all_pnumber[]']:checked").length >0?false:true; },
 
-        postRequest:function(url, tag, start_time, end_time, policy_value, policy_ids){
+        postRequest:function(url, tag, policyIds, channels){
             _index = layer.load();
             $.post(url, {
                 tag:tag,
-                start_time:start_time,
-                end_time:end_time,
-                policy_value:policy_value,
-                policy_ids:policy_ids
+                policy_ids:policyIds,
+                channels:channels,
             },function(data){
                 layer.close(_index);
                 if(data.status == 0) shippingTimeFn.setTimeOutJump(data.msg);
@@ -378,12 +397,10 @@
                         btn: ['确定','取消'] //按钮
                     }, function(){
                         _index2 = layer.load();
-                        $.post("{:U('batchModifyShipingHard')}", {
+                        $.post("{:U('batchModifyChannelHard')}", {
                             tag:tag,
-                            start_time:start_time,
-                            end_time:end_time,
-                            policy_value:policy_value,
-                            policy_ids:policy_ids
+                            policy_ids:policyIds,
+                            channels:channels,
                         },function(res){
                             layer.close(_index2);
                             if(res.status == 0) shippingTimeFn.setTimeOutJump(res.msg);
@@ -396,7 +413,7 @@
 
         setTimeOutJump:function(msg){
             setTimeout(function () { layer.msg(msg) }, 1000);
-            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())}, 2000);
+            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())+"&policyType=5"}, 2000);
         }
 
     }
