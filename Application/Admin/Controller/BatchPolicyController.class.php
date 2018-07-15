@@ -59,10 +59,14 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
-        $policies = M('policy')->where(['id' => ['in', implode(',',$policyIds)]])->select();
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
@@ -77,11 +81,15 @@ class BatchPolicyController extends BaseController
                     'end_time'=> $end,
                 );
             }
-            M('policy')->addAll($dataList);
-            $this->ajaxReturn(['status' => 1, 'msg' =>  '操作成功']);
+            $res = M('policy')->addAll($dataList);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
-            $this->ajaxReturn(['status' => 0, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增新出货时间策略吗？', 'conflict' => $conflict]);
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增新出货时间策略吗？', 'conflict' => $conflict]);
         }
     }
 
@@ -91,7 +99,7 @@ class BatchPolicyController extends BaseController
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -113,7 +121,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //激活时间策略
@@ -147,10 +159,14 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
@@ -165,7 +181,13 @@ class BatchPolicyController extends BaseController
                     'end_time'=> $end,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -177,7 +199,7 @@ class BatchPolicyController extends BaseController
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -199,7 +221,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //兑换平台策略
@@ -232,10 +258,14 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
-            if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPlatform($policies, $platform);
         if(empty($conflict))
         {
@@ -250,7 +280,13 @@ class BatchPolicyController extends BaseController
                     'platform'=> $platform,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -261,7 +297,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $platform = $_POST['platform'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPlatform($policies, $platform);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -282,7 +318,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //客户渠道策略
@@ -298,7 +338,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, $channel);
         if(empty($conflict))
         {
@@ -314,7 +354,13 @@ class BatchPolicyController extends BaseController
                     'channel'=> $channel,
                 );
             }
-            M('policy')->addAll($dataList);
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+            }
         } else {
             //跳转冲突提示框
         }
@@ -325,7 +371,7 @@ class BatchPolicyController extends BaseController
     {
         $policyIds = $_POST['policy_ids'];
         $channel = $_POST['channel'];
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, $channel);
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
@@ -346,7 +392,11 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
-        if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'info' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'info' => '操作失败']);
+        }
     }
 
     //模糊搜索
