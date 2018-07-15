@@ -36,6 +36,7 @@ class BatchPolicyController extends BaseController
     //提交批量更新出货时间策略
     public function batchModifyShipingSubmit()
     {
+        //p($_POST);die;
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
@@ -61,7 +62,7 @@ class BatchPolicyController extends BaseController
             if($res)$this->ajaxReturn(['status' => 1, 'info' => '操作成功']);
         }
 
-        $policies = M('policy')->where(['id' => ['in', $policyIds]]);
+        $policies = M('policy')->where(['id' => ['in', implode(',',$policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         if(empty($conflict))
         {
@@ -80,7 +81,7 @@ class BatchPolicyController extends BaseController
             $this->ajaxReturn(['status' => 1, 'msg' =>  '操作成功']);
         } else {
             //跳转冲突提示框
-            $this->ajaxReturn(['status' => 0, 'msg' =>  '时间冲突', 'conflict' => $conflict]);
+            $this->ajaxReturn(['status' => 0, 'msg' =>  '时间冲突,您确认删除原有出货时间策略，新增新出货时间策略吗？', 'conflict' => $conflict]);
         }
     }
 
