@@ -2,7 +2,6 @@
 namespace Admin\Controller;
 
 use Admin\Model\BaseModel;
-use Admin\Model\BatchPolicyModel;
 use Admin\Model\ProductPolicyModel;
 
 /**
@@ -30,8 +29,6 @@ class BatchPolicyController extends BaseController
     //出货时间策略
     public function shippingTime()
     {
-        $policies = BatchPolicyModel::getPolicyListData(2, 'pnumber');
-        $this->assign('policies', json_encode($policies));
         $this->display();
     }
 
@@ -80,8 +77,10 @@ class BatchPolicyController extends BaseController
                 );
             }
             M('policy')->addAll($dataList);
+            $this->ajaxReturn(['status' => 1, 'msg' =>  '操作成功']);
         } else {
             //跳转冲突提示框
+            $this->ajaxReturn(['status' => 0, 'msg' =>  '时间冲突', 'conflict' => $conflict]);
         }
     }
 
@@ -119,7 +118,6 @@ class BatchPolicyController extends BaseController
     //激活时间策略
     public function activationTime()
     {
-        $this->assign('policies', BatchPolicyModel::getPolicyListData(3, 'pnumber'));
         $this->display();
     }
 
@@ -206,7 +204,6 @@ class BatchPolicyController extends BaseController
     //兑换平台策略
     public function exchangePlatform()
     {
-        $this->assign('policies', BatchPolicyModel::getPolicyListData(4, 'pnumber'));
         $this->display();
     }
 
@@ -290,7 +287,6 @@ class BatchPolicyController extends BaseController
     //客户渠道策略
     public function customerChannel()
     {
-        $this->assign('policies', BatchPolicyModel::getPolicyListData(5, 'pnumber'));
         $this->display();
     }
 
@@ -363,7 +359,7 @@ class BatchPolicyController extends BaseController
 
         //echo 121;die;
         //p(ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
-        $this->assign(['data' =>ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
+        $this->assign(['data' => ProductPolicyController::getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
 
         $this->display('shippingTime');
     }
