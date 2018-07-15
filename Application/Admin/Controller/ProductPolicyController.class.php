@@ -1,8 +1,6 @@
 <?php
 namespace Admin\Controller;
 use Admin\Model\ProductPolicyModel;
-use Admin\Model\SystemKeysModel;
-use Admin\Model\BaseModel;
 
 /**
  * 策略管理

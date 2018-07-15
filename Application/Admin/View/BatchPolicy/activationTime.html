@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>出货时间策略</title>
+    <title>激活时间策略</title>
 
     <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
     <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
@@ -34,7 +34,7 @@
 <div class="container-fluid" style="margin-top: 10px">
     <div class="panel panel-primary">
         <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
-            <span class="badge" style=" color: #1ab394;" >出货时间策略</span>
+            <span class="badge" style=" color: #1ab394;" >激活时间策略</span>
         </div>
     </div>
 </div>
@@ -108,7 +108,7 @@
             <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
             <td><?php echo $key?></td>
             <td colspan="3">
-                <?php foreach($val[2] as $v):?>
+                <?php foreach($val[3] as $v):?>
                 <div class="all_pnumber<?php echo $i;?>" policy-id="<?php echo $v['id'] ?>"> <?php echo date('Y-m-d', strtotime($v['start_time']));?><span style="margin-right:100px "></span><?php echo date('Y-m-d', strtotime($v['end_time']));?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
                 <?php endforeach;?>
             </td>
