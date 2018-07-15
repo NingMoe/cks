@@ -11,7 +11,8 @@ use Admin\Model\ProductPolicyModel;
  */
 class BatchPolicyController extends BaseController
 {
-    //策略类型：1-料号策略；2-出货时间策略；3-激活时间策略；4-兑换平台策略；5-销售渠道策略
+    //策略类型：1-料号策略；2-出货时间策略；3-激活时间策略；4-兑换平台策略；5-客户渠道策略
+    public static $innerPlatforms = ['1-1', '1-2', '1-3', '1-4'];
 
     public $policyType = [ 2=>'shippingTime', 3=>'activationTime', 4=>'exchangePlatform', 5=>'customerChannel'];
 
@@ -240,23 +241,25 @@ class BatchPolicyController extends BaseController
     public function batchModifyPlatformSubmit()
     {
         $policyIds = $_POST['policy_ids'];
-        $platform = $_POST['platform'];
-        $value = $_POST['policy_value'];
+        $platforms = $_POST['platforms'];//(platform, value)数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
-            //删除所有激活时间策略，状态改为已删除
+            //删除所有兑换平台策略，状态改为已删除
             M('policy')->where(['policy_type' => 4, 'status' => 1])->setField('status', 0);
 
             //批量增加激活时间策略
             $policies = M()->query('select distinct pnumber from policy');
             foreach ($policies as $policy) {
-                $dataList[] = array(
-                    'pnumber'=>$policy['pnumber'],
-                    'policy_type'=> 4,
-                    'policy_value'=> $value,
-                    'platform'=> $platform,
-                    //TODO flag默认值
-                );
+                //多组平台策略，双层循环
+                foreach ($platforms as $platform) {
+                    $dataList[] = array(
+                        'pnumber'=>$policy['pnumber'],
+                        'policy_type'=> 4,
+                        'platform'=> $platform['platform'],
+                        'policy_value'=> $platform['value'],
+                        'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                    );
+                }
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
@@ -268,19 +271,22 @@ class BatchPolicyController extends BaseController
         }
 
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkPlatform($policies, $platform);
+        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 'platform'));
         if(empty($conflict))
         {
             //批量增加兑换平台策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
             foreach ($pnumbers as $pnumber) {
-                //TODO 一组还是多组策略，多组使用双层循环
-                $dataList[] = array(
-                    'pnumber'=>$pnumber,
-                    'policy_type'=> 4,
-                    'policy_value'=> $value,
-                    'platform'=> $platform,
-                );
+                //多组平台策略，双层循环
+                foreach ($platforms as $platform) {
+                    $dataList[] = array(
+                        'pnumber'=>$pnumber,
+                        'policy_type'=> 4,
+                        'platform'=> $platform['platform'],
+                        'policy_value'=> $platform['value'],
+                        'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                    );
+                }
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
@@ -298,9 +304,9 @@ class BatchPolicyController extends BaseController
     public function batchModifyPlatformHard()
     {
         $policyIds = $_POST['policy_ids'];
-        $platform = $_POST['platform'];
+        $platforms = $_POST['platforms'];//(platform, value)数组
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkPlatform($policies, $platform);
+        $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 'platform'));
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -309,14 +315,17 @@ class BatchPolicyController extends BaseController
 
         //批量增加平台策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
-        $value = $_POST['policy_value'];
         foreach ($pnumbers as $pnumber) {
-            $dataList[] = array(
-                'pnumber'=>$pnumber,
-                'policy_type'=> 4,
-                'policy_value'=> $value,
-                'platform'=> $platform,
-            );
+            //多组平台策略，双层循环
+            foreach ($platforms as $platform) {
+                $dataList[] = array(
+                    'pnumber'=>$pnumber,
+                    'policy_type'=> 4,
+                    'platform'=> $platform['platform'],
+                    'policy_value'=> $platform['value'],
+                    'flag'=> in_array(static::$innerPlatforms, $platform['platform']) ? 1 : 0,
+                );
+            }
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
@@ -333,28 +342,54 @@ class BatchPolicyController extends BaseController
         $this->display();
     }
 
-
-
     //提交批量更新客户渠道策略
     public function batchModifyChannelSubmit()
     {
         $policyIds = $_POST['policy_ids'];
-        $channel = $_POST['channel'];
+        $channels = $_POST['channels'];//(channel, value)数组
+        //全选所有型号
+        if ($_POST['tag'] == 1) {
+            //删除所有兑换平台策略，状态改为已删除
+            M('policy')->where(['policy_type' => 5, 'status' => 1])->setField('status', 0);
+
+            //批量增加激活时间策略
+            $policies = M()->query('select distinct pnumber from policy');
+            foreach ($policies as $policy) {
+                //多组渠道策略，双层循环
+                foreach ($channels as $channel) {
+                    $dataList[] = array(
+                        'pnumber'=>$policy['pnumber'],
+                        'policy_type'=> 5,
+                        'policy_value'=> $channel['value'],
+                        'channel'=> $channel['channel'],
+                    );
+                }
+            }
+            $res = M('policy')->addAll($dataList);
+            //TODO 记录日志
+            if($res) {
+                $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
+            } else {
+                $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
+            }
+        }
+
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, $channel);
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
         if(empty($conflict))
         {
-            $value = $_POST['policy_value'];
             //批量增加客户渠道策略
             $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
             foreach ($pnumbers as $pnumber) {
-                //TODO 一组还是多组策略，多组使用双层循环
-                $dataList[] = array(
-                    'pnumber'=>$pnumber,
-                    'policy_type'=> 5,
-                    'policy_value'=> $value,
-                    'channel'=> $channel,
-                );
+                //多组渠道策略，多组使用双层循环
+                foreach ($channels as $channel) {
+                    $dataList[] = array(
+                        'pnumber'=>$pnumber,
+                        'policy_type'=> 5,
+                        'policy_value'=> $channel['value'],
+                        'channel'=> $channel['channel'],
+                    );
+                }
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
@@ -372,9 +407,9 @@ class BatchPolicyController extends BaseController
     public function batchModifyChannelHard()
     {
         $policyIds = $_POST['policy_ids'];
-        $channel = $_POST['channel'];
+        $channels = $_POST['channels'];//(channel, value)数组
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
-        $conflict = BaseModel::checkChannel($policies, $channel);
+        $conflict = BaseModel::checkChannel($policies, array_column($channels, 'channel'));
         //删除冲突的平台策略，状态改为已删除
         foreach ($conflict as $item) {
             $id = $item['id'];
@@ -385,12 +420,15 @@ class BatchPolicyController extends BaseController
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
         $value = $_POST['policy_value'];
         foreach ($pnumbers as $pnumber) {
-            $dataList[] = array(
-                'pnumber'=>$pnumber,
-                'policy_type'=> 5,
-                'policy_value'=> $value,
-                'channel'=> $channel,
-            );
+            //多组渠道策略，多组使用双层循环
+            foreach ($channels as $channel) {
+                $dataList[] = array(
+                    'pnumber'=>$pnumber,
+                    'policy_type'=> 5,
+                    'policy_value'=> $value,
+                    'channel'=> $channel['channel'],
+                );
+            }
         }
         $res = M('policy')->addAll($dataList);
         //TODO 记录日志
