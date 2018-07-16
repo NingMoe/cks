@@ -55,6 +55,9 @@ class EditPolicyController extends BaseController
     public function addPolicy()
     {
         $policy = json_decode(file_get_contents('php://input'), true);
+        if ($policy['policy_value'] <= 0) {
+            $this->error('策略子必须大于0');
+        }
         $policies = M('policy')->where(['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'status' => 1])->select();
         if ($policy['policy_type'] == 2) {
             $res = BaseModel::checkPolicyTime($policies, $policy['start_time'], $policy['end_time']);
@@ -114,6 +117,9 @@ class EditPolicyController extends BaseController
     public function changePolicy()
     {
         $policy = json_decode(file_get_contents('php://input'), true);
+        if ($policy['policy_value'] <= 0) {
+            $this->error('策略子必须大于0');
+        }
         $policies = M('policy')->where("pnumber = {$policy['pnumber']} and policy_type = {$policy['policy_type']} and status = 1 and id <> {$policy['id']}")->select();
         if ($policy['policy_type'] == 1) {
             M('policy')->where(['id' => $policy['id']])->save($policy);
