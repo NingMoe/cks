@@ -152,6 +152,8 @@
       <el-button type="primary" @click="dialogMethod">确 定</el-button>
     </div>
   </el-dialog>
+
+  <div><el-button @click="back()" type="primary">返回</el-button></div>
 </div>
 </body>
 
@@ -507,6 +509,9 @@
                 });
                 this.platform_name = obj.platform_name
                 //我这边的name就是对应label的
+            },
+            back () {
+                history.back()
             }
         }
     })
