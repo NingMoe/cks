@@ -173,6 +173,4 @@ class EditPolicyController extends BaseController
         $res = M('channel')->field('channel_name as value')->where($where)->select();
         exit(json_encode($res,JSON_UNESCAPED_UNICODE));
     }
-
-    
 }
