@@ -85,7 +85,11 @@ class EditPolicyController extends BaseController
                 }
                 
                 $id = M('policy')->add($policy);
-                $policy = M('policy')->join('left join platform on policy.platform = platform.platform')->where(['policy.id' => $id])->find();
+                $policy = M('policy')->join('left join platform on policy.platform = platform.platform')
+                    ->where(['policy.id' => $id])
+                    ->field(['policy.id', 'pnumber', 'policy_type', 'policy_value', 'start_time', 'end_time',
+                        'policy.platform', 'platform_name', 'flag', 'channel', 'rate'])
+                    ->find();
                 $this->success('添加成功！', '', $policy);
             }
         } elseif ($policy['policy_type'] == 5) {

@@ -405,6 +405,7 @@
                         message: '请选择客户渠道！',
                         type: 'error'
                     });
+                    return false
                 }
                 let policy = {
                     pnumber: this.basicPolicy.pnumber,
@@ -457,11 +458,12 @@
                 this.platformPolicyVisible = true
             },
             addPlatformPolicy () {
-                if (!this.channel) {
+                if (!this.platform) {
                     this.$message({
                         message: '请选择兑换渠道！',
                         type: 'error'
                     });
+                    return false;
                 }
                 let policy = {
                     pnumber: this.basicPolicy.pnumber,
@@ -481,6 +483,7 @@
                 this.policy = scope.row
                 this.$index = scope.$index
                 this.platform = this.policy.platform
+                this.platform_name = this.policy.platform_name
                 this.policy_value = this.policy.policy_value
                 this.dialogTitle = '修改兑换渠道策略';
                 this.dialogMethod = this.changePlatformPolicy
