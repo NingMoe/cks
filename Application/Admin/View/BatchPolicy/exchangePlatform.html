@@ -29,6 +29,12 @@
     a{
         text-decoration: none !important;
     }
+    .check_all_box{
+        float: right;
+        position: absolute;
+        top: 80px;
+        left: 450px;
+    }
 </style>
 <body>
 <div class="container-fluid" style="margin-top: 10px">
@@ -55,7 +61,7 @@
     </div>
 </form>
 
-<div>
+<div class="check_all_box">
     <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
 </div>
 <div class="container-fluid" id="add-manage-popup" style="display:none;margin-left:20px;margin-top:20px;">
@@ -80,15 +86,14 @@
             <div class="layui-inline">
                 <label class="layui-form-label">比例</label>
                 <div class="layui-input-inline">
-                    <input name="ratio"  placeholder="请输入比例" class="layui-input" type="text" id="ratio">
+                    <input onKeyUp="globalFn.amount(this)" onBlur="globalFn.overFormat(this)"  name="ratio"  placeholder="请输入比例" class="layui-input" type="text" id="ratio">
                 </div>
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <button class="layui-btn" lay-submit="" lay-filter="policy_submit" id="policy_submit">提交</button>
-                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn" lay-submit="" lay-filter="policy_submit" id="policy_submit" style="margin-left:50px">提交</button>
             </div>
         </div>
 
@@ -101,8 +106,8 @@
         <tr>
             <th style="width:150px;" ><input id="all_pnumber" class='all_pnumber' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pnumber[]" value="">全选(料号)</th>
             <th >料号</th>
-            <th >兑换平台</th>
-            <th >比例</th>
+            <th style="border-right:none;width:400px" >兑换平台</th>
+            <th style="border-left:none;width:400px">比例</th>
         </tr>
         </thead>
         <tbody>
@@ -114,7 +119,7 @@
             <td><?php echo $key?></td>
             <td colspan="2">
                 <?php foreach($val[4] as $v):?>
-                <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>">  <?php echo $v['platform_name'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?></div>
+                <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>"><span style="width:100px;display:block;float: left"><?php echo $v['platform_name'];?></span><span style="margin-right:300px "></span><?php echo $v['policy_value'];?></div>
                 <?php endforeach;?>
             </td>
         </tr>
@@ -143,7 +148,7 @@
                 return false;
             };
             $('.del-tag').remove();
-            globalFn.lyPopup('添加兑换平台', ['700px', '580px'],'add-manage-popup',1);
+            globalFn.lyPopup('添加兑换平台', ['700px', '450px'],'add-manage-popup',1);
 
         });
         //模糊搜索
@@ -188,7 +193,7 @@
                 "<div class='layui-inline del-tag'>"+
                 "<label class='layui-form-label'>比例</label>" +
                 "<div class='layui-input-inline'>" +
-                "<input name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
+                "<input onKeyUp='globalFn.amount(this)' onBlur='globalFn.overFormat(this)' name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
                 "</div></div><a class='delete del-tag' href='#'></a>";
 
             $(".layui-form-item-insert").append(iptStr);
