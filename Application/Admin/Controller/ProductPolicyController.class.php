@@ -1,5 +1,6 @@
 <?php
 namespace Admin\Controller;
+use Admin\Model\BaseModel;
 use Admin\Model\ProductPolicyModel;
 
 /**
@@ -70,6 +71,24 @@ class ProductPolicyController extends BaseController
                 $initRes = ProductPolicyModel::initializePolicy($va);//初始化策略
 
             $uptRes = ProductPolicyModel::updateTnTypeFlagStatus($val['pnumber']);//更新tn_type表 flag
+            //策略初始化日志
+            ProductPolicyModel::policyLogRecord([
+                'operator' => BaseModel::username(),
+                'object_id' => $val['pnumber'],
+                'object_type' => 1,
+                'action' => '初始化策略',
+                'sql_type' => 'insert',
+                'created_at' => date('Y-m-d H:i:s', time()),
+            ]);
+            //更新 tn_type 写入日志
+            ProductPolicyModel::policyLogRecord([
+                'operator' => BaseModel::username(),
+                'object_id' => $val['pnumber'],
+                'object_type' => 1,
+                'action' => '策略初始化完成修改tn_type.flag',
+                'sql_type' => 'update',
+                'created_at' => date('Y-m-d H:i:s', time()),
+            ]);
         }
         //dump($initRes);
         //dump($uptRes);die;

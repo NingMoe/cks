@@ -5,7 +5,7 @@ namespace Admin\Model;
 
 class ProductPolicyModel extends  BaseModel{
 
-    public static $table = ['pn_type', 'policy', 'platform', 'channel' ];
+    public static $table = ['pn_type', 'policy', 'platform', 'channel', 'oplog' ];
 
     //型号是否存在
     public static function getPnTypeData($pname){
@@ -133,5 +133,14 @@ class ProductPolicyModel extends  BaseModel{
         ]);
     }
 
+    //日志记录
+    public static function policyLogRecord($data){
+
+        return BaseModel::addData([
+
+            'table' => self::$table[4],
+            'data' => $data,
+        ]);
+    }
 
 }
