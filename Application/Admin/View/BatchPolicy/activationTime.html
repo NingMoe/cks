@@ -83,7 +83,7 @@
         <div class="layui-inline">
             <label class="layui-form-label" style="width: 100px;">比例</label>
             <div class="layui-input-block">
-                <input type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
+                <input onKeyUp="globalFn.amount(this)" onBlur="globalFn.overFormat(this)" type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
             </div>
         </div>
     </div>

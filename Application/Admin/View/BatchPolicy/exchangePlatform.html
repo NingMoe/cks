@@ -86,7 +86,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">比例</label>
                 <div class="layui-input-inline">
-                    <input name="ratio"  placeholder="请输入比例" class="layui-input" type="text" id="ratio">
+                    <input onKeyUp="globalFn.amount(this)" onBlur="globalFn.overFormat(this)"  name="ratio"  placeholder="请输入比例" class="layui-input" type="text" id="ratio">
                 </div>
             </div>
         </div>
@@ -193,7 +193,7 @@
                 "<div class='layui-inline del-tag'>"+
                 "<label class='layui-form-label'>比例</label>" +
                 "<div class='layui-input-inline'>" +
-                "<input name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
+                "<input onKeyUp='globalFn.amount(this)' onBlur='globalFn.overFormat(this)' name='ratio' autocomplete='off' placeholder='请输入比例' class='layui-input' type='text'>" +
                 "</div></div><a class='delete del-tag' href='#'></a>";
 
             $(".layui-form-item-insert").append(iptStr);
