@@ -15,7 +15,8 @@ class ProductPolicyController extends BaseController
         ['status' => 0, 'msg' =>  '该产品不存在'],
         ['status' => 1, 'msg' =>  '请注意该产品型号存在新料号策略生成'],
         ['status' => 2, 'msg' =>  '策略生成成功'],
-        ['status' => 3, 'msg' =>  '策略生成失败,请重新生成']
+        ['status' => 3, 'msg' =>  '策略生成失败,请重新生成'],
+        ['status' => 4, 'msg' =>  '已存在策略，请进行搜索']
     ];
 
     public function index() {
@@ -37,6 +38,8 @@ class ProductPolicyController extends BaseController
 
         $finishedPnumber = ProductPolicyModel::getGeneratedPolicy($panme, 1); //已经生成的料号策略
         $planPnumber = ProductPolicyModel::getGeneratedPolicy($panme, 0); //准备生成的料号策略
+
+        if(!$planPnumber) $this->ajaxReturn($this->statusMsg[4]);
 
         //有型号 将料号生成策略 flag=0生成 flag=1已经生成
         //是否有已经生成的料号策略

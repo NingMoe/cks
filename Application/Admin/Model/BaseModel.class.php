@@ -36,7 +36,7 @@ class BaseModel extends  Model{
     @params []
     @return []
      **/
-    public static function getDbData($condition, $tag = true){
+    public static function getDbData($condition, $tag = true, $distinct=false){
 
         //p($condition);die;
         $condition['where'] = $condition['where'] ? $condition['where'] : null;
@@ -47,8 +47,8 @@ class BaseModel extends  Model{
 
 
         return $data = $tag
-            ? M($condition['table'])->where($condition['where'])->field($condition['fields'])->order($condition['order'])->select()
-            : M($condition['table'])->where($condition['where'])->field($condition['fields'])->find();
+            ? M($condition['table'])->distinct($distinct)->where($condition['where'])->field($condition['fields'])->order($condition['order'])->select()
+            : M($condition['table'])->distinct($distinct)->where($condition['where'])->field($condition['fields'])->find();
 
     }
 

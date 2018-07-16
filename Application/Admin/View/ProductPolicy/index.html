@@ -39,7 +39,7 @@
     </div>
 </div>
 <div class="container-fluid" id="add-manage-popup" style="margin-left:20px;">
-    <form class="layui-form layui-form-pane" action="">
+    <form class="layui-form layui-form-pane" action="" onkeydown="if(event.keyCode==13) return false;">
         <div class="layui-form-item">
             <div class="layui-input-inline">
                 <input id='product-model' name="pname" value="<?php echo $pname ?>" lay-verify="required" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
@@ -57,6 +57,7 @@
         <thead>
         <tr>
             <th  rowspan="3">料号</th>
+            <th  rowspan="3" style="width:100px">产品主策略比例</th>
             <th  colspan="3">出货时间</th>
             <th  colspan="3">激活时间</th>
             <th colspan="2">客户渠道</th>
@@ -80,6 +81,9 @@
         <?php foreach($data as $key=>$val):?>
         <tr>
             <td><?php echo $key;?></td>
+            <?php foreach($val[1] as $v):?>
+            <td><?php echo $v['policy_value'];?></td>
+            <?php endforeach;?>
 
             <td colspan="3">
 
@@ -186,6 +190,7 @@
                     }
 
                     if(data.status == 3)layer.msg(data.msg);
+                    if(data.status == 4)layer.msg(data.msg);
                     console.log(data.data);
                 });
                 return false;
