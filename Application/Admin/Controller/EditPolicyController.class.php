@@ -79,9 +79,17 @@ class EditPolicyController extends BaseController
             if (count($res) > 0) {
                 $this->error('兑换渠道已存在!');
             } else {
-                $policy['flag'] = 0;
+                $no_flag = array('7-1','7-2');
+                if (in_array($policy['platform'], $no_flag)) {
+                    $policy['flag'] = 0;
+                }
+                
                 $id = M('policy')->add($policy);
-                $policy = M('policy')->join('left join platform on policy.platform = platform.platform')->where(['policy.id' => $id])->find();
+                $policy = M('policy')->join('left join platform on policy.platform = platform.platform')
+                    ->where(['policy.id' => $id])
+                    ->field(['policy.id', 'pnumber', 'policy_type', 'policy_value', 'start_time', 'end_time',
+                        'policy.platform', 'platform_name', 'flag', 'channel', 'rate'])
+                    ->find();
                 $this->success('添加成功！', '', $policy);
             }
         } elseif ($policy['policy_type'] == 5) {
@@ -174,6 +182,4 @@ class EditPolicyController extends BaseController
         $res = M('channel')->field('channel_name as value')->where($where)->select();
         exit(json_encode($res,JSON_UNESCAPED_UNICODE));
     }
-
-    
 }

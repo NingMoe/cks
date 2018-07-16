@@ -22,7 +22,7 @@
   <el-dialog title="修改基础比例" :visible.sync="basicPolicyVisible" width="500px" center>
     <el-form label-width="120px">
       <el-form-item>
-        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :min="0"></el-input-number>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -39,7 +39,7 @@
     <el-table-column label="操作" width="200">
         <template slot-scope="scope">
           <el-button @click="showChangeOutTimePolicy(scope)" type="primary" size="small">修改</el-button>
-          <el-button @click="removeOutTimePolicy(scope)" type="danger" size="small">删除</el-button>
+          <el-button @click="removePolicy(scope, outTimePolicies)" type="danger" size="small">删除</el-button>
         </template>
     </el-table-column>
   </el-table>
@@ -54,7 +54,7 @@
         <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
       </el-form-item>
       <el-form-item label="比例">
-        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :min="0"></el-input-number>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -71,7 +71,7 @@
     <el-table-column label="操作" width="200">
       <template slot-scope="scope">
         <el-button @click="showChangeActivePolicy(scope)" type="primary" size="small">修改</el-button>
-        <el-button @click="removeActivePolicy(scope)" type="danger" size="small">删除</el-button>
+        <el-button @click="removePolicy(scope, activePolicies)" type="danger" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -86,7 +86,7 @@
         <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
       </el-form-item>
       <el-form-item label="比例">
-        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :min="0"></el-input-number>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -102,7 +102,7 @@
     <el-table-column label="操作" width="200">
       <template slot-scope="scope">
         <el-button @click="showChangeChannelPolicy(scope)" type="primary" size="small">修改</el-button>
-        <el-button @click="removeChannelPolicy(scope)" type="danger" size="small">删除</el-button>
+        <el-button @click="removePolicy(scope, channelPolicies)" type="danger" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -111,10 +111,10 @@
   <el-dialog :title="dialogTitle" :visible.sync="channelPolicyVisible" width="500px" center>
     <el-form label-width="80px">
       <el-form-item label="客户渠道">
-        <el-autocomplete v-model="channel" :fetch-suggestions="querySearchChannel" @select="handleSelectChannel" placeholder="请输入内容"  label-width="150px"></el-autocomplete>
+        <el-autocomplete v-model="channel" :fetch-suggestions="querySearchChannel" placeholder="请输入内容"  label-width="150px"></el-autocomplete>
       </el-form-item>
       <el-form-item label="比例">
-        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :min="0"></el-input-number>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -130,7 +130,7 @@
     <el-table-column label="操作" width="200">
       <template slot-scope="scope">
         <el-button @click="showChangePlatformPolicy(scope)" type="primary" size="small">修改</el-button>
-        <el-button @click="removePlatformPolicy(scope)" type="danger" size="small">删除</el-button>
+        <el-button @click="removePolicy(scope, platformPolicies)" type="danger" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -140,11 +140,11 @@
     <el-form label-width="80px">
       <el-form-item label="兑换渠道">
         <el-select v-model="platform" @change="getPlatformName" placeholder="请选择">
-          <el-option v-for="item in platform_list" :label="item.platform_name" :value="item.platform"></el-option>
+          <el-option v-for="item in platform_list" :key="item.id" :label="item.platform_name" :value="item.platform"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="比例">
-        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :min="0"></el-input-number>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -186,9 +186,32 @@
             }
         },
         created () {
-            axios.defaults.baseURL = "<?php webDomain().'/index.php/Admin/'?>";
+            axios.defaults.baseURL = "<?php echo webDomain().'/index.php/Admin/' ?>";
             axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
             axios.defaults.headers.post['X-Requested-With'] = 'xmlhttprequest';
+            axios.interceptors.response.use(response => {
+                if (response.data.hasOwnProperty('status')) {
+                    if (response.data.status === 1) {
+                        this.$message({
+                            message: response.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: response.data.info,
+                            type: 'error'
+                        });
+                    }
+                }
+                return response;
+            }, error => {
+                this.$message({
+                    message: error.message,
+                    type: 'error'
+                });
+                return Promise.reject(error);
+            });
+
             Date.prototype.format = function(fmt = 'yyyy-MM-dd hh:mm:ss') {
                 let o = {
                     "M+" : this.getMonth()+1,                 //月份
@@ -225,13 +248,9 @@
             },
             changeBasicPolicy () {
                 this.basicPolicy.policy_value = this.policy_value
-                axios.post("{:U('EditPolicy/changePolicy')}", this.basicPolicy).then(res => {
+                axios.post("EditPolicy/changePolicy", this.basicPolicy).then(res => {
                     if (res.data.status === 1) {
                         this.basicPolicyVisible = false;
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
                     }
                 });
             },
@@ -261,19 +280,10 @@
                         policy_type: 2,
                         policy_value: this.policy_value
                     }
-                    axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                    axios.post("EditPolicy/addPolicy", policy).then(res => {
                         if (res.data.status === 1) {
                             this.outTimePolicyVisible = false
                             this.outTimePolicies.push(res.data)
-                            this.$message({
-                                message: '添加成功！',
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
                         }
                     })
                 } else {
@@ -283,25 +293,16 @@
                     });
                 }
             },
-            removeOutTimePolicy (scope) {
+            removePolicy (scope, policies) {
                 this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
+                    axios.post("EditPolicy/removePolicy", scope.row).then(res => {
                         if (res.data.status === 1) {
-                            this.outTimePolicies.splice(scope.$index, 1);
-                            this.$message({
-                                message: res.data.info,
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
+                            policies.splice(scope.$index, 1);
                         }
                     })
                 })
@@ -320,21 +321,10 @@
                 this.policy.start_time = this.start_time.format()
                 this.policy.end_time = this.end_time.format()
                 this.policy.policy_value = this.policy_value
-                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
                     if (res.data.status === 1) {
-                        //先删除再添加
-                        this.outTimePolicies.splice(this.$index, 1)
-                        this.outTimePolicies.push(this.policy)
+                        this.platformPolicies[this.$index] = this.policy
                         this.outTimePolicyVisible = false;
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
                     }
                 });
             },
@@ -364,19 +354,10 @@
                         policy_type: 3,
                         policy_value: this.policy_value
                     }
-                    axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                    axios.post("EditPolicy/addPolicy", policy).then(res => {
                         if (res.data.status === 1) {
                             this.activePolicyVisible = false
                             this.activePolicies.push(res.data)
-                            this.$message({
-                                message: '添加成功！',
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
                         }
                     })
                 } else {
@@ -387,29 +368,6 @@
                 }
             },
 
-            removeActivePolicy (scope) {
-                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
-                        if (res.data.status === 1) {
-                            this.activePolicies.splice(scope.$index, 1);
-                            this.$message({
-                                message: res.data.info,
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
-                        }
-                    })
-                })
-            },
             showChangeActivePolicy (scope) {
                 this.policy = scope.row
                 this.$index = scope.$index
@@ -424,21 +382,10 @@
                 this.policy.start_time = this.start_time.format()
                 this.policy.end_time = this.end_time.format()
                 this.policy.policy_value = this.policy_value
-                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
                     if (res.data.status === 1) {
-                        //先删除再添加
-                        this.activePolicies.splice(this.$index, 1)
-                        this.activePolicies.push(this.policy)
+                        this.platformPolicies[this.$index] = this.policy
                         this.activePolicyVisible = false;
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'error'
-                        });
                     }
                 });
             },
@@ -458,6 +405,7 @@
                         message: '请选择客户渠道！',
                         type: 'error'
                     });
+                    return false
                 }
                 let policy = {
                     pnumber: this.basicPolicy.pnumber,
@@ -465,46 +413,14 @@
                     policy_type: 5,
                     policy_value: this.policy_value
                 }
-                axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                axios.post("EditPolicy/addPolicy", policy).then(res => {
                     if (res.data.status === 1) {
                         this.channelPolicyVisible = false
                         this.channelPolicies.push(res.data)
-                        this.$message({
-                            message: '添加成功！',
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'error'
-                        });
                     }
                 })
             },
 
-            removeChannelPolicy (scope) {
-                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
-                        if (res.data.status === 1) {
-                            this.channelPolicies.splice(scope.$index, 1);
-                            this.$message({
-                                message: res.data.info,
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
-                        }
-                    })
-                })
-            },
             showChangeChannelPolicy (scope) {
                 this.policy = scope.row
                 this.$index = scope.$index
@@ -517,43 +433,21 @@
             changeChannelPolicy () {
                 this.policy.channel = this.channel
                 this.policy.policy_value = this.policy_value
-                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
                     if (res.data.status === 1) {
-                        //先删除再添加
-                        this.channelPolicies.splice(this.$index, 1)
-                        this.channelPolicies.push(this.policy)
+                        this.platformPolicies[this.$index] = this.policy
                         this.channelPolicyVisible = false;
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'error'
-                        });
                     }
                 });
             },
-            querySearchChannel(queryString, cb) {
-              if (!queryString) {return};
-                //var list = [{}];
-                 //调用的后台接口
-                let url = "{:U('EditPolicy/queryChannel')}" +'?channel='+queryString;
-                 //从后台获取到对象数组
-                axios.get( url ).then((response)=>{
-                    //在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
-                    cb(response.data);
-                }).catch((error)=>{
-                    //console.log(error);
-                });
+            querySearchChannel (queryString, cb) {
+              if (!queryString) {return}
+              let url = "EditPolicy/queryChannel?channel="+queryString;
+              axios.get(url).then((response)=>{
+                  //在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+                  cb(response.data);
+              });
             },
-            handleSelectChannel(item) {
-                //console.log(item);
-                //do something
-            },
-
-
 
             //-------------------------------------------兑换渠道-------------------------------------------
             showAddPlatformPolicy () {
@@ -564,11 +458,12 @@
                 this.platformPolicyVisible = true
             },
             addPlatformPolicy () {
-                if (!this.channel) {
+                if (!this.platform) {
                     this.$message({
                         message: '请选择兑换渠道！',
                         type: 'error'
                     });
+                    return false;
                 }
                 let policy = {
                     pnumber: this.basicPolicy.pnumber,
@@ -576,50 +471,19 @@
                     policy_type: 4,
                     policy_value: this.policy_value
                 }
-                axios.post("{:U('EditPolicy/addPolicy')}", policy).then(res => {
+                axios.post("EditPolicy/addPolicy", policy).then(res => {
                     if (res.data.status === 1) {
                         this.platformPolicyVisible = false
                         this.platformPolicies.push(res.data)
-                        this.$message({
-                            message: '添加成功！',
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'error'
-                        });
                     }
                 })
             },
 
-            removePlatformPolicy (scope) {
-                this.$confirm('此操作将永久删除该策略, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                    center: true
-                }).then(() => {
-                    axios.post("{:U('EditPolicy/removePolicy')}", scope.row).then(res => {
-                        if (res.data.status === 1) {
-                            this.platformPolicies.splice(scope.$index, 1);
-                            this.$message({
-                                message: res.data.info,
-                                type: 'success'
-                            });
-                        } else {
-                            this.$message({
-                                message: res.data.info,
-                                type: 'error'
-                            });
-                        }
-                    })
-                })
-            },
             showChangePlatformPolicy (scope) {
                 this.policy = scope.row
                 this.$index = scope.$index
                 this.platform = this.policy.platform
+                this.platform_name = this.policy.platform_name
                 this.policy_value = this.policy.policy_value
                 this.dialogTitle = '修改兑换渠道策略';
                 this.dialogMethod = this.changePlatformPolicy
@@ -629,28 +493,15 @@
                 this.policy.platform = this.platform
                 this.policy.policy_value = this.policy_value
                 this.policy.platform_name = this.platform_name
-                axios.post("{:U('EditPolicy/changePolicy')}", this.policy).then(res => {
+                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
                     if (res.data.status === 1) {
-                        //先删除再添加
-                        this.platformPolicies.splice(this.$index, 1)
-                        this.platformPolicies.push(this.policy)
+                        this.platformPolicies[this.$index] = this.policy
                         this.platformPolicyVisible = false;
-                        this.$message({
-                            message: res.data.info,
-                            type: 'success'
-                        });
-                    } else {
-                        this.$message({
-                            message: res.data.info,
-                            type: 'error'
-                        });
                     }
                 });
             },
             getPlatformName(platform){
-                //这个vId也就是value值
-                let obj = {};
-                obj = this.platform_list.find((item)=>{
+                let obj = this.platform_list.find((item)=>{
                     //这里的userList就是上面遍历的数据源
                     return item.platform === platform;//筛选出匹配数据
                 });
