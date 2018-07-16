@@ -128,7 +128,8 @@ class EditPolicyController extends BaseController
             if (count($res) > 0) {
                 $this->error('兑换渠道已存在!');
             } else {
-                M('policy')->join('left join platform on policy.platform = platform.platform')->where(['id' => $policy['id']])->save($policy);
+                M('policy')->where(['id' => $policy['id']])->save($policy);
+                //M('policy')->join('left join platform on policy.platform = platform.platform')->where(['id' => $policy['id']])->find();
                 $this->success('修改成功！');
             }
             
