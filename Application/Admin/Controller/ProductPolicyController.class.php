@@ -72,9 +72,9 @@ class ProductPolicyController extends BaseController
 
             $uptRes = ProductPolicyModel::updateTnTypeFlagStatus($val['pnumber']);//更新tn_type表 flag
             //策略初始化日志
-            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 1, '初始化策略', 'insert'));
+            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 'pnumber', '初始化策略', 'insert'));
             //更新 tn_type 写入日志
-            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 1, '策略初始化完成修改tn_type.flag', 'update'));
+            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 'pnumber', '策略初始化完成修改tn_type.flag', 'update'));
         }
         //dump($initRes);
         //dump($uptRes);die;
@@ -156,7 +156,7 @@ class ProductPolicyController extends BaseController
         ProductPolicyModel::updateExchangePlatformPolicy(I('post.policyId'), I('post.flag'));//修改
 
         //更新 policyflag 写入日志
-        ProductPolicyModel::policyLogRecord($this->logRecordParm(I('post.policyId'), 0, '修改兑换平台是否沿用前策略', 'update'));
+        ProductPolicyModel::policyLogRecord($this->logRecordParm(I('post.policyId'), 'policy_id', '修改兑换平台是否沿用前策略', 'update'));
 
         $this->ajaxReturn(1);
 
@@ -164,7 +164,7 @@ class ProductPolicyController extends BaseController
 
     //日志参数
     private function logRecordParm($object_id, $object_type, $action, $sql_type){
-        
+
         return [
             'operator' => BaseModel::username(),
             'object_id' => $object_id,
