@@ -108,7 +108,7 @@
             </td>
             <td colspan="3">
                 <?php foreach($val[3] as $v):?>
-                <div class="main-policy div-border">
+                <div class="main-policy div-border" <?php if(count($val[3]) ==1):?>style="border-bottom:none;"<?php endif;?>>
                     <span class="left"> <?php echo date('Y-m-d H',strtotime($v['start_time'])).'时';?> </span>
                     <span class="center"><?php echo date('Y-m-d H',strtotime($v['end_time'])).'时';?></span>
                     <span class="right"> <?php echo $v['policy_value'];?> </span>
@@ -117,7 +117,7 @@
             </td>
             <td colspan="2">
                 <?php foreach($val[5] as $v):?>
-                <div class="main-policy div-border">
+                <div class="main-policy div-border" <?php if(count($val[5]) ==1):?>style="border-bottom:none;"<?php endif;?>>
                     <span class="left"><?php echo $v['channel'];?> </span>
                     <span class="center"></span>
                     <span class="right"><?php echo $v['policy_value'];?></span>

@@ -43,6 +43,9 @@
 <script type="text/javascript" src="__PUBLIC__/js/login.js"></script>
 <script type="text/javascript" src="__PUBLIC__/js/jparticle.jquery.js"></script>
 <script type="text/javascript">
+    if(window !=top){
+        top.location.href=location.href;
+    }
     //预加载
     function   fresh() {
         if(location.href.indexOf("?reload=true")<0)
