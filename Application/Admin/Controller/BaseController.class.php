@@ -19,7 +19,7 @@ class BaseController extends Controller
         parent::__construct();
 
         if(empty($_SESSION['adminInfo']) && ACTION_NAME != 'checkUnamePsw') {
-            $this->display('login');
+            $this->display('Index/login');
             exit;
         }
 

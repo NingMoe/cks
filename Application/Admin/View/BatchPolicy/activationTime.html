@@ -40,7 +40,7 @@
 </div>
 
 <div class="container-fluid" id="add-manage-popup" style="margin-left:20px;">
-    <form>
+    <form onkeydown="if(event.keyCode==13) return false;">
         <div class="layui-form-item">
             <label class="layui-form-label" style="width: 100px;">产品型号</label>
             <div class="layui-input-inline">
@@ -54,7 +54,7 @@
         </div>
     </form>
 
-<form class="layui-form" action="">
+<form class="layui-form" action="" onkeydown="if(event.keyCode==13) return false;">
 
     <div class="layui-form-item">
         <div class="layui-inline">

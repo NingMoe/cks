@@ -41,7 +41,7 @@
 </div>
 
 
-<form>
+<form onkeydown="if(event.keyCode==13) return false;">
     <div class="layui-form-item">
         <label class="layui-form-label" style="width: 100px;">产品型号</label>
         <div class="layui-input-inline">
@@ -59,7 +59,7 @@
     <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
 </div>
 <div class="container-fluid" id="add-manage-popup" style="display:none;margin-left:20px;margin-top:20px;">
-    <form class="layui-form" action="">
+    <form class="layui-form" action="" onkeydown="if(event.keyCode==13) return false;">
         <i id="add-channel" class="layui-icon" style="float:right;font-size: 20px;margin-top:-5px;cursor:pointer">&#xe654;</i>
         <div class="layui-form-item layui-form-item-insert">
             <div class="layui-inline">

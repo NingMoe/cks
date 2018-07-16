@@ -83,7 +83,7 @@ class ProductPolicyModel extends  BaseModel{
             'fields' => ['pname'],
             'where' => [ 'pname' => ['like', "%".$pname."%"]  ],
 
-        ]), 'field' =>'pname'];
+        ], true, true), 'field' =>'pname'];
 
     }
 
