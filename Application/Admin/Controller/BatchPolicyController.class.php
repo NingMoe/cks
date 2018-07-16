@@ -18,19 +18,8 @@ class BatchPolicyController extends BaseController
 
     public function test()
     {
-        $count = M('policy')->group('pnumber')->select();
-        p($count);die();
-        $channels = [
-            ['JD', 1.2],
-            ['Suning', 1.0],
-            ['Phicomm', 1.5],
-        ];
-        $columes = array_column($channels, 0);
-        foreach ($channels as $channel) {
-            echo $channel['0'];
-            echo $channel['1'];
-        }
-        p($columes);die();
+        $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+        p($pnumbers);die();
     }
 
     //出货时间策略
@@ -43,21 +32,23 @@ class BatchPolicyController extends BaseController
     //提交批量更新出货时间策略
     public function batchModifyShipingSubmit()
     {
-        //p($_POST);die;
         $policyIds = $_POST['policy_ids'];
         $start = $_POST['start_time'];
         $end = $_POST['end_time'];
         $value = $_POST['policy_value'];
         //全选所有型号
         if ($_POST['tag'] == 1) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->where(['policy_type' => 2, 'status' => 1])->getField('pnumber',true);
+            BaseModel::log($pnumbers, 'pnumber', '批量出货时间策略冲突删除', 'delete');
+
             //删除所有出货时间策略，状态改为已删除
             M('policy')->where(['policy_type' => 2, 'status' => 1])->setField('status', 0);
 
             //批量增加出货时间策略
-            $policies = M()->query('select distinct pnumber from policy');
-            foreach ($policies as $policy) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+            foreach ($pnumbers as $pnumber) {
                 $dataList[] = array(
-                    'pnumber'=>$policy['pnumber'],
+                    'pnumber' => $pnumber,
                     'policy_type'=> 2,
                     'policy_value'=> $value,
                     'start_time'=> $start,
@@ -65,7 +56,7 @@ class BatchPolicyController extends BaseController
                 );
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量出货时间策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -89,6 +80,7 @@ class BatchPolicyController extends BaseController
                 );
             }
             $res = M('policy')->addAll($dataList);
+            BaseModel::log($pnumbers, 'pnumber', '新增批量出货时间策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -109,10 +101,9 @@ class BatchPolicyController extends BaseController
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
-        foreach ($conflict as $item) {
-            $id = $item['id'];
-            M('policy')->where("id = $id")->setField('status', 0);
-        }
+        $conflict_ids = array_column($conflict, 'id');
+        M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->setField('status', 0);
+        BaseModel::log($conflict_ids, 'policy_id', '出货时间策略冲突删除', 'delete');
 
         //批量增加出货时间策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));
@@ -127,7 +118,7 @@ class BatchPolicyController extends BaseController
             );
         }
         $res = M('policy')->addAll($dataList);
-        //TODO 记录日志
+        BaseModel::log($pnumbers, 'pnumber', '新增批量出货时间策略', 'insert');
         if($res) {
             $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
@@ -150,14 +141,17 @@ class BatchPolicyController extends BaseController
         $value = $_POST['policy_value'];
         //全选所有型号
         if ($_POST['tag'] == 1) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->where(['policy_type' => 3, 'status' => 1])->getField('pnumber',true);
+            BaseModel::log($pnumbers, 'pnumber', '批量激活时间策略冲突删除', 'delete');
+
             //删除所有激活时间策略，状态改为已删除
             M('policy')->where(['policy_type' => 3, 'status' => 1])->setField('status', 0);
 
             //批量增加激活时间策略
-            $policies = M()->query('select distinct pnumber from policy');
-            foreach ($policies as $policy) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+            foreach ($pnumbers as $pnumber) {
                 $dataList[] = array(
-                    'pnumber'=>$policy['pnumber'],
+                    'pnumber'=>$pnumber,
                     'policy_type'=> 3,
                     'policy_value'=> $value,
                     'start_time'=> $start,
@@ -165,7 +159,7 @@ class BatchPolicyController extends BaseController
                 );
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量激活时间策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -190,6 +184,7 @@ class BatchPolicyController extends BaseController
             }
             $res = M('policy')->addAll($dataList);
             //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量激活时间策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -210,10 +205,9 @@ class BatchPolicyController extends BaseController
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPolicyTime($policies, $start, $end);
         //删除冲突的时间策略，状态改为已删除
-        foreach ($conflict as $item) {
-            $id = $item['id'];
-            M('policy')->where("id = $id")->setField('status', 0);
-        }
+        $conflict_ids = array_column($conflict, 'id');
+        M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->setField('status', 0);
+        BaseModel::log($conflict_ids, 'policy_id', '激活时间策略冲突删除', 'delete');
 
         //批量增加激活时间策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
@@ -228,7 +222,7 @@ class BatchPolicyController extends BaseController
             );
         }
         $res = M('policy')->addAll($dataList);
-        //TODO 记录日志
+        BaseModel::log($pnumbers, 'pnumber', '新增批量激活时间策略', 'insert');
         if($res) {
             $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
@@ -250,16 +244,19 @@ class BatchPolicyController extends BaseController
         $platforms = $_POST['platforms'];//[platform, value]数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->where(['policy_type' => 4, 'status' => 1])->getField('pnumber',true);
+            BaseModel::log($pnumbers, 'pnumber', '批量兑换平台策略冲突删除', 'delete');
+
             //删除所有兑换平台策略，状态改为已删除
             M('policy')->where(['policy_type' => 4, 'status' => 1])->setField('status', 0);
 
             //批量增加激活时间策略
-            $policies = M()->query('select distinct pnumber from policy');
-            foreach ($policies as $policy) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+            foreach ($pnumbers as $pnumber) {
                 //多组平台策略，双层循环
                 foreach ($platforms as $platform) {
                     $dataList[] = array(
-                        'pnumber'=>$policy['pnumber'],
+                        'pnumber'=>$pnumber,
                         'policy_type'=> 4,
                         'platform'=> $platform[0],
                         'policy_value'=> $platform[1],
@@ -268,7 +265,7 @@ class BatchPolicyController extends BaseController
                 }
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量兑换平台策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -295,7 +292,7 @@ class BatchPolicyController extends BaseController
                 }
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量兑换平台策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -315,10 +312,9 @@ class BatchPolicyController extends BaseController
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkPlatform($policies, array_column($platforms, 0));
         //删除冲突的平台策略，状态改为已删除
-        foreach ($conflict as $item) {
-            $id = $item['id'];
-            M('policy')->where("id = $id")->setField('status', 0);
-        }
+        $conflict_ids = array_column($conflict, 'id');
+        M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->setField('status', 0);
+        BaseModel::log($conflict_ids, 'policy_id', '兑换平台策略冲突删除', 'delete');
 
         //批量增加平台策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
@@ -335,7 +331,7 @@ class BatchPolicyController extends BaseController
             }
         }
         $res = M('policy')->addAll($dataList);
-        //TODO 记录日志
+        BaseModel::log($pnumbers, 'pnumber', '新增批量兑换平台策略', 'insert');
         if($res) {
             $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
@@ -356,16 +352,19 @@ class BatchPolicyController extends BaseController
         $channels = $_POST['channels'];//[channel, value]数组
         //全选所有型号
         if ($_POST['tag'] == 1) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->where(['policy_type' => 5, 'status' => 1])->getField('pnumber',true);
+            BaseModel::log($pnumbers, 'pnumber', '批量客户渠道策略冲突删除', 'delete');
+
             //删除所有兑换平台策略，状态改为已删除
             M('policy')->where(['policy_type' => 5, 'status' => 1])->setField('status', 0);
 
             //批量增加激活时间策略
-            $policies = M()->query('select distinct pnumber from policy');
-            foreach ($policies as $policy) {
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+            foreach ($pnumbers as $pnumber) {
                 //多组渠道策略，双层循环
                 foreach ($channels as $channel) {
                     $dataList[] = array(
-                        'pnumber'=>$policy['pnumber'],
+                        'pnumber'=>$pnumber,
                         'policy_type'=> 5,
                         'policy_value'=> $channel[1],
                         'channel'=> $channel[0],
@@ -373,7 +372,7 @@ class BatchPolicyController extends BaseController
                 }
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量客户渠道策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -381,10 +380,8 @@ class BatchPolicyController extends BaseController
             }
         }
 
-        //p($policyIds);die;
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, array_column($channels, 0));
-        //p($conflict);die;
         if(empty($conflict))
         {
             //批量增加客户渠道策略
@@ -401,7 +398,7 @@ class BatchPolicyController extends BaseController
                 }
             }
             $res = M('policy')->addAll($dataList);
-            //TODO 记录日志
+            BaseModel::log($pnumbers, 'pnumber', '新增批量客户渠道策略', 'insert');
             if($res) {
                 $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
             } else {
@@ -421,10 +418,9 @@ class BatchPolicyController extends BaseController
         $policies = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->select();
         $conflict = BaseModel::checkChannel($policies, array_column($channels, 0));
         //删除冲突的平台策略，状态改为已删除
-        foreach ($conflict as $item) {
-            $id = $item['id'];
-            M('policy')->where("id = $id")->setField('status', 0);
-        }
+        $conflict_ids = array_column($conflict, 'id');
+        M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->setField('status', 0);
+        BaseModel::log($conflict_ids, 'policy_id', '客户渠道策略冲突删除', 'delete');
 
         //批量增加平台策略
         $pnumbers = array_unique(array_column($policies, 'pnumber'));//去重
@@ -440,7 +436,7 @@ class BatchPolicyController extends BaseController
             }
         }
         $res = M('policy')->addAll($dataList);
-        //TODO 记录日志
+        BaseModel::log($pnumbers, 'pnumber', '新增批量客户渠道策略', 'insert');
         if($res) {
             $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {

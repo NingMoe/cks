@@ -36,9 +36,10 @@ class KcodeProduceController extends BaseController
     public function  index(){
         //需要导入的页面显示字段
         $this->assign('kcodeImportFields', SystemKeysModel:: getSystemKeys('kcodeImportFields','key2 asc'));
+        //p(SystemKeysModel:: getSystemKeys('kcodeImportFields','key2 asc'));die;
 
         //导入渠道策略选择
-        $this->assign('channelCheckBox', SystemKeysModel:: getSystemKeys('channelCheckBox','key2 asc'));
+        //$this->assign('channelCheckBox', SystemKeysModel:: getSystemKeys('channelCheckBox','key2 asc'));
 
         //需要导入的比例页面显示
         //$this->assign('importRestrictions', SystemKeysModel:: getSystemKeys('importRestrictions','key2 asc'));
@@ -77,7 +78,7 @@ class KcodeProduceController extends BaseController
 
         $pdata = json_decode($_POST['data'],true);
         $this->verifyPnumberByPname(trim($pdata['pnumber']), trim($pdata['pname']));//验证料号和名称是否对应
-        $postData = $this->checkPost($pdata, $_POST['channel_policy']);//待添加数据
+        $postData = $this->checkPost($pdata);//待添加数据
 
         set_time_limit(1000);
         ini_set ('memory_limit', '-1');
@@ -103,10 +104,10 @@ class KcodeProduceController extends BaseController
 
                 $postData['secretcd'] =$this->createKcode('am');
 
-                if($pdata['pname'] == 'N1' || $postData['pname'] == 'N1M')
+                if($pdata['pname'] == 'N1' || $postData['pname'] == 'N1M' || $pdata['pname'] == 'K3-D1')
                     $postData['hcode'] ='BD'.$this->createKcode('BD');
 
-                $sql .= "{$postData['im_model']}\t{$postData['im_pnumber']}\t{$postData['im_time']}\t{$postData['im_staff']}\t{$postData['pmoney']}\t{$postData['close_time']}\t{$postData['status']}\t{$postData['readdress']}\t{$postData['channel_policy']}\t{$postData['clearcd']}\t{$postData['secretcd']}\t{$postData['hcode']}";
+                $sql .= "{$postData['im_model']}\t{$postData['im_pnumber']}\t{$postData['im_time']}\t{$postData['im_staff']}\t{$postData['pmoney']}\t{$postData['close_time']}\t{$postData['status']}\t{$postData['readdress']}\t{$postData['clearcd']}\t{$postData['secretcd']}\t{$postData['hcode']}";
 
                 fwrite($fhandler, $sql . "\r\n");
                 unset($sql);
@@ -114,7 +115,7 @@ class KcodeProduceController extends BaseController
 
             try {
 
-            $pdoExecSql = "LOAD DATA local INFILE '".$_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.')."' INTO TABLE `relation` (`im_model`, `im_pnumber`, `im_time`, `im_staff`, `pmoney`, `close_time`, `status`, `readdress`,`channel_policy`, `clearcd`, `secretcd`, `hcode`);";
+            $pdoExecSql = "LOAD DATA local INFILE '".$_SERVER['DOCUMENT_ROOT'].ltrim($sqlFile,'.')."' INTO TABLE `relation` (`im_model`, `im_pnumber`, `im_time`, `im_staff`, `pmoney`, `close_time`, `status`, `readdress`,`clearcd`, `secretcd`, `hcode`);";
 
             $res = KcodeProduceModel::pdoConnect()->exec($pdoExecSql);
 
@@ -131,7 +132,7 @@ class KcodeProduceController extends BaseController
     }
 
     //数据整合
-    public function checkPost($pdata, $channelPolicy){
+    public function checkPost($pdata){
 
         $data['im_model'] = trim($pdata['pname']);
         $data['im_pnumber'] = trim($pdata['pnumber']);
@@ -141,7 +142,7 @@ class KcodeProduceController extends BaseController
         $data['close_time'] = 999;
         $data['status'] = 0;
         $data['readdress'] = '';
-        $data['channel_policy'] = rtrim($channelPolicy,',');
+        //$data['channel_policy'] = rtrim($channelPolicy,',');
 
         return $data;
     }
