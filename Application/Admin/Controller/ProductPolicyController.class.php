@@ -72,23 +72,9 @@ class ProductPolicyController extends BaseController
 
             $uptRes = ProductPolicyModel::updateTnTypeFlagStatus($val['pnumber']);//更新tn_type表 flag
             //策略初始化日志
-            ProductPolicyModel::policyLogRecord([
-                'operator' => BaseModel::username(),
-                'object_id' => $val['pnumber'],
-                'object_type' => 1,
-                'action' => '初始化策略',
-                'sql_type' => 'insert',
-                'created_at' => date('Y-m-d H:i:s', time()),
-            ]);
+            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 1, '初始化策略', 'insert'));
             //更新 tn_type 写入日志
-            ProductPolicyModel::policyLogRecord([
-                'operator' => BaseModel::username(),
-                'object_id' => $val['pnumber'],
-                'object_type' => 1,
-                'action' => '策略初始化完成修改tn_type.flag',
-                'sql_type' => 'update',
-                'created_at' => date('Y-m-d H:i:s', time()),
-            ]);
+            ProductPolicyModel::policyLogRecord($this->logRecordParm($val['pnumber'], 1, '策略初始化完成修改tn_type.flag', 'update'));
         }
         //dump($initRes);
         //dump($uptRes);die;
@@ -167,8 +153,26 @@ class ProductPolicyController extends BaseController
     //修改兑换平台策略
     public function updateExchangePlatformPolicy(){
 
-        $this->ajaxReturn(ProductPolicyModel::updateExchangePlatformPolicy(I('post.policyId'), I('post.flag')));
+        ProductPolicyModel::updateExchangePlatformPolicy(I('post.policyId'), I('post.flag'));//修改
 
+        //更新 policyflag 写入日志
+        ProductPolicyModel::policyLogRecord($this->logRecordParm(I('post.policyId'), 0, '修改兑换平台是否沿用前策略', 'update'));
+
+        $this->ajaxReturn(1);
+
+    }
+
+    //日志参数
+    private function logRecordParm($object_id, $object_type, $action, $sql_type){
+        
+        return [
+            'operator' => BaseModel::username(),
+            'object_id' => $object_id,
+            'object_type' => $object_type,
+            'action' => $action,
+            'sql_type' => $sql_type,
+            'created_at' => date('Y-m-d H:i:s', time()),
+        ];
     }
 
 
