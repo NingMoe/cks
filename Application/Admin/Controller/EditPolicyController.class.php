@@ -62,6 +62,7 @@ class EditPolicyController extends BaseController
                 $this->error('时间冲突!');
             } else {
                 $id = M('policy')->add($policy);
+                BaseModel::log([$id], 'policy_id', '新增策略', 'insert');
                 $policy = M('policy')->where(['id' => $id])->find();
                 $this->success('添加成功！', '', $policy);
             }
@@ -72,6 +73,7 @@ class EditPolicyController extends BaseController
             } else {
                 $id = M('policy')->add($policy);
                 $policy = M('policy')->where(['id' => $id])->find();
+                BaseModel::log([$id], 'policy_id', '新增策略', 'insert');
                 $this->success('添加成功！', '', $policy);
             }
         } elseif ($policy['policy_type'] == 4) {
@@ -85,6 +87,7 @@ class EditPolicyController extends BaseController
                 }
                 
                 $id = M('policy')->add($policy);
+                BaseModel::log([$id], 'policy_id', '新增策略', 'insert');
                 $policy = M('policy')->join('left join platform on policy.platform = platform.platform')
                     ->where(['policy.id' => $id])
                     ->field(['policy.id', 'pnumber', 'policy_type', 'policy_value', 'start_time', 'end_time',
@@ -98,6 +101,7 @@ class EditPolicyController extends BaseController
                 $this->error('客户渠道已存在!');
             } else {
                 $id = M('policy')->add($policy);
+                BaseModel::log([$id], 'policy_id', '新增策略', 'insert');
                 $policy = M('policy')->where(['id' => $id])->find();
                 $this->success('添加成功！', '', $policy);
             }
@@ -113,6 +117,7 @@ class EditPolicyController extends BaseController
         $policies = M('policy')->where("pnumber = {$policy['pnumber']} and policy_type = {$policy['policy_type']} and status = 1 and id <> {$policy['id']}")->select();
         if ($policy['policy_type'] == 1) {
             M('policy')->where(['id' => $policy['id']])->save($policy);
+            BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
             $this->success('修改成功！');
         } elseif ($policy['policy_type'] == 2) {
             $res = BaseModel::checkPolicyTime($policies, $policy['start_time'], $policy['end_time']);
@@ -120,6 +125,7 @@ class EditPolicyController extends BaseController
                 $this->error('时间冲突!');
             } else {
                 M('policy')->where(['id' => $policy['id']])->save($policy);
+                BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
                 $this->success('修改成功！');
             }
         } elseif ($policy['policy_type'] == 3) {
@@ -128,6 +134,7 @@ class EditPolicyController extends BaseController
                 $this->error('时间冲突!');
             } else {
                 M('policy')->where(['id' => $policy['id']])->save($policy);
+                BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
                 $this->success('修改成功！');
             }
         } elseif ($policy['policy_type'] == 4) {
@@ -138,7 +145,7 @@ class EditPolicyController extends BaseController
                 $this->error('兑换渠道已存在!');
             } else {
                 M('policy')->where(['id' => $policy['id']])->save($policy);
-                //M('policy')->join('left join platform on policy.platform = platform.platform')->where(['id' => $policy['id']])->find();
+                BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
                 $this->success('修改成功！');
             }
             
@@ -150,6 +157,7 @@ class EditPolicyController extends BaseController
                 $this->error('客户渠道已存在!');
             } else {
                 M('policy')->where(['id' => $policy['id']])->save($policy);
+                BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
                 $this->success('修改成功！');
             }
             
@@ -166,6 +174,7 @@ class EditPolicyController extends BaseController
             $this->error('策略数不能小于1');
         }
         M('policy')->where(['id' => $policy['id']])->setField('status', 0);
+        BaseModel::log([$policy['id']], 'policy_id', '删除策略', 'delete');
         $this->success('删除成功！');
     }
 

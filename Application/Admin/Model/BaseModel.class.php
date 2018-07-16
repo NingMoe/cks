@@ -315,10 +315,10 @@ class BaseModel extends  Model{
 
     /**
      * 记录操作日志，单条操作记录策略id，批量操作记录料号
-     * @param $object_ids 料号或者策略id数组
-     * @param $object_type 操作对象类型，批量操作时为pnumber，单个操作为policy_id
-     * @param $action 用户操作如：生成策略，批量添加出货时间
-     * @param $sql_type 数据库操作类型：insert update delete
+     * @param $object_ids array 料号或者策略id数组
+     * @param $object_type string 操作对象类型，批量操作时为pnumber，单个操作为policy_id
+     * @param $action string 用户操作如：生成策略，批量添加出货时间
+     * @param $sql_type string 数据库操作类型：insert update delete
      */
 
     public static function log($object_ids, $object_type, $action, $sql_type){
