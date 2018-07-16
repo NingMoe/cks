@@ -263,7 +263,7 @@ class BatchPolicyController extends BaseController
                         'policy_type'=> 4,
                         'platform'=> $platform[0],
                         'policy_value'=> $platform[1],
-                        'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
+                        'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
                     );
                 }
             }
@@ -290,7 +290,7 @@ class BatchPolicyController extends BaseController
                         'policy_type'=> 4,
                         'platform'=> $platform[0],
                         'policy_value'=> $platform[1],
-                        'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
+                        'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
                     );
                 }
             }
@@ -330,7 +330,7 @@ class BatchPolicyController extends BaseController
                     'policy_type'=> 4,
                     'platform'=> $platform[0],
                     'policy_value'=> $platform[1],
-                    'flag'=> in_array(static::$innerPlatforms, $platform[0]) ? 1 : 0,
+                    'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
                 );
             }
         }
