@@ -28,6 +28,17 @@
     a{
         text-decoration: none !important;
     }
+
+    .div-border {border-bottom:1px solid #ccc; }
+    .left {
+        float: left;
+    }
+    .right {
+        float: right;
+    }
+    .center{
+        margin-left: 30px;
+    }
 </style>
 
 <body>
@@ -88,22 +99,38 @@
             <td colspan="3">
 
                 <?php foreach($val[2] as $v):?>
-                <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <div class="main-policy div-border" <?php if(count($val[2]) ==1):?>style="border-bottom:none;"<?php endif;?>>
+                    <span class="left"><?php echo date('Y-m-d H',strtotime($v['start_time'])).'时';?> </span>
+                    <span class="center" ><?php echo date('Y-m-d H',strtotime($v['end_time'])).'时';?></span>
+                    <span class="right"> <?php echo $v['policy_value'];?> </span>
+                </div><br/>
                 <?php endforeach;?>
             </td>
             <td colspan="3">
                 <?php foreach($val[3] as $v):?>
-                    <?php echo $v['start_time'];?><span style="margin-right:100px "></span><?php echo $v['end_time'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <div class="main-policy div-border">
+                    <span class="left"> <?php echo date('Y-m-d H',strtotime($v['start_time'])).'时';?> </span>
+                    <span class="center"><?php echo date('Y-m-d H',strtotime($v['end_time'])).'时';?></span>
+                    <span class="right"> <?php echo $v['policy_value'];?> </span>
+                </div><br/>
                 <?php endforeach;?>
             </td>
             <td colspan="2">
                 <?php foreach($val[5] as $v):?>
-                <?php echo $v['channel'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <div class="main-policy div-border">
+                    <span class="left"><?php echo $v['channel'];?> </span>
+                    <span class="center"></span>
+                    <span class="right"><?php echo $v['policy_value'];?></span>
+                </div><br/>
                 <?php endforeach;?>
             </td>
             <td colspan="2">
                 <?php foreach($val[4] as $v):?>
-                <input class='channel_policy' data-id="<?php echo $v['id']?>" type="checkbox" name="channel_policy[]" <?php if($v['flag'] ==1):?>checked<?php endif;?> value="<?php echo $v['id']?>"><?php echo $v['platform_name'];?><span style="margin-right:100px "></span><?php echo $v['policy_value'];?><br/>
+                <div class="main-policy">
+                    <span class="left"><input class='channel_policy' data-id="<?php echo $v['id']?>" type="checkbox" name="channel_policy[]" <?php if($v['flag'] ==1):?>checked<?php endif;?> value="<?php echo $v['id']?>"></span>
+                    <span class="center"><?php echo $v['platform_name'];?> </span>
+                    <span class="right"><?php echo $v['policy_value'];?></span>
+                </div><br/>
                 <?php endforeach;?>
             </td>
 

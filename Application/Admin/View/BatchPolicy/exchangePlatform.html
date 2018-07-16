@@ -214,9 +214,14 @@
 
         //全选
         $("body").on('click', "#all_pnumber",function(){
-            $("#all_pnumber").prop("checked")? shippingTimeFn.checkBoxSec(true):shippingTimeFn.checkBoxSec(false);
+            $("#all_pnumber").prop("checked")?  globalFn.checkBoxSecAll(true): globalFn.checkBoxSecAll(false);
         });
 
+
+        //不全选
+        $("body").on('click', ".all_pnumber_child",function(){
+            globalFn.checkBoxSecNotAll();
+        });
         layui.use(['form'], function(){
             var form = layui.form(),layer = layui.layer;
             //监听提交
@@ -330,11 +335,6 @@
                     return true;
                 }
             }
-        },
-        checkBoxSec:function(bool){
-            $(".all_pnumber_child").each(function(i){
-                !bool?$(this).prop('checked',false):$(this).prop('checked',true);
-            })
         },
 
         timeFilter:function () {

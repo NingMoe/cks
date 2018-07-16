@@ -1,5 +1,20 @@
 //全局函数
 var globalFn = {
+    //全选
+    checkBoxSecAll:function(bool){
+        $(".all_pnumber_child").each(function(i){
+            !bool?$(this).prop('checked',false):$(this).prop('checked',true);
+        })
+    },
+
+    //不全选
+    checkBoxSecNotAll:function(){
+        var lgh1 = $(".all_pnumber_child:checked").length;
+        var lgh2 = $(".all_pnumber_child").length;
+        if(lgh2 > lgh1) $('#all_pnumber').prop('checked',false);
+        if(lgh2 == lgh1) $('#all_pnumber').prop('checked',true);
+
+    },
     //page  总页数
     //jumpurl 模块/控制器/方法
     lypage:function (id, page, jumpUrl, field, val) {
