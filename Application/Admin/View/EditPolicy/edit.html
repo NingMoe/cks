@@ -31,7 +31,6 @@
     </div>
   </el-dialog>
 
-
   <h3>出货时间：<el-button @click="showAddOutTimePolicy" type="success" size="small">添加</el-button></h3>
   <el-table :data="outTimePolicies" border style="width: 701px">
     <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
@@ -44,8 +43,9 @@
         </template>
     </el-table-column>
   </el-table>
+
   <!--出货时间窗-->
-  <el-dialog :title="dialogTitle" :visible.sync="outTimePolicyVisible" center>
+  <el-dialog :title="dialogTitle" :visible.sync="outTimePolicyVisible" width="500px" center>
     <el-form label-width="80px">
       <el-form-item label="开始时间">
         <el-date-picker v-model="start_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
@@ -63,103 +63,95 @@
     </div>
   </el-dialog>
 
-    <h3>激活时间：<el-button @click="showAddActivePolicy" type="success" size="small">添加</el-button></h3>
-    <el-table :data="activePolicies" border style="width: 701px">
-      <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
-      <el-table-column prop="end_time" label="结束时间" width="200"></el-table-column>
-      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
-      <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
-          <el-button @click="showChangeActivePolicy(scope)" type="primary" size="small">修改</el-button>
-          <el-button @click="removeActivePolicy(scope)" type="danger" size="small">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+  <h3>激活时间：<el-button @click="showAddActivePolicy" type="success" size="small">添加</el-button></h3>
+  <el-table :data="activePolicies" border style="width: 701px">
+    <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
+    <el-table-column prop="end_time" label="结束时间" width="200"></el-table-column>
+    <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+    <el-table-column label="操作" width="200">
+      <template slot-scope="scope">
+        <el-button @click="showChangeActivePolicy(scope)" type="primary" size="small">修改</el-button>
+        <el-button @click="removeActivePolicy(scope)" type="danger" size="small">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
 
-    <!--激活时间窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="activePolicyVisible" center>
-      <el-form label-width="80px">
-        <el-form-item label="开始时间">
-          <el-date-picker v-model="start_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间">
-          <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="比例">
-          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="activePolicyVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogMethod">确 定</el-button>
-      </div>
-    </el-dialog>
+  <!--激活时间窗-->
+  <el-dialog :title="dialogTitle" :visible.sync="activePolicyVisible" width="500px" center>
+    <el-form label-width="80px">
+      <el-form-item label="开始时间">
+        <el-date-picker v-model="start_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束时间">
+        <el-date-picker v-model="end_time" type="datetime" placeholder="选择日期时间"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="比例">
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="activePolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogMethod">确 定</el-button>
+    </div>
+  </el-dialog>
 
-    <h3>客户渠道：<el-button @click="showAddChannelPolicy" type="success" size="small">添加</el-button></h3>
-    <el-table :data="channelPolicies" border style="width: 601px">
-      <el-table-column prop="channel" label="客户渠道" width="300"></el-table-column>
-      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
-      <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
-          <el-button @click="showChangeChannelPolicy(scope)" type="primary" size="small">修改</el-button>
-          <el-button @click="removeChannelPolicy(scope)" type="danger" size="small">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+  <h3>客户渠道：<el-button @click="showAddChannelPolicy" type="success" size="small">添加</el-button></h3>
+  <el-table :data="channelPolicies" border style="width: 601px">
+    <el-table-column prop="channel" label="客户渠道" width="300"></el-table-column>
+    <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+    <el-table-column label="操作" width="200">
+      <template slot-scope="scope">
+        <el-button @click="showChangeChannelPolicy(scope)" type="primary" size="small">修改</el-button>
+        <el-button @click="removeChannelPolicy(scope)" type="danger" size="small">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
 
-    <!--客户渠道窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="channelPolicyVisible" center>
-      <el-form label-width="80px">
-        <el-form-item label="客户渠道">
-          <el-autocomplete 
-            v-model="channel" 
-            :fetch-suggestions="querySearchChannel" 
-            @select="handleSelectChannel"
-            placeholder="请输入内容"  label-width="150px"
-          >
-          </el-autocomplete>
-        </el-form-item>
-        <el-form-item label="比例">
-          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="channelPolicyVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogMethod">确 定</el-button>
-      </div>
-    </el-dialog>
+  <!--客户渠道窗-->
+  <el-dialog :title="dialogTitle" :visible.sync="channelPolicyVisible" width="500px" center>
+    <el-form label-width="80px">
+      <el-form-item label="客户渠道">
+        <el-autocomplete v-model="channel" :fetch-suggestions="querySearchChannel" @select="handleSelectChannel" placeholder="请输入内容"  label-width="150px"></el-autocomplete>
+      </el-form-item>
+      <el-form-item label="比例">
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="channelPolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogMethod">确 定</el-button>
+    </div>
+  </el-dialog>
 
-  <el-row>
-    <h3>兑换平台：<el-button @click="showAddPlatformPolicy" type="success" size="small">添加</el-button></h3>
-    <el-table :data="platformPolicies" border style="width: 601px">
-      <el-table-column prop="platform_name" label="兑换平台" width="300"></el-table-column>
-      <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
-      <el-table-column label="操作" width="200">
-        <template slot-scope="scope">
-          <el-button @click="showChangePlatformPolicy(scope)" type="primary" size="small">修改</el-button>
-          <el-button @click="removePlatformPolicy(scope)" type="danger" size="small">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </el-row>
+  <h3>兑换平台：<el-button @click="showAddPlatformPolicy" type="success" size="small">添加</el-button></h3>
+  <el-table :data="platformPolicies" border style="width: 601px">
+    <el-table-column prop="platform_name" label="兑换平台" width="300"></el-table-column>
+    <el-table-column prop="policy_value" label="比例" width="100"></el-table-column>
+    <el-table-column label="操作" width="200">
+      <template slot-scope="scope">
+        <el-button @click="showChangePlatformPolicy(scope)" type="primary" size="small">修改</el-button>
+        <el-button @click="removePlatformPolicy(scope)" type="danger" size="small">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
 
   <!--兑换渠道窗-->
-    <el-dialog :title="dialogTitle" :visible.sync="platformPolicyVisible" center>
-      <el-form label-width="80px">
-        <el-form-item label="兑换渠道">
-          <el-select v-model="platform" @change="getPlatformName" placeholder="请选择">
-            <el-option v-for="item in platform_list" :label="item.platform_name" :value="item.platform"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="比例">
-          <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="platformPolicyVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogMethod">确 定</el-button>
-      </div>
-    </el-dialog>
+  <el-dialog :title="dialogTitle" :visible.sync="platformPolicyVisible" width="500px" center>
+    <el-form label-width="80px">
+      <el-form-item label="兑换渠道">
+        <el-select v-model="platform" @change="getPlatformName" placeholder="请选择">
+          <el-option v-for="item in platform_list" :label="item.platform_name" :value="item.platform"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="比例">
+        <el-input-number v-model="policy_value" :precision="2" :step="0.1" :max="10" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="platformPolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="dialogMethod">确 定</el-button>
+    </div>
+  </el-dialog>
 </div>
 </body>
 
