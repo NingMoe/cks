@@ -120,7 +120,7 @@ class EditPolicyController extends BaseController
     {
         $policy = json_decode(file_get_contents('php://input'), true);
         if ($policy['policy_value'] <= 0) {
-            $this->error('策略子必须大于0');
+            $this->error('策略值必须大于0');
         }
         $policies = M('policy')->where("pnumber = {$policy['pnumber']} and policy_type = {$policy['policy_type']} and status = 1 and id <> {$policy['id']}")->select();
         if ($policy['policy_type'] == 1) {
