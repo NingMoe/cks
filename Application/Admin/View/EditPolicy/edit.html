@@ -443,6 +443,13 @@
                 this.channelPolicyVisible = true
             },
             changeChannelPolicy () {
+                if (!this.channel) {
+                    this.$message({
+                        message: '请选择客户渠道！',
+                        type: 'error'
+                    });
+                    return false
+                }
                 let policy = {
                     id: this.policy.id,
                     pnumber: this.policy.pnumber,

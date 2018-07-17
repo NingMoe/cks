@@ -101,6 +101,10 @@ class EditPolicyController extends BaseController
                 $this->success('添加成功！', '', $policy);
             }
         } elseif ($policy['policy_type'] == 5) {
+            $res = M('channel')->field('id')->where(['channel_name'=>$policy['channel']])->select();
+            if (empty($res)) {
+                $this->error('该渠道不存在于客户渠道表中!');
+            }
             $res = M('policy')->where(['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'channel' => $policy['channel'], 'status' => 1])->find();
             if (count($res) > 0) {
                 $this->error('客户渠道已存在!');
@@ -158,6 +162,10 @@ class EditPolicyController extends BaseController
             }
             
         } elseif ($policy['policy_type'] == 5) {
+            $res = M('channel')->field('id')->where(['channel_name'=>$policy['channel']])->select();
+            if (empty($res)) {
+                $this->error('该渠道不存在于客户渠道表中!');
+            }
             $where = ['pnumber' => $policy['pnumber'], 'policy_type' => $policy['policy_type'], 'channel' => $policy['channel'], 'status' => 1];
             $where['id']=array('neq',$policy['id']);
             $res = M('policy')->where($where)->find();
