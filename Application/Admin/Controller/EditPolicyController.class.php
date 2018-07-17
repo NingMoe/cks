@@ -90,7 +90,9 @@ class EditPolicyController extends BaseController
                 if (in_array($policy['platform'], $no_flag)) {
                     $policy['flag'] = 0;
                 }
-                
+                if ($policy['platform']=='1-1') {
+                    $policy['rate'] = 100;
+                }
                 $id = M('policy')->add($policy);
                 BaseModel::log([$id], 'policy_id', '新增策略', 'insert');
                 $policy = M('policy')->join('left join platform on policy.platform = platform.platform')
