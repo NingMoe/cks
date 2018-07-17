@@ -261,6 +261,7 @@ class BatchPolicyController extends BaseController
                         'platform'=> $platform[0],
                         'policy_value'=> $platform[1],
                         'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
+                        'rate' => $platform[0] == '1-1' ? 100:1,
                     );
                 }
             }
@@ -288,6 +289,7 @@ class BatchPolicyController extends BaseController
                         'platform'=> $platform[0],
                         'policy_value'=> $platform[1],
                         'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
+                        'rate' => $platform[0] == '1-1' ? 100:1,
                     );
                 }
             }
@@ -327,6 +329,8 @@ class BatchPolicyController extends BaseController
                     'platform'=> $platform[0],
                     'policy_value'=> $platform[1],
                     'flag'=> in_array($platform[0], static::$innerPlatforms) ? 1 : 0,
+                    'rate' => $platform[0] == '1-1' ? 100:1,
+
                 );
             }
         }
