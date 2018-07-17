@@ -104,7 +104,7 @@ class KcodeProduceController extends BaseController
 
                 $postData['secretcd'] =$this->createKcode('am');
 
-                if($pdata['pname'] == 'N1' || $postData['pname'] == 'N1M' || $pdata['pname'] == 'K3-D1')
+                if(trim($pdata['pname']) == 'N1' || trim($pdata['pname']) == 'N1M' || trim($pdata['pname']) == 'K3-D1')
                     $postData['hcode'] ='BD'.$this->createKcode('BD');
 
                 $sql .= "{$postData['im_model']}\t{$postData['im_pnumber']}\t{$postData['im_time']}\t{$postData['im_staff']}\t{$postData['pmoney']}\t{$postData['close_time']}\t{$postData['status']}\t{$postData['readdress']}\t{$postData['clearcd']}\t{$postData['secretcd']}\t{$postData['hcode']}";
