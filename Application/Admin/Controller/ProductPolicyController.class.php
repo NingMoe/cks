@@ -121,10 +121,10 @@ class ProductPolicyController extends BaseController
 
         return [
             ['pnumber' => $pnumber, 'policy_type' => 1 ],
-            ['pnumber' => $pnumber, 'policy_type' => 2, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' => $date = date('Y', time()) + 1 . '-' . date('m-d H:i:s'),],
-            ['pnumber' => $pnumber, 'policy_type' => 3, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' => $date = date('Y', time()) + 1 . '-' . date('m-d H:i:s'),],
+            ['pnumber' => $pnumber, 'policy_type' => 2, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' =>  date('Y', time()) + 2 . '-' . date('m-d H:i:s'),],
+            ['pnumber' => $pnumber, 'policy_type' => 3, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' =>  date('Y', time()) + 2 . '-' . date('m-d H:i:s'),],
             ['pnumber' => $pnumber, 'policy_type' => 5],
-            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-1', 'flag' => 1],
+            ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-1', 'flag' => 1, 'rate' => 100],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-2', 'flag' => 1],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-3', 'flag' => 1],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-4', 'flag' => 1],
