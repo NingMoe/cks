@@ -2,17 +2,14 @@
 <head>
   <meta charset="utf-8">
   <title>iview example</title>
-  <!--<link rel="stylesheet" type="text/css" href="../../../../Public/css/vue/iview.css">-->
   <link rel="stylesheet" type="text/css" href="/../../../../Public/css/vue/element.css">
   <script type="text/javascript" src="/../../../../Public/js/vue/vue.js"></script>
-  <!--<script type="text/javascript" src="../../../../Public/js/vue/iview.min.js"></script>-->
   <script type="text/javascript" src="/../../../../Public/js/vue/element.js"></script>
   <script type="text/javascript" src="/../../../../Public/js/vue/axios.min.js"></script>
 </head>
 <body>
 <div id="app">
-<h2>产品策略编辑页面</h2>
-<h3 >料号：<span>{{ basicPolicy.pnumber }}</span></h3>
+<h3 >料号：<span>{{ basicPolicy.pnumber }}</span>——————<span>{$pname}</span></h3>
 
   <h3><el-col :span="5">基础比例：</el-col>
     <el-col :span="3"><el-input :value="basicPolicy.policy_value" :disabled="true"></el-input></el-col>

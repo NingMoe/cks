@@ -20,6 +20,7 @@ class EditPolicyController extends BaseController
     public function edit()
     {
         $pnumber = I('get.pnumber');
+        $pn_type = M('pn_type')->where(['pnumber' => $pnumber])->find();
         $policies = M('policy')->join('left join platform on policy.platform = platform.platform')
             ->where(['pnumber' => $pnumber, 'status' => 1])
             ->field(['policy.id', 'pnumber', 'policy_type', 'policy_value', 'start_time', 'end_time',
@@ -43,6 +44,7 @@ class EditPolicyController extends BaseController
         }));
 
         $platform_list = M('platform')->select();
+        $this->assign('pname', $pn_type['pname']);
         $this->assign('basicPolicy', json_encode($basicPolicy));
         $this->assign('outTimePolicies', json_encode($outTimePolicies));
         $this->assign('activePolicies', json_encode($activePolicies));
