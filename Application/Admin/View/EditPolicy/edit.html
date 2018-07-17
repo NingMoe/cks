@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <title>iview example</title>
   <link rel="stylesheet" type="text/css" href="/../../../../Public/css/vue/element.css">
-  <script type="text/javascript" src="/../../../../Public/js/vue/vue.js"></script>
+  <script type="text/javascript" src="/../../../../Public/js/vue/vue.min.js"></script>
   <script type="text/javascript" src="/../../../../Public/js/vue/element.js"></script>
   <script type="text/javascript" src="/../../../../Public/js/vue/axios.min.js"></script>
 </head>
@@ -153,7 +153,6 @@
   <div><el-button @click="back()" type="primary">返回</el-button></div>
 </div>
 </body>
-
 <script>
     new Vue({
         el: '#app',
@@ -317,12 +316,19 @@
                 this.outTimePolicyVisible = true
             },
             changeOutTimePolicy () {
-                this.policy.start_time = this.start_time.format()
-                this.policy.end_time = this.end_time.format()
-                this.policy.policy_value = this.policy_value
-                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
+                let policy = {
+                    id: this.policy.id,
+                    pnumber: this.policy.pnumber,
+                    policy_type: this.policy.policy_type,
+                    start_time: this.start_time.format(),
+                    end_time: this.end_time.format(),
+                    policy_value: this.policy_value
+                }
+                axios.post("EditPolicy/changePolicy", policy).then(res => {
                     if (res.data.status === 1) {
-                        this.platformPolicies[this.$index] = this.policy
+                        this.outTimePolicies[this.$index].start_time = this.start_time.format()
+                        this.outTimePolicies[this.$index].end_time = this.end_time.format()
+                        this.outTimePolicies[this.$index].policy_value = this.policy_value
                         this.outTimePolicyVisible = false;
                     }
                 });
@@ -378,12 +384,19 @@
                 this.activePolicyVisible = true
             },
             changeActivePolicy () {
-                this.policy.start_time = this.start_time.format()
-                this.policy.end_time = this.end_time.format()
-                this.policy.policy_value = this.policy_value
-                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
+                let policy = {
+                    id: this.policy.id,
+                    pnumber: this.policy.pnumber,
+                    policy_type: this.policy.policy_type,
+                    start_time: this.start_time.format(),
+                    end_time: this.end_time.format(),
+                    policy_value: this.policy_value
+                }
+                axios.post("EditPolicy/changePolicy", policy).then(res => {
                     if (res.data.status === 1) {
-                        this.platformPolicies[this.$index] = this.policy
+                        this.activePolicies[this.$index].start_time = this.start_time.format()
+                        this.activePolicies[this.$index].end_time = this.end_time.format()
+                        this.activePolicies[this.$index].policy_value = this.policy_value
                         this.activePolicyVisible = false;
                     }
                 });
@@ -430,22 +443,28 @@
                 this.channelPolicyVisible = true
             },
             changeChannelPolicy () {
-                this.policy.channel = this.channel
-                this.policy.policy_value = this.policy_value
-                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
+                let policy = {
+                    id: this.policy.id,
+                    pnumber: this.policy.pnumber,
+                    policy_type: this.policy.policy_type,
+                    channel: this.channel,
+                    policy_value: this.policy_value
+                }
+                axios.post("EditPolicy/changePolicy", policy).then(res => {
                     if (res.data.status === 1) {
-                        this.platformPolicies[this.$index] = this.policy
+                        this.channelPolicies[this.$index].channel = this.channel
+                        this.channelPolicies[this.$index].policy_value = this.policy_value
                         this.channelPolicyVisible = false;
                     }
                 });
             },
             querySearchChannel (queryString, cb) {
-              if (!queryString) {return}
-              let url = "EditPolicy/queryChannel?channel="+queryString;
-              axios.get(url).then((response)=>{
-                  //在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
-                  cb(response.data);
-              });
+                if (!queryString) {return}
+                let url = "EditPolicy/queryChannel?channel="+queryString;
+                axios.get(url).then((response)=>{
+                    //在这里为这个数组中每一个对象加一个value字段, 因为autocomplete只识别value字段并在下拉列中显示
+                    cb(response.data);
+                });
             },
 
             //-------------------------------------------兑换渠道-------------------------------------------
@@ -489,12 +508,19 @@
                 this.platformPolicyVisible = true
             },
             changePlatformPolicy () {
-                this.policy.platform = this.platform
-                this.policy.policy_value = this.policy_value
-                this.policy.platform_name = this.platform_name
-                axios.post("EditPolicy/changePolicy", this.policy).then(res => {
+                let policy = {
+                    id: this.policy.id,
+                    pnumber: this.policy.pnumber,
+                    policy_type: this.policy.policy_type,
+                    platform: this.platform,
+                    policy_value: this.policy_value,
+                    platform_name: this.platform_name
+                }
+                axios.post("EditPolicy/changePolicy", policy).then(res => {
                     if (res.data.status === 1) {
-                        this.platformPolicies[this.$index] = this.policy
+                        this.platformPolicies[this.$index].policy_value = this.policy_value
+                        this.platformPolicies[this.$index].platform = this.platform
+                        this.platformPolicies[this.$index].platform_name = this.platform_name
                         this.platformPolicyVisible = false;
                     }
                 });
