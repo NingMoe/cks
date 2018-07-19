@@ -269,7 +269,7 @@ class BaseModel extends  Model{
     /**
     @获取最新的一条数据的id
      **/
-    public static function getlastid($table,$where){
+    public static function getLastId($table,$where){
         $data=M($table)->where($where)->order("id desc")->limit(1)->select();
         return $data[0]['id'];
     }
@@ -313,32 +313,6 @@ class BaseModel extends  Model{
         return $conflict;
     }
 
-    /**
-     * 记录操作日志，单条操作记录策略id，批量操作记录料号
-     * @param $object_ids array 料号或者策略id数组
-     * @param $object_type string 操作对象类型，批量操作时为pnumber，单个操作为policy_id
-     * @param $action string 用户操作如：生成策略，批量添加出货时间
-     * @param $sql_type string 数据库操作类型：insert update delete
-     */
 
-    public static function log($table, $policyIds, $pnumber, $action, $sqlType, $beforeData='', $afterData=''){
-        $dataList = [];
-        foreach ($policyIds as $objectId) {
-            $dataList[] = array(
-                'table' => $table,
-                'operator' => self::username(),
-                'policy_id' => $objectId,
-                'action' => $action,
-                'pnumber' => $pnumber,
-                'sql_type' => $sqlType,
-                'update_time' => date('Y-m-d H:i:s', time()),
-                'before_data' => $beforeData,
-                'after_data' => $afterData
-            );
-        }
-
-
-        return M('oplog')->addAll($dataList);
-    }
 
 }
