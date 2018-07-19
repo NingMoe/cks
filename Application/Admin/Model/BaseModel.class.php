@@ -338,7 +338,7 @@ class BaseModel extends  Model{
         }
 
 
-        M('oplog')->addAll($dataList);
+        return M('oplog')->addAll($dataList);
     }
 
 }
