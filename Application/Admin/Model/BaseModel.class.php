@@ -321,18 +321,23 @@ class BaseModel extends  Model{
      * @param $sql_type string 数据库操作类型：insert update delete
      */
 
-    public static function log($object_ids, $object_type, $action, $sql_type){
+    public static function log($table, $policyIds, $pnumber, $action, $sqlType, $beforeData='', $afterData=''){
         $dataList = [];
-        foreach ($object_ids as $object_id) {
+        foreach ($policyIds as $objectId) {
             $dataList[] = array(
+                'table' => $table,
                 'operator' => self::username(),
-                'object_id' => $object_id,
-                'object_type' => $object_type,
+                'policy_id' => $objectId,
                 'action' => $action,
-                'sql_type' => $sql_type,
-                'created_at' => date('Y-m-d H:i:s', time()),
+                'pnumber' => $pnumber,
+                'sql_type' => $sqlType,
+                'update_time' => date('Y-m-d H:i:s', time()),
+                'before_data' => $beforeData,
+                'after_data' => $afterData
             );
         }
+
+
         M('oplog')->addAll($dataList);
     }
 
