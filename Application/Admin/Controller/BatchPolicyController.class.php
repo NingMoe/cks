@@ -19,6 +19,19 @@ class BatchPolicyController extends BaseController
     public function test()
     {
         $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+        foreach ($pnumbers as $pnumber) {
+            $dataList[] = array(
+                'pnumber' => $pnumber,
+                'policy_type'=> 1,
+                'policy_value'=> 1,
+            );
+        }
+        p($dataList);
+        $res = M('policy')->addAll($dataList);
+
+
+
+        $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
         p($pnumbers);die();
     }
 
@@ -441,6 +454,28 @@ class BatchPolicyController extends BaseController
         }
         $res = M('policy')->addAll($dataList);
         BaseModel::log($pnumbers, 'pnumber', '新增批量客户渠道策略', 'insert');
+        if($res) {
+            $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
+        } else {
+            $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
+        }
+    }
+
+    //批量修改K码激活锁定期策略
+    public function batchModifyLockDay()
+    {
+        $lockDay = $_POST['lock_day'];
+        //全选所有型号
+        if ($_POST['tag'] == 1) {
+            //批量修改K码激活锁定期策略
+            $res = M('policy')->where(['policy_type' => 6, 'status' => 1])->setField('policy_value', $lockDay);
+            $pnumbers = M('policy')->distinct(true)->field('pnumber')->where(['policy_type' => 6, 'status' => 1])->getField('pnumber',true);
+        } else {
+            $policyIds = $_POST['policy_ids'];
+            $res = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->setField('policy_value', $lockDay);
+            $pnumbers = M('policy')->where(['id' => ['in', implode(',', $policyIds)]])->getField('pnumber',true);
+        }
+        BaseModel::log($pnumbers, 'pnumber', '批量修改K码激活锁定期策略', 'update');
         if($res) {
             $this->ajaxReturn(['status' => 0, 'msg' => '操作成功']);
         } else {
