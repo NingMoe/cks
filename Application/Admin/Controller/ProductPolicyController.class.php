@@ -111,6 +111,9 @@ class ProductPolicyController extends BaseController
 
             if($val['policy_type'] == 5)
                 $showArr[$val['pnumber']][5][] = ['id'=>$val['id'], 'channel'=> $val['channel'], 'policy_value' => $val['policy_value']];
+
+            if($val['policy_type'] == 6)
+                $showArr[$val['pnumber']][6][] = ['id'=>$val['id'], 'policy_value' => $val['policy_value']];
         }
 
         return $showArr;
@@ -124,6 +127,7 @@ class ProductPolicyController extends BaseController
             ['pnumber' => $pnumber, 'policy_type' => 2, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' =>  date('Y', time()) + 2 . '-' . date('m-d H:i:s'),],
             ['pnumber' => $pnumber, 'policy_type' => 3, 'start_time' => date('Y-m-d H:i:s', time()),'end_time' =>  date('Y', time()) + 2 . '-' . date('m-d H:i:s'),],
             ['pnumber' => $pnumber, 'policy_type' => 5],
+            ['pnumber' => $pnumber, 'policy_type' => 6, 'policy_value' => 0],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-1', 'flag' => 1, 'rate' => 100],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-2', 'flag' => 1],
             ['pnumber' => $pnumber, 'policy_type' => 4, 'platform' => '1-3', 'flag' => 1],
@@ -146,6 +150,7 @@ class ProductPolicyController extends BaseController
         //p($this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
 
         $this->assign(['data' =>$this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))),'pname' => $_GET['pname']]);
+        //p($this->getPolicyListData(ProductPolicyModel::searchPnameShowPolicy(I('get.pname'))));die;
 
         $this->display('index');
     }

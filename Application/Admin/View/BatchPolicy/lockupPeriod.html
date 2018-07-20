@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>K码锁定期策略</title>
+
+    <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
+    <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
+    <!-- 引入jQuery UI的css文件 -->
+    <link rel="stylesheet" href="__PUBLIC__/js/bootstrap3.37/css/bootstrap.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/js/My97DatePicker/skin/WdatePicker.css">
+    <script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/js/layui/layui.js"></script>
+    <script src="__PUBLIC__/js/bootstrap3.37/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/global.js"></script>
+    <script src="__PUBLIC__/js/layui/layui.js" charset="utf-8"></script>
+    <script language="javascript" type="text/javascript" src="__PUBLIC__/js/date/WdatePicker.js"></script>
+
+</head>
+<style>
+    .panel-primary{
+        border-color: #1ab394;
+    }
+    a{
+        text-decoration: none !important;
+    }
+    .check_all_box{
+        float: right;
+        position: absolute;
+        top: 80px;
+        left: 450px;
+    }
+</style>
+<body>
+<div class="container-fluid" style="margin-top: 10px">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
+            <span class="badge" style=" color: #1ab394;" >K码锁定期策略</span>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" id="add-manage-popup" style="margin-left:20px;">
+    <form onkeydown="if(event.keyCode==13) return false;">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 100px;">产品型号</label>
+            <div class="layui-input-inline">
+                <input id='product-model' name="pname" value="<?php echo $pname ?>" placeholder="请输入产品型号" autocomplete="off" class="layui-input" type="text" >
+                <div id="aaresults" style="display: none;height: 150px;overflow-y: scroll">
+
+                </div>
+            </div>
+            <div class="layui-btn" id="search-product">搜索</div>
+
+        </div>
+    </form>
+
+    <div class="check_all_box">
+        <input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)
+    </div>
+<form class="layui-form" action="" onkeydown="if(event.keyCode==13) return false;">
+
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 100px;">锁定期</label>
+            <div class="layui-input-block">
+                <input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="policy_submit" id="policy_submit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            <!--<input class='all_pname' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pname[]"  value="">全选(型号)-->
+        </div>
+    </div>
+
+</form>
+</div>
+
+<div class="container-fluid">
+    <table class="layui-table" lay-data="{width: 892, height:332, url:BatchPolicy/shippingTime page:true, id:'idTest'}" lay-filter="idTest">
+        <thead>
+        <tr>
+            <th style="width:150px;" ><input id="all_pnumber" class='all_pnumber' data-id="<?php echo $v['id']?>" type="checkbox" name="all_pnumber[]" value="">全选(料号)</th>
+            <th >料号</th>
+            <th style="border-left:none;">锁定期</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php $i = 0;?>
+        <?php foreach($data as $key => $val):?>
+
+        <tr>
+            <td><input class='all_pnumber all_pnumber_child' data-id="<?php echo $val['id']?>" type="checkbox" name="all_pnumber[]" value=""></td>
+            <td><?php echo $key?></td>
+            <td >
+                <?php foreach($val[6] as $v):?>
+                <div class="all_pnumber<?php echo $i;?>  all_pnumber_sec  tag_<?php echo $v['id'] ?>" policy-id="<?php echo $v['id'] ?>"> <?php echo $v['policy_value'];?></div>
+                <?php endforeach;?>
+            </td>
+        </tr>
+        <?php $i++;?>
+        <?php endforeach;?>
+        </tbody>
+
+    </table>
+</div>
+
+</body>
+<script>
+
+    $(function() {
+        //模糊搜索
+        $('#product-model').on('input propertychange', function() {
+            $("#aaresults").html('');
+            $.post("{:U('dimSearch')}", {pname: $(this).val()}, function (data) {
+                var htmls = '';
+                if (data.data.length >0) {
+                    var field = data.field;
+                    for (var i in data.data)
+                        htmls = htmls + "<p>" + data.data[i][data.field] + "</p>";
+                    $("#aaresults").html(htmls);
+                    $("#aaresults").show();
+                }
+
+            });
+        });
+
+        $("body").on('click','#aaresults p',function () {
+            var index = $(this).index("#aaresults p");
+            postPnumberValue =  $("#aaresults p").eq(index).html();
+            $("#product-model").val(postPnumberValue);
+            $("#aaresults").html('');
+            $("#aaresults").hide();
+
+        })
+
+        $('#search-product').click(function () {
+            var pname = $.trim($('#product-model').val());
+            if($.trim(pname) == ''){
+                layer.msg('请输入产品型号');
+                return false;
+            }
+            window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+pname+"&policyType=6";
+        })
+
+        //全选
+        $("body").on('click', "#all_pnumber",function(){
+            $("#all_pnumber").prop("checked")?  globalFn.checkBoxSecAll(true): globalFn.checkBoxSecAll(false);
+        });
+
+
+        //不全选
+        $("body").on('click', ".all_pnumber_child",function(){
+            globalFn.checkBoxSecNotAll();
+        });
+
+        layui.use(['form'], function(){
+            var form = layui.form(),layer = layui.layer;
+            //监听提交
+            form.on('submit(policy_submit)', function(data){
+
+                //型号料号选择
+                if(!shippingTimeFn.checkNum()){
+                    layer.msg('请选择料号或者型号');
+                    return false;
+                }
+
+                //型号、料号必选
+                if(!shippingTimeFn.checkPnumberPnameNum()){
+                    layer.msg('料号和型号只能选择其一');
+                    return false;
+                };
+
+                //更改类型
+                var tag = $('.all_pname').prop("checked")?1:0;
+                var policy_value = $('#policy_value').val();
+                var policy_ids = [];
+
+                //组装id
+                $(".all_pnumber_child").each(function(i){
+
+                    if($(this).prop("checked"))
+                        $('.all_pnumber'+i).each(function () {
+                            policy_ids.push($(this).attr('policy-id'));
+                        })
+                })
+
+                console.log(policy_ids);
+
+                if(tag == 1){
+                        shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, policy_value,policy_ids);
+                }else{
+                    shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, policy_value,policy_ids);
+                }
+
+                return false;
+
+            });
+
+        })
+
+
+    })
+    var shippingTimeFn = {
+
+        timeFilter:function () {
+            var pname = $.trim($('#product-model').val());
+            var beginDate=$("#start_time").val();
+            var endDate=$("#end_time").val();
+            var d1 = new Date(beginDate.replace(/\-/g, "\/"));
+            var d2 = new Date(endDate.replace(/\-/g, "\/"));
+
+            return beginDate!=""&&endDate!=""&&d1 >=d2?false:true;
+        },
+
+        checkNum:function(){ return $("input[type='checkbox']:checked").length == 0?false:true; },
+
+        checkPnumberPnameNum:function(){ return $('.all_pname').prop("checked") && $("input[name='all_pnumber[]']:checked").length >0?false:true; },
+
+        postRequest:function(url, tag, policy_value, policy_ids){
+            _index = layer.load();
+            $.post(url, {
+                tag:tag,
+                policy_value:policy_value,
+                policy_ids:policy_ids
+            },function(data){
+                layer.close(_index);
+                if(data.status == 0) shippingTimeFn.setTimeOutJump(data.msg);
+                if(data.status == -1)layer.msg(data.msg);
+            });
+        },
+
+        setTimeOutJump:function(msg){
+            setTimeout(function () { layer.msg(msg) }, 1000);
+            setTimeout(function(){window.location.href = "/index.php/Admin/BatchPolicy/searchPnameShowPolicy.html?pname="+$.trim($('#product-model').val())+"&policyType=6"}, 2000);
+        }
+
+    }
+</script>
+</html>

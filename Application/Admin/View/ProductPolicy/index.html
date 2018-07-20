@@ -69,6 +69,7 @@
         <tr>
             <th  rowspan="3">料号</th>
             <th  rowspan="3" style="width:100px">产品主策略比例</th>
+            <th  rowspan="3" style="width:100px">K码激活锁定期策略</th>
             <th  colspan="3">出货时间</th>
             <th  colspan="3">激活时间</th>
             <th colspan="2">客户渠道</th>
@@ -93,6 +94,10 @@
         <tr>
             <td><?php echo $key;?></td>
             <?php foreach($val[1] as $v):?>
+            <td><?php echo $v['policy_value'];?></td>
+            <?php endforeach;?>
+
+            <?php foreach($val[6] as $v):?>
             <td><?php echo $v['policy_value'];?></td>
             <?php endforeach;?>
 
