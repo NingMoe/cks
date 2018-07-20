@@ -28,6 +28,23 @@
     </div>
   </el-dialog>
 
+  <h3><el-col :span="5">锁定期：</el-col>
+    <el-col :span="3"><el-input :value="lockPolicies.policy_value" :disabled="true"></el-input></el-col>
+    <el-button @click="showChangelockPolicy" type="primary">修改</el-button>
+  </h3>
+
+  <el-dialog title="修改基础比例" :visible.sync="lockPolicyVisible" width="500px" center>
+    <el-form label-width="120px">
+      <el-form-item>
+        <el-input-number v-model="policy_value" :precision="0" :step="1" :min="0"></el-input-number>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="lockPolicyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="changelockPolicy">确定</el-button>
+    </div>
+  </el-dialog>
+
   <h3>出货时间：<el-button @click="showAddOutTimePolicy" type="success" size="small">添加</el-button></h3>
   <el-table :data="outTimePolicies" border style="width: 701px">
     <el-table-column prop="start_time" label="开始时间" width="200"></el-table-column>
@@ -164,12 +181,14 @@
                 platformPolicies: {$platformPolicies},
                 channelPolicies: {$channelPolicies},
                 platform_list: {$platform_list},
+                lockPolicies: {$lockPolicies},
 
                 basicPolicyVisible: false,
                 outTimePolicyVisible: false,
                 activePolicyVisible: false,
                 channelPolicyVisible: false,
                 platformPolicyVisible: false,
+                lockPolicyVisible: false,
 
                 start_time: '',
                 end_time: '',
@@ -252,7 +271,19 @@
                     }
                 });
             },
-
+            //-------------------------------------------锁定时间-------------------------------------------
+            showChangelockPolicy () {
+                this.policy_value = this.lockPolicies.policy_value
+                this.lockPolicyVisible = true
+            },
+            changelockPolicy () {
+                this.lockPolicies.policy_value = this.policy_value
+                axios.post("EditPolicy/changePolicy", this.lockPolicies).then(res => {
+                    if (res.data.status === 1) {
+                        this.lockPolicyVisible = false;
+                    }
+                });
+            },
             //-------------------------------------------出货时间-------------------------------------------
             showAddOutTimePolicy () {
                 this.start_time = ''

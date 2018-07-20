@@ -42,7 +42,10 @@ class EditPolicyController extends BaseController
         $channelPolicies = array_values(array_filter($policies, function ($policy) {
             return $policy['policy_type'] == 5;
         }));
-
+        $lockPolicies = array_values(array_filter($policies, function ($policy) {
+            return $policy['policy_type'] == 6;
+        }));
+        $lockPolicies = $lockPolicies[0];
         $platform_list = M('platform')->select();
         $this->assign('pname', $pn_type['pname']);
         $this->assign('basicPolicy', json_encode($basicPolicy));
@@ -50,6 +53,7 @@ class EditPolicyController extends BaseController
         $this->assign('activePolicies', json_encode($activePolicies));
         $this->assign('platformPolicies', json_encode($platformPolicies));
         $this->assign('channelPolicies', json_encode($channelPolicies));
+        $this->assign('lockPolicies', json_encode($lockPolicies));
         $this->assign('platform_list', json_encode($platform_list));
         $this->display();
     }
@@ -116,7 +120,7 @@ class EditPolicyController extends BaseController
                 $policy = M('policy')->where(['id' => $id])->find();
                 $this->success('添加成功！', '', $policy);
             }
-        }
+        } 
         else {
             $this->error('策略类型错误');
         }
@@ -125,7 +129,7 @@ class EditPolicyController extends BaseController
     public function changePolicy()
     {
         $policy = json_decode(file_get_contents('php://input'), true);
-        if ($policy['policy_value'] <= 0) {
+        if ($policy['policy_value'] <= 0 && $policy['policy_type'] != 6) {
             $this->error('策略值必须大于0');
         }
         $policies = M('policy')->where("pnumber = {$policy['pnumber']} and policy_type = {$policy['policy_type']} and status = 1 and id <> {$policy['id']}")->select();
@@ -179,6 +183,10 @@ class EditPolicyController extends BaseController
                 $this->success('修改成功！');
             }
             
+        } elseif ($policy['policy_type'] == 6) {
+            M('policy')->where(['id' => $policy['id']])->save($policy);
+            BaseModel::log([$policy['id']], 'policy_id', '修改策略', 'update');
+            $this->success('修改成功！');
         }else {
             $this->error('策略类型错误');
         }
