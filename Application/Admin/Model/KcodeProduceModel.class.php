@@ -21,6 +21,8 @@ class KcodeProduceModel extends  BaseModel{
     }
 
     public static function exportExcel($expTitle, $expCellName, $expTableData){
+        set_time_limit(1000);
+        ini_set ('memory_limit', '-1');
 
         $xlsTitle = iconv('utf-8', 'gb2312', $expTitle);//文件名称
         $fileName = time();//导出excal 文件名称
