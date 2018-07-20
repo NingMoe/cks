@@ -14,7 +14,7 @@ class BatchPolicyController extends BaseController
     //策略类型：1-料号策略；2-出货时间策略；3-激活时间策略；4-兑换平台策略；5-客户渠道策略
     public static $innerPlatforms = ['1-1', '1-2', '1-3', '1-4'];
 
-    public $policyType = [ 2=>'shippingTime', 3=>'activationTime', 4=>'exchangePlatform', 5=>'customerChannel'];
+    public $policyType = [ 2=>'shippingTime', 3=>'activationTime', 4=>'exchangePlatform', 5=>'customerChannel', 6=>'lockupPeriod'];
 
     public function test()
     {
@@ -459,6 +459,12 @@ class BatchPolicyController extends BaseController
         } else {
             $this->ajaxReturn(['status' => -1, 'msg' => '操作失败']);
         }
+    }
+
+    //客户渠道策略
+    public function lockupPeriod()
+    {
+        $this->display();
     }
 
     //批量修改K码激活锁定期策略
