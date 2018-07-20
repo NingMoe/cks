@@ -7,24 +7,16 @@ namespace Admin\Model;
  */
 class LogRecordModel extends  BaseModel
 {
-    public static $table = ['oplog' ];
-
-    /**
-     * 记录操作日志，单条操作记录策略id，批量操作记录料号
-     * @param $object_ids array 料号或者策略id数组
-     * @param $object_type string 操作对象类型，批量操作时为pnumber，单个操作为policy_id
-     * @param $action string 用户操作如：生成策略，批量添加出货时间
-     * @param $sql_type string 数据库操作类型：insert update delete
-     */
+    public static $table = ['oplog'];
 
     public static function log($table, $policyIds, $pnumber, $action, $sqlType, $beforeData='', $afterData=''){
         $dataList = [];
-        foreach ($policyIds as $objectId) {
+        foreach ($policyIds as $policyId) {
 
             $dataList[] = array(
                 'table' => $table,
                 'operator' => self::username(),
-                'policy_id' => $objectId,
+                'policy_id' => $policyId,
                 'action' => $action,
                 'pnumber' => $pnumber,
                 'sql_type' => $sqlType,
