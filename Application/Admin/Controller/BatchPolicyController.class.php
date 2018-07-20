@@ -35,6 +35,19 @@ class BatchPolicyController extends BaseController
         p($pnumbers);die();
     }
 
+    public function initLockTime()
+    {
+        $pnumbers = M('policy')->distinct(true)->field('pnumber')->getField('pnumber',true);
+        foreach ($pnumbers as $pnumber) {
+            $dataList[] = array(
+                'pnumber' => $pnumber,
+                'policy_type'=> 6,
+                'policy_value'=> 0,
+            );
+        }
+        M('policy')->addAll($dataList);
+    }
+
     //出货时间策略
     public function shippingTime()
     {
