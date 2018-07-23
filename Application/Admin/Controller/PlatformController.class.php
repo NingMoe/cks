@@ -29,7 +29,8 @@ class PlatformController extends BaseController
 
     public function update()
     {
-
+        $platform = I('get.platform');
+        M('policy')->where(['id' => $platform['id']])->save($platform);
     }
 
 }
