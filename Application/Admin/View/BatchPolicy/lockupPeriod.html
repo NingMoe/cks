@@ -70,7 +70,7 @@
         <div class="layui-inline">
             <label class="layui-form-label" style="width: 100px;">锁定期</label>
             <div class="layui-input-block">
-                <input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type='text' class='layui-input' lay-verify="required" id='policy_value' value="{$policy.policy_value}">
+                <input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type='text' class='layui-input' lay-verify="required" id='policy_value' value="<?php echo $policy_value ?>">
             </div>
         </div>
     </div>
@@ -196,11 +196,7 @@
 
                 console.log(policy_ids);
 
-                if(tag == 1){
-                        shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, policy_value,policy_ids);
-                }else{
-                    shippingTimeFn.postRequest("{:U('batchModifyActivationSubmit')}",tag, policy_value,policy_ids);
-                }
+                shippingTimeFn.postRequest("{:U('batchModifyLockDay')}",tag, policy_value,policy_ids);
 
                 return false;
 
@@ -230,7 +226,7 @@
             _index = layer.load();
             $.post(url, {
                 tag:tag,
-                policy_value:policy_value,
+                lock_day:policy_value,
                 policy_ids:policy_ids
             },function(data){
                 layer.close(_index);
