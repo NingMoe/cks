@@ -185,6 +185,8 @@ class KcodeProduceController extends BaseController
 
     //导出
     public function exportProductInitialData(){
+        set_time_limit(0);
+        ini_set ('memory_limit', '-1');
         $pdata = json_decode($_POST['data'],true);
 
         $this->verifyTimeValidity($pdata['start_time'], $pdata['end_time']);//验证时间合法性
