@@ -1,14 +1,10 @@
 <?php
 
 namespace Admin\Controller;
-use Admin\Model\AccountModel;
-use Admin\Model\BaseModel;
 
 /**
- * 用于用户的登录验证控制器类
- * 
- * @author jan
- *
+ * 平台营业控制器类
+ * @author observerstar
  */
 class PlatformController extends BaseController
 {
