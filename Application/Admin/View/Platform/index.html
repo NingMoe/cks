@@ -9,11 +9,15 @@
 </head>
 <body>
 <div id="app">
-  <el-table :data="platforms" style="width: 801px" border>
-    <el-table-column prop="platform_name" label="平台名称" width="150"></el-table-column>
-    <el-table-column prop="week" label="可兑换工作日" width="150"></el-table-column>
-    <el-table-column prop="op_start_time" label="开始时间" width="150"></el-table-column>
-    <el-table-column prop="op_end_time" label="结束时间" width="150"></el-table-column>
+  <el-table :data="platforms" style="width: 751px" border>
+    <el-table-column prop="platform_name" label="平台名称" width="100"></el-table-column>
+    <el-table-column prop="week" label="可兑换工作日" width="250">
+      <template slot-scope="scope">
+        <label>{{ changeWeek(scope.row.week)}}</label>
+      </template>
+    </el-table-column>
+    <el-table-column prop="op_start_time" label="开始时间" width="100"></el-table-column>
+    <el-table-column prop="op_end_time" label="结束时间" width="100"></el-table-column>
     <el-table-column prop="is_allot" label="是否可兑换" width="100">
       <template slot-scope="scope">
         <el-switch :value="scope.row.is_allot == 1" disabled></el-switch>
@@ -66,19 +70,18 @@
 <script>
     new Vue({
         el: '#app',
-        data () {
-            return {
-                platforms: {$platforms},
-                platform_name: '',
-                week: [],
-                is_allot: true,
-                op_start_time: '',
-                op_end_time: '',
-                dialogVisible: false,
-                id: 0,
-                $index: null,
-                today: null
-            }
+        data: {
+            platforms: {$platforms},
+            platform_name: '',
+            week: [],
+            is_allot: true,
+            op_start_time: '',
+            op_end_time: '',
+            dialogVisible: false,
+            id: 0,
+            $index: null,
+            today: null,
+            weekZh: ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
         },
         methods: {
             showDialog (scope) {
@@ -122,6 +125,13 @@
                         type: 'error'
                     });
                 }
+            },
+            changeWeek (week) {
+                let weekChanged = []
+                week.split(',').forEach((item, index) => {
+                    weekChanged[index] = this.weekZh[item]
+                })
+                return weekChanged.join(',')
             }
         },
         created () {
