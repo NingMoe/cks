@@ -17,20 +17,22 @@ class PlatformController extends BaseController
      */
     public function index()
     {
-       $this->assign('platforms', M('platform')->select());
-       $this->display();
+        $platforms = M('platform')->select();
+        $this->assign('platforms', json_encode($platforms));
+        $this->display();
     }
 
     public function edit(){
-        $id = I('get.platformId');
-        $this->assign('platform', M('platform')->where(['id' => $id]))->find();
-        $this->display();
+        $id = I('get.platform');
+        $platform = M('platform')->where(['id' => $id])->find();
+        $this->ajaxReturn($platform);
     }
 
     public function update()
     {
-        $platform = I('get.platform');
-        M('policy')->where(['id' => $platform['id']])->save($platform);
+        $platform = json_decode(file_get_contents('php://input'), true);
+        M('platform')->where(['id' => $platform['id']])->save($platform);
+        $this->success('保存成功！');
     }
 
 }

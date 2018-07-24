@@ -1,1 +1,176 @@
-abc
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>iview example</title>
+  <link rel="stylesheet" type="text/css" href="/../../../../Public/css/vue/element.css">
+  <script type="text/javascript" src="/../../../../Public/js/vue/vue.js"></script>
+  <script type="text/javascript" src="/../../../../Public/js/vue/element.js"></script>
+  <script type="text/javascript" src="/../../../../Public/js/vue/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <el-table :data="platforms" style="width: 801px" border>
+    <el-table-column prop="platform_name" label="平台名称" width="150"></el-table-column>
+    <el-table-column prop="week" label="可兑换工作日" width="150"></el-table-column>
+    <el-table-column prop="op_start_time" label="开始时间" width="150"></el-table-column>
+    <el-table-column prop="op_end_time" label="结束时间" width="150"></el-table-column>
+    <el-table-column prop="is_allot" label="是否可兑换" width="100">
+      <template slot-scope="scope">
+        <el-switch :value="scope.row.is_allot == 1" disabled></el-switch>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="100">
+      <template slot-scope="scope">
+        <el-button size="mini" @click="showDialog(scope)" type="primary">编辑</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <el-dialog title="修改兑换平台" :visible.sync="dialogVisible" width="500px" center>
+    <el-form label-width="120px">
+      <el-form-item label="平台名称">
+        <el-col :span="16">
+          <el-input v-model="platform_name" disabled></el-input>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="可兑换工作日">
+        <el-checkbox-group v-model="week">
+          <el-checkbox label=1 name="type">周一</el-checkbox>
+          <el-checkbox label=2 name="type">周二</el-checkbox>
+          <el-checkbox label=3 name="type">周三</el-checkbox>
+          <el-checkbox label=4 name="type">周四</el-checkbox>
+          <el-checkbox label=5 name="type">周五</el-checkbox>
+          <el-checkbox label=6 name="type">周六</el-checkbox>
+          <el-checkbox label=0 name="type">周日</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="开始时间">
+        <el-time-picker v-model="op_start_time" placeholder="开始时间">
+        </el-time-picker>
+      </el-form-item>
+      <el-form-item label="结束时间">
+        <el-time-picker v-model="op_end_time" placeholder="结束时间">
+        </el-time-picker>
+      </el-form-item>
+      <el-form-item label="是否可兑换">
+        <el-switch v-model="is_allot" active-value=1 inactive-value=0></el-switch>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="changePlatform">确 定</el-button>
+    </div>
+  </el-dialog>
+</div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        data () {
+            return {
+                platforms: {$platforms},
+                platform_name: '',
+                week: [],
+                is_allot: true,
+                op_start_time: '',
+                op_end_time: '',
+                dialogVisible: false,
+                id: 0,
+                $index: null,
+                today: null
+            }
+        },
+        methods: {
+            showDialog (scope) {
+                this.id = scope.row.id
+                this.platform_name = scope.row.platform_name
+                this.op_start_time = new Date(this.today + scope.row.op_start_time)
+                this.op_end_time = new Date(this.today + scope.row.op_end_time)
+                this.is_allot = scope.row.is_allot
+                this.week = scope.row.week.split(',')
+                this.$index = scope.$index
+                this.dialogVisible = true
+            },
+            changePlatform () {
+                if (this.op_start_time instanceof Date && this.op_end_time instanceof Date) {
+                    if (this.op_start_time.format() > this.op_end_time.format()) {
+                        this.$message({
+                            message: '开始时间不能大于结束时间！',
+                            type: 'error'
+                        });
+                        return false
+                    }
+                    let platform = {
+                        id: this.id,
+                        op_start_time: this.op_start_time.format(),
+                        op_end_time: this.op_end_time.format(),
+                        week: this.week.sort().join(','),
+                        is_allot: this.is_allot
+                    }
+                    axios.post("Platform/update", platform).then(res => {
+                        if (res.data.status === 1) {
+                            this.platforms[this.$index].op_start_time = platform.op_start_time
+                            this.platforms[this.$index].op_end_time = platform.op_end_time
+                            this.platforms[this.$index].week = platform.week
+                            this.platforms[this.$index].is_allot = platform.is_allot
+                            this.dialogVisible = false
+                        }
+                    })
+                } else {
+                    this.$message({
+                        message: '请选择开始和结束时间！',
+                        type: 'error'
+                    });
+                }
+            }
+        },
+        created () {
+            axios.defaults.baseURL = "<?php echo webDomain().'/index.php/Admin/' ?>";
+            axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+            axios.defaults.headers.post['X-Requested-With'] = 'xmlhttprequest';
+            axios.interceptors.response.use(response => {
+                if (response.data.hasOwnProperty('status')) {
+                    if (response.data.status === 1) {
+                        this.$message({
+                            message: response.data.info,
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: response.data.info,
+                            type: 'error'
+                        });
+                    }
+                }
+                return response;
+            }, error => {
+                this.$message({
+                    message: error.message,
+                    type: 'error'
+                });
+                return Promise.reject(error);
+            });
+            Date.prototype.format = function(fmt = 'hh:mm:ss') {
+                let o = {
+                    "M+" : this.getMonth()+1,                 //月份
+                    "d+" : this.getDate(),                    //日
+                    "h+" : this.getHours(),                   //小时
+                    "m+" : this.getMinutes(),                 //分
+                    "s+" : this.getSeconds(),                 //秒
+                    "q+" : Math.floor((this.getMonth()+3)/3), //季度
+                    "S"  : this.getMilliseconds()             //毫秒
+                };
+                if(/(y+)/.test(fmt)) {
+                    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+                }
+                for(let k in o) {
+                    if(new RegExp("("+ k +")").test(fmt)){
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length===1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+                    }
+                }
+                return fmt;
+            }
+            this.today = (new Date()).format('yyyy-MM-dd ')
+        },
+    })
+</script>
