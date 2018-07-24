@@ -116,6 +116,9 @@
                             this.platforms[this.$index].op_end_time = platform.op_end_time
                             this.platforms[this.$index].week = platform.week
                             this.platforms[this.$index].is_allot = platform.is_allot
+                            if (platform.is_allot == 0) {
+                                this.$alert('您已将当前平台关闭，请维护公告！', '警告');
+                            }
                             this.dialogVisible = false
                         }
                     })
