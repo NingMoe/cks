@@ -20,9 +20,11 @@ class NoticeManageModel extends  BaseModel{
         $ch = curl_init();
 
         curl_setopt($ch,CURLOPT_URL, C('uploadCksApiUrl'));
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,FALSE);
         curl_setopt($ch, CURLOPT_POST, 1 );
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields );
 
         //运行curl
         $output = curl_exec($ch);

@@ -11,4 +11,6 @@ return array(
 
     //uploadUrl
     'uploadCksApiUrl' => 'https://k-test.phicomm.com/cks_api/index.php/API/Base/upload',
+    //'uploadCksApiUrl' => 'https://k.phicomm.com/cks_api/index.php/API/Base/upload',
+
 );
