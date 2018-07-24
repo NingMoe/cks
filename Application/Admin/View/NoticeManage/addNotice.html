@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>文章管理</title>
+
+    <link rel="stylesheet" href="__PUBLIC__/css/content.css" />
+    <link rel="stylesheet" href="__PUBLIC__/js/layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/js/webuploader-0.1.5/webuploader.css">
+    <link rel="stylesheet" href="__PUBLIC__/js/bootstrap3.37/css/bootstrap.min.css">
+    <script src="__PUBLIC__/js/jquery.min.js?v=2.1.4"></script>
+    <script src="__PUBLIC__/js/layui/layui.js"></script>
+    <script src="__PUBLIC__/js/bootstrap3.37/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/webuploader-0.1.5/webuploader.js"></script>
+    <script src="__PUBLIC__/js/kindeditor/kindeditor.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/kindeditor/lang/zh_CN.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/kindeditor/plugins/code/prettify.js" type="text/javascript"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/global.js"></script>
+</head>
+<script>
+    var editor;
+    KindEditor.ready(function(K) {
+        editor = K.create('#noticecontent', {
+            resizeType : 1,
+            allowPreviewEmoticons : false,
+            allowImageUpload : true,
+            uploadJson : "{:U('kindEditorUpload')}",
+            items : [
+                'source','undo','clearhtml','hr',
+                'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+                'insertunorderedlist', "fontsize","forecolor",'|', 'emoticons', 'image','link', 'unlink','baidumap','lineheight','table','anchor','preview','print','template','code',/*'cut', 'music', 'video'*/],
+            afterBlur: function(){this.sync();}
+        });
+    });
+</script>
+<style>
+    .panel-primary{
+        border-color: #1ab394;
+    }
+
+    a{
+        text-decoration: none !important;
+    }
+
+    .layui-form-label{
+        width:auto;
+    }
+    .layui-form-item{
+        margin-bottom: 30px;
+    }
+
+</style>
+
+<body>
+<div class="container-fluid" style="margin-top: 10px">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="background-color: #1ab394;border-color: #1ab394;">
+            <span class="badge" style=" color: #1ab394;" >{$noticeData['id']?编辑公告:添加公告}</span>
+            <span class="badge" style=" color: #1ab394; float:right;cursor:pointer" onclick="history.back()">返回</span>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid" id="add-manage-popup" style="margin-left:20px;margin-top:20px" >
+    <form class="layui-form" action="">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" >公告标题</label>
+            <div class="layui-input-inline">
+                <input name="noticetitle" lay-verify="required" value="{$noticeData.title}" placeholder="请输入文章标题"  class="layui-input" type="text" id="noticetitle" style="width:470px">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">公告排序</label>
+            <div class="layui-input-inline">
+                <input onkeyup='this.value=this.value.replace(/\D/gi,"")' name="noticesort" value="{$noticeData.sort}" lay-verify="required"  placeholder="请输入排序数字" class="layui-input" type="text" id="noticesort" style="width:195px" >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否显示</label>
+            <div class="layui-input-block">
+                <input name="show" value="1" title="是" type="radio" <?php if($noticeData['display'] == 1 || !isset($noticeData['display']))echo 'checked'?> >
+                <input name="show" value="0" title="否" type="radio" <?php if($noticeData['display'] == 0 && isset($noticeData['display']))echo 'checked'?> >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">公告内容</label>
+            <textarea name="noticecontent" id="noticecontent" lay-verify="required"  style="width:688px;height:350px;" class="layui-textarea">{$noticeData.content}</textarea>
+        </div>
+
+        <div class="layui-form-item" style="margin-left:100px; " >
+            <div class="layui-btn layui-btn-big" lay-submit="" lay-filter="demo2" id="sub-btn" style="margin-top: 20px;">保存</div>
+            <input name="action" type="hidden" class="layui-input" value="{$noticeData['id']?'edit':'add'}" id="action">
+            <input name="eid" type="hidden" class="layui-input" value="{$noticeData['id']}" id="eid">
+        </div>
+    </form>
+
+</div>
+
+</body>
+
+<script>
+    $(function () {
+
+        layui.use(['form'], function(){
+            var form = layui.form(),layer = layui.layer;
+            //监听提交
+            form.on('submit(demo2)', function(data){
+
+                _index = layer.load();
+                $.post("{:U('access')}", {data:JSON.stringify(data.field)},function(res){
+                    res.status == 1 ? globalFn.remind(_index, res.info,"{:U('index')}")
+                        : globalFn.remind(_index, res.info);
+                });
+                return false;
+            });
+        });
+
+
+    });
+
+</script>
+
+</html>
