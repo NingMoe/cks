@@ -45,7 +45,7 @@
           <el-checkbox label=4 name="type">周四</el-checkbox>
           <el-checkbox label=5 name="type">周五</el-checkbox>
           <el-checkbox label=6 name="type">周六</el-checkbox>
-          <el-checkbox label=0 name="type">周日</el-checkbox>
+          <el-checkbox label=7 name="type">周日</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="开始时间">
@@ -81,7 +81,7 @@
             id: 0,
             $index: null,
             today: null,
-            weekZh: ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+            weekZh: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
         },
         methods: {
             showDialog (scope) {
@@ -132,7 +132,7 @@
             changeWeek (week) {
                 let weekChanged = []
                 week.split(',').forEach((item, index) => {
-                    weekChanged[index] = this.weekZh[item]
+                    weekChanged[index] = this.weekZh[item-1]
                 })
                 return weekChanged.join(',')
             }
