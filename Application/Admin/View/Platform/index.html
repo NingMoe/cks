@@ -91,6 +91,9 @@
                 this.op_end_time = new Date(this.today + scope.row.op_end_time)
                 this.is_allot = scope.row.is_allot
                 this.week = scope.row.week.split(',')
+                if (scope.row.week.length=='') {
+                    this.week = []
+                }
                 this.$index = scope.$index
                 this.dialogVisible = true
             },
@@ -99,6 +102,14 @@
                     if (this.op_start_time.format() > this.op_end_time.format()) {
                         this.$message({
                             message: '开始时间不能大于结束时间！',
+                            type: 'error'
+                        });
+                        return false
+                    }
+                    console.log(this.week);
+                    if (this.week.length==0 && this.is_allot==1) {
+                        this.$message({
+                            message: '选择兑换工作日！',
                             type: 'error'
                         });
                         return false
