@@ -123,13 +123,14 @@
                     }
                     axios.post("Platform/update", platform).then(res => {
                         if (res.data.status === 1) {
+                            if (this.platforms[this.$index].is_allot !== platform.is_allot) {
+                              let is_msg = platform.is_allot == 0 ? '关闭' : '开启'
+                              this.$alert('您已将'+this.platform_name+is_msg+'，请维护公告！', '警告');
+                            }
                             this.platforms[this.$index].op_start_time = platform.op_start_time
                             this.platforms[this.$index].op_end_time = platform.op_end_time
                             this.platforms[this.$index].week = platform.week
                             this.platforms[this.$index].is_allot = platform.is_allot
-                            if (platform.is_allot == 0) {
-                                this.$alert('您已将当前平台关闭，请维护公告！', '警告');
-                            }
                             this.dialogVisible = false
                         }
                     })
